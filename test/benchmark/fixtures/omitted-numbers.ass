@@ -1,0 +1,15 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 320
+PlayResY: 180
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,24,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,2,1,2,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:24:01.27,Default,,0,0,0,,{\pos(160,25)\an\a\b\fe\i\s\u\q}Omitted numeric arguments 0
+Dialogue: 0,0:22:20.00,0:24:01.27,Default,,0,0,0,,{\pos(160,51)\1c\2c\3c\4c\c\1a\2a\3a\4a\alpha}Omitted numeric arguments 1
+Dialogue: 0,0:22:20.00,0:24:01.27,Default,,0,0,0,,{\pos(160,77)\blur\bord\be\fax\fay\frx\fry\frz\fr}Omitted numeric arguments 2
+Dialogue: 0,0:22:20.00,0:24:01.27,Default,,0,0,0,,{\pos(160,103)\fscx\fscy\fsc\fsp\fs\shad\xbord\ybord\xshad\yshad}Omitted numeric arguments 3
+Dialogue: 0,0:22:20.00,0:24:01.27,Default,,0,0,0,,{\pos(160,129)\kt\kf\K\ko\k\pbo\p}Omitted numeric arguments 4
+Dialogue: 0,0:22:20.00,0:24:01.27,Default,,0,0,0,,{\pos(160,155)\t(0,1500,\blur\bord\fscx\fscy\b\c)}Omitted numeric arguments 5

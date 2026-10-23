@@ -3,6 +3,9 @@
 
 #include <boost/shared_ptr.hpp>
 class CWord;
+struct DrawItem;
+class DrawItemHashKey;
+typedef ::boost::shared_ptr<DrawItemHashKey> SharedPtrDrawItemHashKey;
 typedef ::boost::shared_ptr<CWord> SharedPtrCWord;
 
 struct Overlay;
@@ -16,7 +19,9 @@ typedef ::boost::shared_ptr<OverlayKey> SharedPtrOverlayKey;
 
 class CWordPaintMachine
 {
+    struct AllocationTag {};
 public:
+    explicit CWordPaintMachine(AllocationTag) {}
     enum LAYER 
     {
         SHADOW = 0
@@ -33,6 +38,7 @@ public:
 
     void Paint(LAYER layer, SharedPtrOverlay* overlay);
     const SharedPtrOverlayKey& GetHashKey(LAYER layer);
+    const SharedPtrDrawItemHashKey& GetDrawItemHashKey(const DrawItem& item);
 private:
     CWordPaintMachine(){}
 
@@ -40,9 +46,9 @@ private:
     void PaintOutline(const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay);
     void PaintShadow(const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay);
 
-    OverlayKey* CreateBodyOverlayHashKey(const SharedPtrCWord& word, const CPointCoor2& p);
-    OverlayKey* CreateOutlineOverlayHashKey(const SharedPtrCWord& word, const CPointCoor2& p);
-    OverlayKey* CreateShadowOverlayHashKey(const SharedPtrCWord& word, const CPointCoor2& p);
+    SharedPtrOverlayKey CreateBodyOverlayHashKey(const SharedPtrCWord& word, const CPointCoor2& p);
+    SharedPtrOverlayKey CreateOutlineOverlayHashKey(const SharedPtrCWord& word, const CPointCoor2& p);
+    SharedPtrOverlayKey CreateShadowOverlayHashKey(const SharedPtrCWord& word, const CPointCoor2& p);
 
     SharedPtrCWord m_word;
     CPointCoor2 m_shadow_pos, m_outline_pos, m_body_pos;
@@ -63,6 +69,7 @@ public:
     void Paint(SharedPtrOverlay* overlay);
     CRectCoor2 CalcDirtyRect();//return a 8x8 supersampled rect
     const SharedPtrOverlayKey& GetHashKey();
+    const SharedPtrDrawItemHashKey& GetDrawItemHashKey(const DrawItem& item);
 private:
     SharedCWordPaintMachine m_inner_paint_machine;
     CWordPaintMachine::LAYER m_layer;

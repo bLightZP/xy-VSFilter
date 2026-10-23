@@ -15,6 +15,8 @@ typedef ::boost::shared_ptr<CClipperPaintMachine> SharedPtrCClipperPaintMachine;
 
 class DrawItemHashKey;
 typedef ::boost::shared_ptr<DrawItemHashKey> SharedPtrDrawItemHashKey;
+struct DrawItem;
+typedef ::boost::shared_ptr<DrawItem> SharedPtrDrawItem;
 
 struct DrawItem
 {
@@ -33,19 +35,17 @@ public:
     SharedPtrDrawItemHashKey m_key;
 public:
     CRectCoor2 GetDirtyRect();
-    static CRectCoor2 Draw        ( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect );
-    static CRectCoor2 AlphaBltDraw( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect );
-    static CRectCoor2 AdditionDraw( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect );
+    static CRectCoor2 Draw        ( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer );
+    static CRectCoor2 AlphaBltDraw( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer );
+    static CRectCoor2 AdditionDraw( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer );
     const SharedPtrDrawItemHashKey& GetHashKey();
 
-    static DrawItem* CreateDrawItem(const SharedPtrOverlayPaintMachine& overlay_paint_machine,
+    static SharedPtrDrawItem CreateDrawItem(const SharedPtrOverlayPaintMachine& overlay_paint_machine,
         const CRect& clipRect,
         const SharedPtrCClipperPaintMachine &clipper,
         int xsub, int ysub,
         const DWORD* switchpts, bool fBody, bool fBorder);
 };
-
-typedef ::boost::shared_ptr<DrawItem> SharedPtrDrawItem;
 
 typedef CAtlList<DrawItem> DrawItemList;
 
@@ -74,7 +74,7 @@ public:
     CAtlList<SharedPtrDrawItem> draw_item_list;
     CRectCoor2 clip_rect;
 public:
-    void Draw(SharedPtrXyBitmap *bitmap, int *bitmap_identity_num);
+    void Draw(SharedPtrXyBitmap *bitmap, int *bitmap_identity_num, AlphaMaskBuffer& buffer);
 
     void CreateHashKey(GroupedDrawItemsHashKey *key);
 };

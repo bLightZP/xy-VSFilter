@@ -1886,13 +1886,13 @@ void OverlapRegion(tSpanBuffer& dst, const tSpanBuffer& src, int dx, int dy)
 }
 
 
-SharedPtrByte Rasterizer::CompositeAlphaMask(const SharedPtrOverlay& overlay, const CRect& clipRect, 
+BYTE* Rasterizer::CompositeAlphaMask(const SharedPtrOverlay& overlay, const CRect& clipRect,
     const GrayImage2* alpha_mask, 
     int xsub, int ysub, const DWORD* switchpts, bool fBody, bool fBorder, 
-    CRect *outputDirtyRect)
+    CRect *outputDirtyRect, AlphaMaskBuffer& buffer)
 {
     //fix me: check and log error
-    SharedPtrByte result;
+    BYTE* result = NULL;
     *outputDirtyRect = CRect(0, 0, 0, 0);
     if (!switchpts || !fBody && !fBorder) return result;
     if (fBorder && !overlay->mBorder) return result;
@@ -1924,7 +1924,10 @@ SharedPtrByte Rasterizer::CompositeAlphaMask(const SharedPtrOverlay& overlay, co
     // draw
     // Grab the first colour
     DWORD color = switchpts[0];
-    byte* s_base = (byte*)xy_malloc(overlay->mOverlayPitch * overlay->mOverlayHeight);
+    // A zero-opacity single-color layer preserves every destination pixel.
+    // Keep its original bounds/grouping, but omit the mask and pixel work.
+    if (fSingleColor && (color >> 24) == 0) return NULL;
+    byte* s_base = buffer.GetBuffer(static_cast<size_t>(overlay->mOverlayPitch) * overlay->mOverlayHeight);
     const byte* alpha_mask_data = alpha_mask != NULL ? alpha_mask->data.get() : NULL;
     const int alpha_mask_pitch = alpha_mask != NULL ? alpha_mask->pitch : 0;
     if(alpha_mask_data!=NULL )
@@ -1956,8 +1959,7 @@ SharedPtrByte Rasterizer::CompositeAlphaMask(const SharedPtrOverlay& overlay, co
             sw += 2;
         }
     }
-    result.reset( s_base, xy_free );
-    return result;
+    return s_base;
 }
 
 

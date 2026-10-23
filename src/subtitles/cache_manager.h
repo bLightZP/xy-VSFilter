@@ -71,13 +71,31 @@ public:
         return m_str_id==key.m_str_id 
             && fabs(m_scalex-key.m_scalex)<0.000001
             && fabs(m_scaley-key.m_scaley)<0.000001 
-            && ( m_style==key.m_style || CompareSTSStyle(m_style, key.m_style) );
+            && (IsPolygon() == key.IsPolygon())
+            && (IsPolygon() || m_style==key.m_style || CompareSTSStyle(m_style, key.m_style));
     }
     bool operator==(const CWord& key)const
     {
         return operator==(PathDataCacheKey(key));
     }
 
+    bool MatchesWordExactly(const CWord& word) const
+    {
+        const PathDataCacheKey current(word);
+        return m_str_id == current.m_str_id && m_scalex == current.m_scalex && m_scaley == current.m_scaley
+            && m_style == current.m_style;
+    }
+
+    // Constructor-time geometry reuse requires exact scales, rather than the
+    // tolerant comparison used by the existing paint cache.
+    bool HasExactPolygonScale(double x, double y) const
+    {
+        return m_scalex == x && m_scaley == y;
+    }
+
+    // Text keys have zero script scales. Drawing vertices use script scales,
+    // not font glyph attributes; transformed/painted keys add their own fields.
+    bool IsPolygon() const { return m_scalex != 0 || m_scaley != 0; }
     static bool CompareSTSStyle(const STSStyle& lhs, const STSStyle& rhs);
     
     ULONG UpdateHashValue();
@@ -139,6 +157,7 @@ public:
     OverlayKey(const OverlayKey& key):OverlayNoBlurKey(key), m_hash_value(key.m_hash_value) {}
 
     bool operator==(const OverlayKey& key)const;
+    bool MatchesWord(const CWord& word, const POINT& p, const POINT& org) const;
 
     ULONG UpdateHashValue();
     inline ULONG GetHashValue()const
@@ -209,6 +228,7 @@ class DrawItemHashKey
 public:
     DrawItemHashKey(const DrawItem& draw_item);
     bool operator==(const DrawItemHashKey& hash_key) const;
+    bool MatchesDrawItem(const DrawItem& item) const;
 
     ULONG UpdateHashValue();
     inline ULONG GetHashValue()const
@@ -243,10 +263,9 @@ public:
     ULONG m_hash_value;
 private:
     typedef ::boost::shared_ptr<DrawItemHashKey> PKey;
-    typedef CAtlArray<PKey> Keys;
-    typedef ::boost::shared_ptr<Keys> PKeys;
+    typedef CInlineList<PKey> Keys;
 
-    PKeys m_key;
+    Keys m_key;
     CRect m_clip_rect;
 
     friend struct GroupedDrawItems;

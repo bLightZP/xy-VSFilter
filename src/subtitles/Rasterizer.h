@@ -148,6 +148,34 @@ typedef ::boost::shared_ptr<ScanLineData2> SharedPtrScanLineData2;
 
 typedef ::boost::shared_ptr<BYTE> SharedPtrByte;
 
+// Scratch alpha pixels belong to one frame's synchronous composition. They
+// are consumed before the next draw and never retained by a bitmap or cache.
+class AlphaMaskBuffer
+{
+    BYTE* m_data;
+    size_t m_capacity;
+    AlphaMaskBuffer(const AlphaMaskBuffer&);
+    AlphaMaskBuffer& operator=(const AlphaMaskBuffer&);
+public:
+    AlphaMaskBuffer() : m_data(NULL), m_capacity(0) {}
+    ~AlphaMaskBuffer() { xy_free(m_data); }
+    BYTE* GetBuffer(size_t bytes)
+    {
+        if (bytes > m_capacity)
+        {
+            BYTE* next = static_cast<BYTE*>(xy_malloc(bytes));
+            if (!next) throw std::bad_alloc();
+            xy_free(m_data);
+            m_data = next;
+            m_capacity = bytes;
+        }
+        return m_data;
+    }
+    size_t GetCapacity() const { return m_capacity; }
+};
+
+
+
 struct Overlay
 {
 public:
@@ -237,10 +265,10 @@ public:
         double target_scale_x, double target_scale_y, 
         SharedPtrOverlay output_overlay );
 
-    static SharedPtrByte CompositeAlphaMask(const SharedPtrOverlay& overlay, const CRect& clipRect, 
+    static BYTE* CompositeAlphaMask(const SharedPtrOverlay& overlay, const CRect& clipRect,
         const GrayImage2* alpha_mask, 
         int xsub, int ysub, const DWORD* switchpts, bool fBody, bool fBorder, 
-        CRect *outputDirtyRect);
+        CRect *outputDirtyRect, AlphaMaskBuffer& buffer);
 
     static void Draw(XyBitmap* bitmap, 
         SharedPtrOverlay overlay, 

@@ -59,6 +59,30 @@ public:
     // v will be assigned to a shared pointer
     XyFlyWeight(const V *v):_v(v)
     {
+        Intern();
+    }
+    XyFlyWeight(const V& v)
+    {
+        Cacher* cacher = GetCacher();
+        // This alias borrows v without a control-block allocation. Lookup does
+        // not retain the probe; a cache miss receives an owned copy.
+        const SharedConstV probe(SharedConstV(), &v);
+        POSITION pos = cacher->Lookup(probe);
+        if (pos)
+        {
+            cacher->UpdateCache(pos);
+            _v = cacher->GetKeyAt(pos);
+            _id = cacher->GetAt(pos);
+        }
+        else
+        {
+            _v.reset(new V(v));
+            Intern();
+        }
+    }
+private:
+    void Intern()
+    {
         Cacher * cacher = GetCacher();
         ASSERT( cacher );
         bool new_item_added = false;
@@ -75,6 +99,7 @@ public:
             cacher->GetAt(pos) = _id;
         }
     }
+public:
     inline const V& Get() const { return *_v; }
     inline IdType GetId() const { return _id; }
 
@@ -111,6 +136,9 @@ typedef XyFlyWeight<CStringW, 16*1024, CStringElementTraits<CStringW>> XyFwStrin
 
 static inline std::size_t hash_value(const double& d)
 {
+    // Floating-point equality treats +0 and -0 as equal. Their hashes must
+    // match as well, including newly hashed animated style parameters.
+    if (d == 0.0) return 0;
     std::size_t hash = 515;
     const int32_t* tmp = reinterpret_cast<const int32_t*>(&d);
     hash += (hash<<5);

@@ -1,0 +1,14 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 320
+PlayResY: 180
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,24,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,2,1,2,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:22:21.00,Default,,0,0,0,,{\an5\pos(160,90)\bord0\shad0\1c&H609020&\p1}m -80 -30 l 80 -30 80 30 -80 30
+Dialogue: 1,0:22:20.00,0:22:21.00,Default,,0,0,0,,{\an5\pos(160,90)\alpha&HFF&\bord4\shad3\t(0,1000,\frz30)}Transparent
+Dialogue: 2,0:22:20.00,0:22:21.00,Default,,0,0,0,,{\an5\pos(160,70)\1a&HFF&\3a&H00&\4a&HFF&\bord2\t(0,1000,\frz-20)}Outline
+Dialogue: 3,0:22:20.00,0:22:21.00,Default,,0,0,0,,{\an5\pos(160,110)\alpha&HFF&\iclip(140,80,180,130)\t(0,1000,\frz20)}Inverse
+Dialogue: 4,0:22:20.00,0:22:21.00,Default,,0,0,0,,{\an5\pos(160,90)\alpha&HFF&\clip(m 0 0 l 320 0 320 180 0 180)\t(0,1000,\fs40)}Vector

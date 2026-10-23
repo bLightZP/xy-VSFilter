@@ -28,6 +28,8 @@
 #include <atlcoll.h>
 #include <boost/flyweight/key_value.hpp>
 #include <boost/smart_ptr.hpp>
+#include <map>
+#include <vector>
 #include "mru_cache.h"
 #include "xy_int_map.h"
 
@@ -67,6 +69,7 @@ class CClipperPaintMachine;
 typedef ::boost::shared_ptr<CClipperPaintMachine> SharedPtrCClipperPaintMachine;
 
 class OverlayKey;
+class DrawItemHashKey;
 interface IXySubRenderFrame;
 
 class CWord
@@ -102,6 +105,11 @@ public:
 
 protected:
     XyFwStringW       m_str;
+    // Three small keys cover body/outline/shadow geometry and draw state.
+    // Keys own no word or painted bitmap, so these references cannot cycle.
+    boost::shared_ptr<OverlayKey> m_overlayKeyCache[3];
+    boost::shared_ptr<DrawItemHashKey> m_drawKeyCache[3];
+    unsigned m_nextOverlayKey, m_nextDrawKey;
 public:
     bool              m_fWhiteSpaceChar, m_fLineBreak;
     FwSTSStyle        m_style;
@@ -136,6 +144,7 @@ public:
     CText(const FwSTSStyle& style, const CStringW& str, int ktype, int kstart, int kend
         , double target_scale_x=1.0, double target_scale_y=1.0);
     CText(const CText& src);
+    bool HasSmallRetainedText() const { return m_str.Get().GetLength() <= 128; }
 
     virtual SharedPtrCWord Copy();
     virtual bool Append(const SharedPtrCWord& w);
@@ -143,15 +152,17 @@ public:
 
 class CPolygon : public CWord
 {
-    bool Get6BitFixedPoint(CStringW& str, LONG& ret);
-    bool GetPOINT(CStringW& str, POINT& ret);
+    bool Get6BitFixedPoint(const WCHAR*& cursor, LONG& ret);
+    bool GetPOINT(const WCHAR*& cursor, POINT& ret);
     bool ParseStr();
+    void UpdateMetrics(bool scaleCoordinates);
 
 protected:
     double            m_scalex, m_scaley;
     int               m_baseline;
     CAtlArray<BYTE>   m_pathTypesOrg;
     CAtlArray<CPoint> m_pathPointsOrg;
+    SharedPtrConstPathData m_cachedPath;
 
     virtual bool CreatePath(PathData* path_data);
 
@@ -162,6 +173,11 @@ public:
         , bool round_to_whole_pixel_after_scale_to_target = false);
 	// can't use a const reference because we need to use CAtlArray::Copy which expects a non-const reference
     CPolygon(CPolygon&); 
+    bool HasSmallRetainedPath() const
+    {
+        const size_t count = m_cachedPath ? m_cachedPath->mPathPoints : m_pathTypesOrg.GetCount();
+        return count <= 16 && m_str.Get().GetLength() <= 128;
+    }
     virtual ~CPolygon();
 
     virtual SharedPtrCWord Copy();
@@ -232,13 +248,44 @@ public:
     friend class CClipperPaintMachine;
 };
 
-class CLine: private CAtlList<SharedPtrCWord>
+// Most subtitle events and lines contain one word. Keep that element inline;
+// longer text spills into a vector whose storage follows the container lifetime.
+template<class T> class CInlineList
 {
+    T m_first;
+    std::vector<T> m_rest;
+    bool m_hasFirst;
 public:
+    CInlineList() : m_first(), m_hasFirst(false) {}
+    size_t GetCount() const { return m_hasFirst ? m_rest.size() + 1 : 0; }
+    T& operator[](size_t i) { ASSERT(i < GetCount()); return i ? m_rest[i-1] : m_first; }
+    const T& operator[](size_t i) const { ASSERT(i < GetCount()); return i ? m_rest[i-1] : m_first; }
+    void AddTail(const T& value)
+    {
+        if (m_hasFirst) m_rest.push_back(value);
+        else { m_first = value; m_hasFirst = true; }
+    }
+    void Reserve(size_t count) { if (count > 1) m_rest.reserve(count-1); }
+    void Truncate(size_t count)
+    {
+        ASSERT(count <= GetCount());
+        if (!count) { m_first = T(); m_hasFirst = false; m_rest.clear(); }
+        else m_rest.resize(count-1);
+    }
+};
+
+class CLine
+{
+    CInlineList<SharedPtrCWord> m_words;
+    CLine(const CLine&);
+    CLine& operator=(const CLine&);
+public:
+    CLine() {}
     int m_width, m_ascent, m_descent, m_borderX, m_borderY;
 
     virtual ~CLine();
 
+    void Empty() { m_words.Truncate(0); }
     void Compact();
 
     int GetWordCount();
@@ -248,15 +295,21 @@ public:
     CRectCoor2 PaintAll(CompositeDrawItemList* output, const CRectCoor2& clipRect, 
         const CPointCoor2& margin,
         const SharedPtrCClipperPaintMachine &clipper, 
-        CPoint p, const CPoint& org, const int time, const int alpha);
+        CPoint p, const CPoint& org, const int time, const int alpha, POSITION outputPos = NULL);
 };
 
-class CSubtitle: private CAtlList<CLine*>
+class CSubtitle
 {
+    CInlineList<CLine*> m_lines;
+    CLine m_inlineLine;
+    Effect m_inlineEffect;
+    bool m_inlineEffectUsed;
+    CSubtitle(const CSubtitle&);
+    CSubtitle& operator=(const CSubtitle&);
     int GetFullWidth();
-    int GetFullLineWidth(POSITION pos);
-    int GetWrapWidth(POSITION pos, int maxwidth);
-    CLine* GetNextLine(POSITION& pos, int maxwidth);
+    int GetFullLineWidth(size_t pos);
+    int GetWrapWidth(size_t pos, int maxwidth);
+    CLine* GetNextLine(size_t& pos, int maxwidth);
 
 public:
     int                      m_scrAlignment;
@@ -265,18 +318,23 @@ public:
     bool                     m_fAnimated2; //If this Subtitle has animate effect
     int                      m_relativeTo;
     Effect*                  m_effects[EF_NUMBEROFEFFECTS];
-    CAtlList<SharedPtrCWord> m_words;
+    CInlineList<SharedPtrCWord> m_words;
     SharedPtrCClipper        m_pClipper;
     CRect                    m_rect, m_clip;
     int                      m_topborder, m_bottomborder;
     bool                     m_clipInverse;
     double                   m_scalex, m_scaley;
     double                   m_target_scale_x, m_target_scale_y;
+    POSITION                 m_cachePosition;
+    int                      m_reuseFrom, m_reuseUntil, m_reuseDelay;
+    size_t                   m_reuseCharge;
+    CStringW                 m_sourceText;
     int                      m_hard_position_level;//-1: for no style override at all, others see @AssCmdPosLevel
 public:
     CSubtitle();
     virtual ~CSubtitle();
     virtual void Empty();
+    Effect* CreateEffect(eftype type);
 
     void CreateClippers(CSize size1, const CSizeCoor2& size_scale_to);
 
@@ -284,6 +342,29 @@ public:
 
     POSITION GetHeadLinePosition();
     CLine* GetNextLine(POSITION& pos);
+};
+
+// Empty event storage only: no words, clippers, effects or vector capacity
+// survive recycling. Each renderer owns its pool and clears it on invalidation.
+class CSubtitlePool
+{
+    enum { MAX_ITEMS = (1024*1024 - 64) / (sizeof(CSubtitle) + sizeof(CSubtitle*)) };
+    CSubtitle* m_items[MAX_ITEMS];
+    size_t m_count;
+    unsigned __int64 m_hits, m_misses;
+    CSubtitlePool(const CSubtitlePool&);
+    CSubtitlePool& operator=(const CSubtitlePool&);
+public:
+    CSubtitlePool() : m_count(0), m_hits(0), m_misses(0) {}
+    ~CSubtitlePool() { Clear(); }
+    CSubtitle* Acquire();
+    void Recycle(CSubtitle* subtitle);
+    void Clear();
+    static size_t GetCapacity() { return MAX_ITEMS; }
+    size_t GetCount() const { return m_count; }
+    size_t GetRetainedBytes() const { return sizeof(*this) + m_count * sizeof(CSubtitle); }
+    unsigned __int64 GetHits() const { return m_hits; }
+    unsigned __int64 GetMisses() const { return m_misses; }
 };
 
 struct CSubtitle2
@@ -398,13 +479,61 @@ public:
     typedef ::boost::shared_ptr<const AssTagList> SharedPtrConstAssTagList;
     struct AssTag
     {
+        union Number { double real; long integer; };
         AssCmdType cmdType;
         CAtlArray<CStringW> strParams;
         AssTagList embeded;
+        Number firstNumber;
+        boost::scoped_array<Number> extraNumbers;
+        void AllocateNumbers(size_t count)
+        {
+            ASSERT(count > 0 && count <= 7);
+            if (count > 1) extraNumbers.reset(new Number[count - 1]);
+        }
+        Number& GetNumber(size_t i) { return i == 0 ? firstNumber : extraNumbers[i - 1]; }
+        const Number& GetNumber(size_t i) const { return i == 0 ? firstNumber : extraNumbers[i - 1]; }
+    };
+    struct ParsedTagCacheStats
+    {
+        unsigned __int64 hits, misses;
+        size_t bytes, peakBytes, entries;
     };
 public:
     static std::size_t SetMaxCacheSize(std::size_t max_cache_size);
+    // Internal renderer diagnostics/control; this does not change the COM API.
+    ParsedTagCacheStats GetParsedTagCacheStats() const;
+    void SetParsedTagCacheLimit(size_t bytes);
 private:
+    struct ParsedTagBlock
+    {
+        int offset, tagEnd, textEnd;
+        CStringW text;
+        SharedPtrConstAssTagList tags;
+    };
+    struct ParsedEventTags
+    {
+        CStringW text;
+        std::vector<ParsedTagBlock> blocks;
+        size_t bytes;
+        ParsedEventTags() : bytes(0) {}
+    };
+    typedef boost::shared_ptr<ParsedEventTags> SharedParsedEventTags;
+    typedef std::map<int, SharedParsedEventTags> ParsedEventTagMap;
+    ParsedEventTagMap m_parsedEventTags;
+    size_t m_parsedTagBytes, m_parsedTagPeakBytes, m_parsedTagLimit;
+    unsigned __int64 m_parsedTagHits, m_parsedTagMisses;
+    REFERENCE_TIME m_parsedTagTime;
+    void ClearParsedTags();
+    void ExpireParsedTags(REFERENCE_TIME rt, double fps);
+    static size_t EstimateTagMemory(const AssTagList& tags);
+    static SharedPtrConstAssTagList GetParsedSSATags(const CStringW& text);
+    CSubtitlePool           m_subtitlePool;
+    size_t m_reconstructionCount, m_reconstructionPeak, m_reconstructionLimit;
+    size_t m_reconstructionBytes, m_reconstructionPeakBytes;
+    unsigned __int64 m_reconstructionHits;
+    int m_reconstructionFrom, m_reconstructionUntil;
+    bool m_reconstructionStable;
+    void ClearReconstructedSubtitles();
     XyIntMap<CSubtitle*>     m_subtitleCache;
     CAtlList<int>            m_subtitleCacheEntry;
 
@@ -434,8 +563,8 @@ private:
     void ParsePolygon(CSubtitle* sub, const CStringW& str, const FwSTSStyle& style);
 
     static bool ParseSSATag(AssTagList *assTags, const CStringW& str);
+    static void CacheTagNumbers(AssTag& tag);
     bool ParseSSATag(CSubtitle* sub, const AssTagList& assTags, STSStyle& style, const STSStyle& org, bool fAnimate = false);
-    bool ParseSSATag(CSubtitle* sub, const CStringW& str, STSStyle& style, const STSStyle& org, bool fAnimate = false);
 
     bool ParseHtmlTag(CSubtitle* sub, CStringW str, STSStyle& style, STSStyle& org);
 
@@ -468,6 +597,13 @@ private:
         const SIZE& layout_size);
 public:
     void Deinit();
+    const CSubtitlePool& GetSubtitlePool() const { return m_subtitlePool; }
+    void SetReconstructionCacheLimit(size_t entries);
+    size_t GetReconstructionCacheCount() const { return m_reconstructionCount; }
+    size_t GetReconstructionCachePeak() const { return m_reconstructionPeak; }
+    size_t GetReconstructionCacheBytes() const { return m_reconstructionBytes; }
+    size_t GetReconstructionCachePeakBytes() const { return m_reconstructionPeakBytes; }
+    unsigned __int64 GetReconstructionCacheHits() const { return m_reconstructionHits; }
 
     DECLARE_IUNKNOWN
     STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);

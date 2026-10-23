@@ -111,7 +111,9 @@ static inline std::size_t hash_value(const STSStyleBase& s)
 
 static inline std::size_t hash_value(const STSStyle& s)
 {
-    //Todo: fix me
+    // Keep every field used by operator== in the hash. Animated ASS often varies
+    // only shadow, border, alpha or blur, so omitting them creates long chains
+    // in the shared style flyweight table.
     std::size_t hash = hash_value(static_cast<const STSStyleBase&>(s));
     hash = (hash<<5) + (hash) + s.colors[0];
     hash = (hash<<5) + (hash) + s.colors[2];
@@ -122,6 +124,23 @@ static inline std::size_t hash_value(const STSStyle& s)
     hash = (hash<<5) + (hash) + hash_value(s.fontAngleZ);
     hash = (hash<<5) + (hash) + hash_value(s.fontShiftX);
     hash = (hash<<5) + (hash) + hash_value(s.fontShiftY);
+    hash = (hash<<5) + (hash) + hash_value(s.marginRect.get());
+    hash = (hash<<5) + (hash) + s.scrAlignment;
+    hash = (hash<<5) + (hash) + s.borderStyle;
+    hash = (hash<<5) + (hash) + hash_value(s.outlineWidthX);
+    hash = (hash<<5) + (hash) + hash_value(s.outlineWidthY);
+    hash = (hash<<5) + (hash) + hash_value(s.shadowDepthX);
+    hash = (hash<<5) + (hash) + hash_value(s.shadowDepthY);
+    hash = (hash<<5) + (hash) + s.colors[1];
+    hash = (hash<<5) + (hash) + s.colors[3];
+    hash = (hash<<5) + (hash) + s.alpha[0];
+    hash = (hash<<5) + (hash) + s.alpha[1];
+    hash = (hash<<5) + (hash) + s.alpha[2];
+    hash = (hash<<5) + (hash) + s.alpha[3];
+    hash = (hash<<5) + (hash) + hash_value(s.fontSpacing);
+    hash = (hash<<5) + (hash) + hash_value(s.fBlur);
+    hash = (hash<<5) + (hash) + hash_value(s.fGaussianBlur);
+    hash = (hash<<5) + (hash) + s.relativeTo;
 
     return  hash;
 }

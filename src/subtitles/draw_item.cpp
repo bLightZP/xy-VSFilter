@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include "xy_overlay_paint_machine.h"
 #include "xy_clipper_paint_machine.h"
 #include "../SubPic/ISubPic.h"
@@ -46,7 +47,7 @@ CRectCoor2 DrawItem::GetDirtyRect()
     return r;
 }
 
-CRectCoor2 DrawItem::Draw( XyBitmap* bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect )
+CRectCoor2 DrawItem::Draw( XyBitmap* bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer )
 {
 
     // PF 20180411 disable use_addition=true for planar
@@ -54,11 +55,11 @@ CRectCoor2 DrawItem::Draw( XyBitmap* bitmap, DrawItem& draw_item, const CRectCoo
     // asserts FATAL in AdditionDraw (use case: Avisynth TextSub plugin for YV12)
     bool PLANAR = (bitmap->type == XyBitmap::PLANNA);
 
-    return !PLANAR && draw_item.use_addition_draw ? AdditionDraw(bitmap, draw_item, clip_rect) 
-                                       : AlphaBltDraw(bitmap, draw_item, clip_rect);
+    return !PLANAR && draw_item.use_addition_draw ? AdditionDraw(bitmap, draw_item, clip_rect, buffer)
+                                       : AlphaBltDraw(bitmap, draw_item, clip_rect, buffer);
 }
 
-CRectCoor2 DrawItem::AlphaBltDraw( XyBitmap* bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect )
+CRectCoor2 DrawItem::AlphaBltDraw( XyBitmap* bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer )
 {
     CRect result;
     SharedPtrGrayImage2 alpha_mask;
@@ -68,16 +69,17 @@ CRectCoor2 DrawItem::AlphaBltDraw( XyBitmap* bitmap, DrawItem& draw_item, const 
     ASSERT(draw_item.overlay_paint_machine);
     draw_item.overlay_paint_machine->Paint(&overlay);
 
-    const SharedPtrByte& alpha = Rasterizer::CompositeAlphaMask(overlay, draw_item.clip_rect & clip_rect, alpha_mask.get(),
+    BYTE* alpha = Rasterizer::CompositeAlphaMask(overlay, draw_item.clip_rect & clip_rect, alpha_mask.get(),
         draw_item.xsub, draw_item.ysub, draw_item.switchpts, draw_item.fBody, draw_item.fBorder,
-        &result);
+        &result, buffer);
+    if (!alpha) return result;
 
-    Rasterizer::Draw(bitmap, overlay, result, alpha.get(),
+    Rasterizer::Draw(bitmap, overlay, result, alpha,
         draw_item.xsub, draw_item.ysub, draw_item.switchpts, draw_item.fBody, draw_item.fBorder);
     return result;
 }
 
-CRectCoor2 DrawItem::AdditionDraw( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect )
+CRectCoor2 DrawItem::AdditionDraw( XyBitmap *bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer )
 {
     TRACE_DRAW("AdditionDraw");
     CRect result;
@@ -88,19 +90,20 @@ CRectCoor2 DrawItem::AdditionDraw( XyBitmap *bitmap, DrawItem& draw_item, const 
     ASSERT(draw_item.overlay_paint_machine);
     draw_item.overlay_paint_machine->Paint(&overlay);
 
-    const SharedPtrByte& alpha = Rasterizer::CompositeAlphaMask(overlay, draw_item.clip_rect & clip_rect, alpha_mask.get(),
+    BYTE* alpha = Rasterizer::CompositeAlphaMask(overlay, draw_item.clip_rect & clip_rect, alpha_mask.get(),
         draw_item.xsub, draw_item.ysub, draw_item.switchpts, draw_item.fBody, draw_item.fBorder,
-        &result);
+        &result, buffer);
+    if (!alpha) return result;
 
-    Rasterizer::AdditionDraw(bitmap, overlay, result, alpha.get(),
+    Rasterizer::AdditionDraw(bitmap, overlay, result, alpha,
         draw_item.xsub, draw_item.ysub, draw_item.switchpts, draw_item.fBody, draw_item.fBorder);
     return result;
 }
 
-DrawItem* DrawItem::CreateDrawItem( const SharedPtrOverlayPaintMachine& overlay_paint_machine, const CRect& clipRect,
+SharedPtrDrawItem DrawItem::CreateDrawItem( const SharedPtrOverlayPaintMachine& overlay_paint_machine, const CRect& clipRect,
     const SharedPtrCClipperPaintMachine &clipper, int xsub, int ysub, const DWORD* switchpts, bool fBody, bool fBorder )
 {
-    DrawItem* result              = DEBUG_NEW DrawItem();
+    SharedPtrDrawItem result      = boost::make_shared<DrawItem>();
     result->overlay_paint_machine = overlay_paint_machine;
     result->clip_rect             = clipRect;
     result->clipper               = clipper;
@@ -113,8 +116,7 @@ DrawItem* DrawItem::CreateDrawItem( const SharedPtrOverlayPaintMachine& overlay_
 
     result->use_addition_draw = false;
 
-    result->m_key.reset( DEBUG_NEW DrawItemHashKey(*result) );
-    result->m_key->UpdateHashValue();
+    result->m_key = overlay_paint_machine->GetDrawItemHashKey(*result);
 
     return result;
 }
@@ -275,9 +277,10 @@ void CompositeDrawItem::Draw( XySubRenderFrame**output, CompositeDrawItemListLis
     *output = render_frame_creater->NewXySubRenderFrame(grouped_draw_items.GetCount());
     XySubRenderFrame& sub_render_frame = **output;
 
+    AlphaMaskBuffer alphaBuffer;
     for (unsigned i=0;i<grouped_draw_items.GetCount();i++)
     {
-        grouped_draw_items[i].Draw(&(sub_render_frame.m_bitmaps.GetAt(i)), &(sub_render_frame.m_bitmap_ids.GetAt(i)));
+        grouped_draw_items[i].Draw(&(sub_render_frame.m_bitmaps.GetAt(i)), &(sub_render_frame.m_bitmap_ids.GetAt(i)), alphaBuffer);
     }
 }
 
@@ -522,7 +525,7 @@ void DecideDrawMethod( CompositeDrawItemListList& compDrawItemListList, XyRectEx
 // GroupedDrawItems
 // 
 
-void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num )
+void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num, AlphaMaskBuffer& buffer )
 {
     ASSERT(bitmap && bitmap_identity_num);
     BitmapMruCache *bitmap_cache = CacheManager::GetBitmapMruCache();
@@ -539,7 +542,7 @@ void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num
         while(pos)
         {
             DrawItem& item = *draw_item_list.GetNext(pos);
-            DrawItem::Draw(tmp, item, clip_rect);
+            DrawItem::Draw(tmp, item, clip_rect, buffer);
         }
         XyColorSpace color_space;
         HRESULT hr = XySubRenderFrameCreater::GetDefaultCreater()->GetColorSpace(&color_space);
@@ -585,14 +588,9 @@ void GroupedDrawItems::CreateHashKey(GroupedDrawItemsHashKey *key)
 {
     ASSERT(key);
     key->m_clip_rect = clip_rect;
-    GroupedDrawItemsHashKey::Keys *inner_key = DEBUG_NEW GroupedDrawItemsHashKey::Keys();
-    ASSERT(inner_key);
-    key->m_key.reset(inner_key);
-    inner_key->SetCount(draw_item_list.GetCount());
+    key->m_key.Truncate(0);
+    key->m_key.Reserve(draw_item_list.GetCount());
     POSITION pos = draw_item_list.GetHeadPosition();
-    for (unsigned i=0;i<inner_key->GetCount();i++)
-    {
-        inner_key->GetAt(i) = draw_item_list.GetNext(pos)->GetHashKey();
-    }
+    while (pos) key->m_key.AddTail(draw_item_list.GetNext(pos)->GetHashKey());
     key->UpdateHashValue();
 }

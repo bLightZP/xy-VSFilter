@@ -1,0 +1,19 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 320
+PlayResY: 180
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,24,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,2,1,2,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:22:20.40,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}plain {\unknown7} tail{broken
+Dialogue: 0,0:22:20.40,0:22:20.80,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}<b>bold</b> <i>italic</i> <font color="#20FFFF">color</font>
+Dialogue: 0,0:22:20.80,0:22:21.20,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}<<unknown>x</unknown><broken
+Dialogue: 0,0:22:21.20,0:22:21.60,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}{}{\b1}{\i1}Consecutive{}{\r} end
+Dialogue: 0,0:22:21.60,0:22:22.00,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}{\q2}  space  words\hno-break\Nnext\nsoft
+Dialogue: 0,0:22:22.00,0:22:22.40,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}{\q0}one two three four five six seven eight nine ten\nwrap
+Dialogue: 0,0:22:22.40,0:22:22.80,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}{\q3}one two three four five six seven eight nine ten\Nwrap
+Dialogue: 0,0:22:22.80,0:22:23.20,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}{\p1}m -2.25 0 l 20 0 20 20 0 20{\p0} text
+Dialogue: 0,0:22:23.20,0:22:23.60,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}leading <b>{\1c&H00FF00&}mixed</b> trailing
+Dialogue: 0,0:22:23.60,0:22:24.00,Default,,0,0,0,,{\an5\pos(160,90)\t(0,400,\frz10\bord3)}{}<b></b>{\b1}

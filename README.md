@@ -1,7 +1,10 @@
-# xy-VSFilter (pfmod) v3.2.0.810 (20240123)
-https://github.com/pinterf/xy-VSFilter/
+# xy-VSFilter v3.2.1.900 (20261023)
+https://github.com/bLightZP/xy-VSFilter/
 
-Active branch: xy_sub_filter_rc5
+Active branch: codex/sol-6.1-xhigh-v3.2.1.900
+
+Optimization fork of [pinterf/xy-VSFilter](https://github.com/pinterf/xy-VSFilter/).
+See [release notes](docs/releases/v3.2.1.900.md), [benchmark evidence](docs/benchmarks/v3.2.1.900.json), and the [architecture graph](docs/knowledge-graph.md).
 
 A modification by pinterf. 
 
@@ -17,7 +20,7 @@ Plus:
 [Avisynth wiki](http://avisynth.nl/index.php/Xy-VSFilter)
 
 # Info:
-- Package contains VSFilter.dll and XySubFilter.dll (x86 and x64 versions)
+- The v3.2.1.900 release contains Win32 (x86) VSFilter.dll, XySubFilter.dll and xy_sub_filter_consumer.dll, with matching symbols in a separate archive.
 
 - VSFilter.DLL: Included Avisynth filters (name and parameter signature)
   
@@ -31,6 +34,10 @@ Plus:
   After downloading XySubFilter BETA3, you must ensure to run the 'Install' bat (not only replace) or else XySubFilter's autoload helper required for entering the DirectShow graph with external subtitles will not be installed
 
 # Change log:
+
+## v3.2.1.900 (20261023)
+
+See the [optimization changelog](docs/releases/v3.2.1.900.md).
 
 ## v3.2.0.810 (20240123)
 

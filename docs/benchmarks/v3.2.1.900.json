@@ -1,0 +1,235 @@
+{
+  "release": "v3.2.1.900",
+  "provenance": "Version-only rebuild of the previously measured word-keys-exact candidate; all twelve modified shared renderer source/header files are unchanged. Playback testing remains paused at user request.",
+  "measured_candidate_dll_sha256": "b87fff108872c7193d64748e9dbc17bd7a4436e909cbe6416b8d289cc02f75c0",
+  "base_commit": "4911cacb102bc0cbd41449793e54473265b04e62",
+  "conditions": {
+    "player": "Z:\\zpAI\\zplayer.exe",
+    "player_build": "Debug (LOCAL) MAX",
+    "filter_build": "Win32 Release, v145",
+    "cpu": "Intel Core i7-2600K, 4 cores / 8 logical CPUs",
+    "gpu": "NVIDIA GTX 1060 6GB",
+    "renderer": "madVR",
+    "subtitle": "default track 0, Signs & Songs [eng] (ass) [default]",
+    "media_sha256": "e85d3926112f7ccbc071b6e6d1034aa76bc75a65ae15c44721e8aef0aa237d2f",
+    "interval_ms": [
+      1340000,
+      1441272
+    ],
+    "renderer_poll_interval_s": 1.0,
+    "main_window_client_size": [
+      970,
+      550
+    ]
+  },
+  "playback_fresh_geometry_control": {
+    "capture": "reconstruction-control-unprofiled",
+    "bitmap_entries": 64,
+    "profiled": false,
+    "new_renderer_drops": 599,
+    "cpu_seconds": 77.5625,
+    "peak_private_bytes": 622579712,
+    "wall_seconds": 102.00177849992178,
+    "drop_intervals": []
+  },
+  "playback_final_runs": [
+    {
+      "capture": "word-keys-exact-unprofiled",
+      "bitmap_entries": 64,
+      "profiled": true,
+      "new_renderer_drops": 1,
+      "cpu_seconds": 62.4375,
+      "peak_private_bytes": 632262656,
+      "wall_seconds": 102.00122289999854,
+      "drop_intervals": [
+        {
+          "elapsed_s": 1.001164,
+          "position_ms": 1340955,
+          "new_drops": 1
+        }
+      ]
+    },
+    {
+      "capture": "word-keys-exact-unprofiled-02",
+      "bitmap_entries": 64,
+      "profiled": false,
+      "new_renderer_drops": 1,
+      "cpu_seconds": 58.265625,
+      "peak_private_bytes": 624603136,
+      "wall_seconds": 102.00179259991273,
+      "drop_intervals": [
+        {
+          "elapsed_s": 1.000874,
+          "position_ms": 1340955,
+          "new_drops": 1
+        }
+      ]
+    },
+    {
+      "capture": "word-keys-exact-bitmap256",
+      "bitmap_entries": 256,
+      "profiled": false,
+      "new_renderer_drops": 1,
+      "cpu_seconds": 59.25,
+      "peak_private_bytes": 626610176,
+      "wall_seconds": 102.0014789000852,
+      "drop_intervals": [
+        {
+          "elapsed_s": 1.000686,
+          "position_ms": 1340957,
+          "new_drops": 1
+        }
+      ]
+    },
+    {
+      "capture": "word-keys-exact-bitmap256-02",
+      "bitmap_entries": 256,
+      "profiled": false,
+      "new_renderer_drops": 0,
+      "cpu_seconds": 61.984375,
+      "peak_private_bytes": 626892800,
+      "wall_seconds": 102.0017759000184,
+      "drop_intervals": []
+    },
+    {
+      "capture": "word-keys-exact-bitmap256-03",
+      "bitmap_entries": 256,
+      "profiled": false,
+      "new_renderer_drops": 0,
+      "cpu_seconds": 61.484375,
+      "peak_private_bytes": 631013376,
+      "wall_seconds": 102.00187189993449,
+      "drop_intervals": []
+    },
+    {
+      "capture": "word-keys-exact-bitmap256-profiled",
+      "bitmap_entries": 256,
+      "profiled": true,
+      "new_renderer_drops": 1,
+      "cpu_seconds": 59.015625,
+      "peak_private_bytes": 630358016,
+      "wall_seconds": 102.00176470004953,
+      "drop_intervals": [
+        {
+          "elapsed_s": 1.000894,
+          "position_ms": 1340958,
+          "new_drops": 1
+        }
+      ]
+    }
+  ],
+  "unprofiled_mean_cpu_seconds": 60.24609375,
+  "native_comparisons": {
+    "pixel-comparison.json": {
+      "frames_compared": 2428,
+      "mismatch_count": 0,
+      "mismatch_examples": [],
+      "control": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 70.17356445634267,
+        "render_ms_p95": 180.0227,
+        "render_ms_p99": 253.7453,
+        "render_ms_max": 422.6607,
+        "over_41_708ms": 1204
+      },
+      "candidate": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 15.253087850082373,
+        "render_ms_p95": 35.0428,
+        "render_ms_p99": 75.7585,
+        "render_ms_max": 163.6074,
+        "over_41_708ms": 64
+      },
+      "timing_note": "Offline wall times include other activity; playback captures measure end-to-end CPU independently."
+    },
+    "bitmap256-comparison.json": {
+      "frames_compared": 2428,
+      "mismatch_count": 0,
+      "mismatch_examples": [],
+      "control": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 70.17356445634267,
+        "render_ms_p95": 180.0227,
+        "render_ms_p99": 253.7453,
+        "render_ms_max": 422.6607,
+        "over_41_708ms": 1204
+      },
+      "candidate": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 16.291876317957165,
+        "render_ms_p95": 39.9248,
+        "render_ms_p99": 77.2924,
+        "render_ms_max": 175.2919,
+        "over_41_708ms": 105
+      },
+      "timing_note": "Offline wall times include other activity; playback captures measure end-to-end CPU independently."
+    }
+  },
+  "validation": {
+    "focused_contracts_passed": 12,
+    "fixture_comparisons_passed": 54,
+    "additional_final_regressions_pending": 6
+  },
+  "unchanged_shared_sources": [
+    {
+      "path": "src/subtitles/cache_manager.cpp",
+      "sha256": "52abfd29b695ff1e530667d652dde0809efb124cd26a10e514df3025aba3dc3e"
+    },
+    {
+      "path": "src/subtitles/cache_manager.h",
+      "sha256": "9a1d2254d91218c7096c0a1f7bcc7b06e1ff34fa1a3365bac3a906f86233aaaf"
+    },
+    {
+      "path": "src/subtitles/draw_item.cpp",
+      "sha256": "1698bf2f6968658e04ade939ac0d1acacc833a54e6e335155d4a4c28522fcc92"
+    },
+    {
+      "path": "src/subtitles/draw_item.h",
+      "sha256": "77f996efa0a3f07e76f521276d72929b7759e0611c0f52a4e05b1bf13f3115b0"
+    },
+    {
+      "path": "src/subtitles/flyweight_base_types.h",
+      "sha256": "8a8085108ce2634a00ff64802c2ac65d6636d3293025a2a39d2c0f9751d7ff94"
+    },
+    {
+      "path": "src/subtitles/Rasterizer.cpp",
+      "sha256": "c05d3aab5e5a8ece1629d3c376c4ecbfc739e791d88b097d3a421977da9b04e1"
+    },
+    {
+      "path": "src/subtitles/Rasterizer.h",
+      "sha256": "745a4c6c832d464f324d347b3ff9aea03829d0e94832416eb8b0dd3e7bd3504a"
+    },
+    {
+      "path": "src/subtitles/RTS.cpp",
+      "sha256": "64deabc62f758e2dff4b37576bb34192c3a3f2d0b6030a670f04a6eb6b7104ac"
+    },
+    {
+      "path": "src/subtitles/RTS.h",
+      "sha256": "f4acb18a4e9cd32d7f3d73e83f0698f8126a4d8abe71ad6df1096d1b1cce1853"
+    },
+    {
+      "path": "src/subtitles/STS.h",
+      "sha256": "4e760c87f97cd0e244bc7d5ce95f004c5a46b8d242b8e207d84f569f3f673222"
+    },
+    {
+      "path": "src/subtitles/xy_overlay_paint_machine.cpp",
+      "sha256": "85491c19e9bf2924ff6947a622de1ed25588c326f204fb0e97e09905a24c56e9"
+    },
+    {
+      "path": "src/subtitles/xy_overlay_paint_machine.h",
+      "sha256": "529eadae281cbca169792f71a76a14e599ede6fa0bfbae8a081ac05f4d724910"
+    }
+  ],
+  "limitations": [
+    "Renderer drawn/FPS counters reflect presentation refresh, not source-frame counts.",
+    "CPU covers the player/decoder/filter/renderer, not just subtitle code.",
+    "Native wall times are diagnostic; no broad workload or x64 claim.",
+    "Full-window zero drops occurred twice; occasional first-interval drops remain unresolved.",
+    "256-entry cache was a temporary experiment; the source default and restored setting remain 64.",
+    "Raw traces and sample media are retained locally and are not in the repository."
+  ]
+}

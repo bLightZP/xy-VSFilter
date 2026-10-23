@@ -132,6 +132,7 @@ ULONG PathDataCacheKey::UpdateHashValue()
     m_hash_value += hash_value(m_scalex);
     m_hash_value += (m_hash_value<<5);
     m_hash_value += hash_value(m_scaley);
+    if (IsPolygon()) return m_hash_value;
     m_hash_value += (m_hash_value<<5);
     m_hash_value += style.charSet;
     m_hash_value += (m_hash_value<<5);
@@ -233,6 +234,12 @@ bool OverlayKey::operator==( const OverlayKey& key ) const
     //static_cast will call copy constructer to construct a tmp obj
     //return ((CWordCacheKey)(*this)==(CWordCacheKey)key) && (m_p.x==key.m_p.x) && (m_p.y==key.m_p.y) 
     //        && (m_org.x==key.m_org.x) && (m_org.y==key.m_org.y);
+}
+
+bool OverlayKey::MatchesWord(const CWord& word, const POINT& p, const POINT& org) const
+{
+    return m_p.x == p.x && m_p.y == p.y && m_org.x == org.x && m_org.y == org.y
+        && MatchesWordExactly(word);
 }
 
 ULONG OverlayKey::UpdateHashValue()
@@ -355,6 +362,18 @@ DrawItemHashKey::DrawItemHashKey( const DrawItem& draw_item)
         m_switchpts[i] = draw_item.switchpts[i];
 }
 
+bool DrawItemHashKey::MatchesDrawItem(const DrawItem& item) const
+{
+    const SharedOverlayKey& overlay = item.overlay_paint_machine->GetHashKey();
+    return m_clip_rect == item.clip_rect && m_xsub == item.xsub && m_ysub == item.ysub
+        && m_fBody == item.fBody && m_fBorder == item.fBorder
+        && !memcmp(m_switchpts,item.switchpts,sizeof(m_switchpts))
+        && m_overlay_key->GetHashValue() == overlay->GetHashValue()
+        && (m_overlay_key == overlay || *m_overlay_key == *overlay)
+        && m_clipper_key.GetHashValue() == item.clipper->GetHashKey().GetHashValue()
+        && m_clipper_key == item.clipper->GetHashKey();
+}
+
 bool DrawItemHashKey::operator==( const DrawItemHashKey& key ) const
 {
     AddFuncCalls(DrawItemHashKey_EQUAL);
@@ -376,11 +395,10 @@ bool DrawItemHashKey::operator==( const DrawItemHashKey& key ) const
 ULONG GroupedDrawItemsHashKey::UpdateHashValue()
 {
     m_hash_value = hash_value(m_clip_rect);
-    ASSERT(m_key);
-    for( unsigned i=0;i<m_key->GetCount();i++)
+    for( unsigned i=0;i<m_key.GetCount();i++)
     {
         m_hash_value += (m_hash_value<<5);
-        m_hash_value += m_key->GetAt(i)->GetHashValue();
+        m_hash_value += m_key[i]->GetHashValue();
     }
     return m_hash_value;
 }
@@ -392,15 +410,15 @@ bool GroupedDrawItemsHashKey::operator==( const GroupedDrawItemsHashKey& key ) c
     {
         return true;
     }
-    else if ( m_key->GetCount()!=key.m_key->GetCount() || m_clip_rect!=key.m_clip_rect)
+    else if ( m_key.GetCount()!=key.m_key.GetCount() || m_clip_rect!=key.m_clip_rect)
     {
         return false;
     }
     else
     {
-        for( unsigned i=0;i<m_key->GetCount();i++)
+        for( unsigned i=0;i<m_key.GetCount();i++)
         {
-            if( !(*m_key->GetAt(i) == *key.m_key->GetAt(i)) )
+            if( !(*m_key[i] == *key.m_key[i]) )
                 return false;
         }
         return true;

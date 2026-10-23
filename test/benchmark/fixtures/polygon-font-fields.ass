@@ -1,0 +1,13 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,24,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,2,1,7,0,0,0,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\an7\pos(400,400)\p1\c&H336699&\t(0,4000,\frz90)}m -50 -25 l 150 -25 150 125 -50 125
+Dialogue: 0,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\an7\pos(800,400)\fnTahoma\fs70\b1\i1\u1\s1\fsp10\fe2\p1\c&H669933&\t(0,4000,\frz90)}m -50 -25 l 150 -25 150 125 -50 125
+Dialogue: 0,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\an7\pos(600,700)\p2\fscx120\fscy80\bord4\shad3\t(0,4000,\frx30\fry20)}m -50 -25 l 150 -25 150 125 -50 125
+Dialogue: 0,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(650,900)\fnArial\fs32}Font dependent text {\fnTahoma\fs48\i1}still differs

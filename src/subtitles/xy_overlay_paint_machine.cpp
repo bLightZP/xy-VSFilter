@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <boost/make_shared.hpp>
 #include "xy_overlay_paint_machine.h"
 #include "RTS.h"
 #include "Rasterizer.h"
@@ -23,7 +24,7 @@ void OverlayPaintMachine::Paint(SharedPtrOverlay* overlay)
 CRectCoor2 OverlayPaintMachine::CalcDirtyRect()
 {
     ASSERT(m_inner_paint_machine);
-    m_inner_paint_machine->Paint(m_layer, &m_overlay);//fix me: not a decent state machine yet
+    if (!m_overlay) m_inner_paint_machine->Paint(m_layer, &m_overlay);
     if (m_overlay)
     {
         int x = m_overlay->mOffsetX;
@@ -38,6 +39,23 @@ CRectCoor2 OverlayPaintMachine::CalcDirtyRect()
 const SharedPtrOverlayKey& OverlayPaintMachine::GetHashKey()
 {
     return m_inner_paint_machine->GetHashKey(m_layer);
+}
+
+const SharedPtrDrawItemHashKey& OverlayPaintMachine::GetDrawItemHashKey(const DrawItem& item)
+{
+    return m_inner_paint_machine->GetDrawItemHashKey(item);
+}
+
+const SharedPtrDrawItemHashKey& CWordPaintMachine::GetDrawItemHashKey(const DrawItem& item)
+{
+    for (unsigned i = 0; i < 3; ++i)
+        if (m_word->m_drawKeyCache[i] && m_word->m_drawKeyCache[i]->MatchesDrawItem(item))
+            return m_word->m_drawKeyCache[i];
+    SharedPtrDrawItemHashKey& key = m_word->m_drawKeyCache[m_word->m_nextDrawKey];
+    key = boost::make_shared<DrawItemHashKey>(item);
+    key->UpdateHashValue();
+    m_word->m_nextDrawKey = (m_word->m_nextDrawKey+1)%3;
+    return key;
 }
 
 void CWordPaintMachine::Paint( LAYER layer, SharedPtrOverlay* overlay )
@@ -138,7 +156,7 @@ void CWordPaintMachine::CreatePaintMachines( const SharedPtrCWord& word
     , const CPointCoor2& org
     , SharedPtrOverlayPaintMachine *shadow, SharedPtrOverlayPaintMachine *outline, SharedPtrOverlayPaintMachine *body)
 {
-    SharedCWordPaintMachine machine(DEBUG_NEW CWordPaintMachine());
+    SharedCWordPaintMachine machine = boost::make_shared<CWordPaintMachine>(AllocationTag());
     machine->m_word = word;
     if (shadow!=NULL)
     {
@@ -156,21 +174,42 @@ void CWordPaintMachine::CreatePaintMachines( const SharedPtrCWord& word
     machine->m_outline_pos = outline_pos;
     machine->m_body_pos = body_pos;
 
-    machine->m_body_key.reset( machine->CreateBodyOverlayHashKey(word, machine->m_body_pos) );
-    machine->m_border_key.reset( machine->CreateOutlineOverlayHashKey(word, machine->m_outline_pos) );
-    machine->m_shadow_key.reset( machine->CreateShadowOverlayHashKey(word, machine->m_shadow_pos) );
-
+    const auto sameSubpixel = [](const CPointCoor2& a, const CPointCoor2& b) {
+        const int mask = SubpixelPositionControler::EIGHT_X_EIGHT_MASK;
+        return (a.x & mask) == (b.x & mask) && (a.y & mask) == (b.y & mask);
+    };
+    if (body) machine->m_body_key = machine->CreateBodyOverlayHashKey(word, machine->m_body_pos);
+    if (outline)
+    {
+        // Layer keys describe the same geometry when their fractional position
+        // matches. The draw-item key separately retains color, flags and full position.
+        if (word->m_style.get().borderStyle == 0 && body && sameSubpixel(outline_pos, body_pos))
+            machine->m_border_key = machine->m_body_key;
+        else machine->m_border_key = machine->CreateOutlineOverlayHashKey(word, outline_pos);
+    }
     if (shadow)
     {
-        shadow->reset( DEBUG_NEW OverlayPaintMachine(machine, SHADOW) );
+        if (outline && sameSubpixel(shadow_pos, outline_pos))
+            machine->m_shadow_key = machine->m_border_key;
+        else if (word->m_style.get().borderStyle == 0 && body && sameSubpixel(shadow_pos, body_pos))
+            machine->m_shadow_key = machine->m_body_key;
+        else machine->m_shadow_key = machine->CreateShadowOverlayHashKey(word, shadow_pos);
+    }
+
+    if (body)
+    {
+        *body = boost::make_shared<OverlayPaintMachine>(machine, BODY);
     }
     if (outline)
     {
-        outline->reset( DEBUG_NEW OverlayPaintMachine(machine, OUTLINE) );
+        if (body && machine->m_border_key == machine->m_body_key) *outline = *body;
+        else *outline = boost::make_shared<OverlayPaintMachine>(machine, OUTLINE);
     }
-    if (body)
+    if (shadow)
     {
-        body->reset( DEBUG_NEW OverlayPaintMachine(machine, BODY) );
+        if (outline && machine->m_shadow_key == machine->m_border_key) *shadow = *outline;
+        else if (body && machine->m_shadow_key == machine->m_body_key) *shadow = *body;
+        else *shadow = boost::make_shared<OverlayPaintMachine>(machine, SHADOW);
     }
 }
 
@@ -180,7 +219,7 @@ void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2
     machine.m_word = word;
     machine.m_trans_org = org - p;//IMPORTANT! NOTE: not totally initiated
     machine.m_body_pos = p;
-    machine.m_body_key.reset( machine.CreateBodyOverlayHashKey(word, machine.m_body_pos) );
+    machine.m_body_key = machine.CreateBodyOverlayHashKey(word, machine.m_body_pos);
     machine.PaintBody(word, p, overlay);
 }
 
@@ -203,7 +242,7 @@ const SharedPtrOverlayKey& CWordPaintMachine::GetHashKey(LAYER layer)
     return m_body_key;
 }
 
-OverlayKey* CWordPaintMachine::CreateBodyOverlayHashKey( const SharedPtrCWord& word, const CPointCoor2& p )
+SharedPtrOverlayKey CWordPaintMachine::CreateBodyOverlayHashKey( const SharedPtrCWord& word, const CPointCoor2& p )
 {
     CPoint trans_org2 = m_trans_org;    
     bool need_transform = word->NeedTransform();
@@ -213,12 +252,17 @@ OverlayKey* CWordPaintMachine::CreateBodyOverlayHashKey( const SharedPtrCWord& w
         trans_org2.y=0;
     }
     CPoint psub_true( (p.x&SubpixelPositionControler::EIGHT_X_EIGHT_MASK), (p.y&SubpixelPositionControler::EIGHT_X_EIGHT_MASK) );
-    OverlayKey *body_overlay_key=DEBUG_NEW OverlayKey(*word, psub_true, trans_org2);
-    body_overlay_key->UpdateHashValue();
-    return body_overlay_key;
+    for (unsigned i = 0; i < 3; ++i)
+        if (word->m_overlayKeyCache[i] && word->m_overlayKeyCache[i]->MatchesWord(*word,psub_true,trans_org2))
+            return word->m_overlayKeyCache[i];
+    SharedPtrOverlayKey key = boost::make_shared<OverlayKey>(*word, psub_true, trans_org2);
+    key->UpdateHashValue();
+    word->m_overlayKeyCache[word->m_nextOverlayKey] = key;
+    word->m_nextOverlayKey = (word->m_nextOverlayKey+1)%3;
+    return key;
 }
 
-OverlayKey* CWordPaintMachine::CreateOutlineOverlayHashKey( const SharedPtrCWord& word, const CPointCoor2& p )
+SharedPtrOverlayKey CWordPaintMachine::CreateOutlineOverlayHashKey( const SharedPtrCWord& word, const CPointCoor2& p )
 {
     if (word->m_style.get().borderStyle==0)
     {
@@ -232,10 +276,10 @@ OverlayKey* CWordPaintMachine::CreateOutlineOverlayHashKey( const SharedPtrCWord
         }
     }
     ASSERT(0);
-    return NULL;
+    return SharedPtrOverlayKey();
 }
 
-OverlayKey* CWordPaintMachine::CreateShadowOverlayHashKey( const SharedPtrCWord& word, const CPointCoor2& p )
+SharedPtrOverlayKey CWordPaintMachine::CreateShadowOverlayHashKey( const SharedPtrCWord& word, const CPointCoor2& p )
 {
     return CreateOutlineOverlayHashKey(word, p);
 }

@@ -12,3 +12,7 @@ ipch
 /src/filters/BaseClasses/*.asm
 /src/filters/transform/VSFilter/*.asm
 /.vs
+/benchmark-results/
+/tools/yasm.exe
+
+/Subtitles_CPU_killer_on_end_credits.mkv
