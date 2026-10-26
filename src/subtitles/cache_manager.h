@@ -330,6 +330,7 @@ public:
     static const int WORD_CACHE_ITEM_NUM = 512;
 
     static BitmapMruCache* GetBitmapMruCache();
+    static void SetBitmapCacheSize(std::size_t items);
 
     static ClipperAlphaMaskMruCache* GetClipperAlphaMaskMruCache();
     static TextInfoMruCache* GetTextInfoCache();

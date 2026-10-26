@@ -565,19 +565,11 @@ void xy_be_blur(PUINT8 src, int width, int height, int stride, float pass_x, flo
 /**
  * \brief blur with [[1,2,1]. [2,4,2], [1,2,1]] kernel.
  */
-static void be_blur(unsigned char *buf, unsigned *tmp_base, int w, int h, int stride)
+static void be_blur(unsigned char *buf, WORD *col_pix_buf, WORD *col_sum_buf, int w, int h, int stride)
 {   
-    WORD *col_pix_buf_base = reinterpret_cast<WORD*>(xy_malloc(w*sizeof(WORD)));
-    WORD *col_sum_buf_base = reinterpret_cast<WORD*>(xy_malloc(w*sizeof(WORD)));
-    if(!col_sum_buf_base || !col_pix_buf_base)
-    {
-        //ToDo: error handling
-        return;
-    }
-    memset(col_pix_buf_base, 0, w*sizeof(WORD));
-    memset(col_sum_buf_base, 0, w*sizeof(WORD));
-    WORD *col_pix_buf = col_pix_buf_base-2;//for aligment;
-    WORD *col_sum_buf = col_sum_buf_base-2;//for aligment;
+    // Reset every pass; the previous pass's vertical state must not carry over.
+    memset(col_pix_buf, 0, w*sizeof(WORD));
+    memset(col_sum_buf, 0, w*sizeof(WORD));
     {
         int y = 0;
         unsigned char *src=buf+y*stride;
@@ -666,8 +658,19 @@ static void be_blur(unsigned char *buf, unsigned *tmp_base, int w, int h, int st
         }
     }
 
-    xy_free(col_sum_buf_base);
-    xy_free(col_pix_buf_base);
+}
+
+static bool BeBlurPasses(unsigned char *buf, int w, int h, int stride, int passes)
+{
+    if (passes <= 0 || w < 3 || h < 3) return true;
+    // Only two rows are needed, shared by every integer pass. No image-sized
+    // temporary is read by this kernel. Keep the row indices within ownership.
+    SharedPtrByte scratch(reinterpret_cast<BYTE*>(xy_malloc(std::size_t(w)*2*sizeof(WORD))), xy_free);
+    if (!scratch) return false;
+    WORD* rows = reinterpret_cast<WORD*>(scratch.get());
+    for (int pass = 0; pass < passes; ++pass)
+        be_blur(buf, rows, rows+w, w, h, stride);
+    return true;
 }
 
 /**
@@ -1024,13 +1027,8 @@ bool Rasterizer::OldFixedPointBlur(const Overlay& input_overlay, float be_streng
     int pitch = output_overlay->mOverlayPitch;
     byte* blur_plan = output_overlay->mfWideOutlineEmpty ? body : border;
 
-    for (int pass = 0; pass < pass_num; pass++)
-    {
-        if(output_overlay->mOverlayWidth >= 3 && output_overlay->mOverlayHeight >= 3)
-        {
-            be_blur(blur_plan, tmp_buf.get(), output_overlay->mOverlayWidth, output_overlay->mOverlayHeight, pitch);
-        }
-    }
+    if (!BeBlurPasses(blur_plan, output_overlay->mOverlayWidth, output_overlay->mOverlayHeight, pitch, pass_num))
+        return false;
     if (scaled_be_strength>pass_num)
     {
         xy_be_blur(blur_plan, output_overlay->mOverlayWidth, output_overlay->mOverlayHeight, pitch, 
@@ -1231,14 +1229,8 @@ bool Rasterizer::BeBlur( const Overlay& input_overlay, float be_strength,
     int pass_num = static_cast<int>(scaled_be_strength);
     int pitch = output_overlay->mOverlayPitch;
     byte* blur_plan = output_overlay->mfWideOutlineEmpty ? body : border;
-    ::boost::shared_array<unsigned> tmp_buf( DEBUG_NEW unsigned[max((output_overlay->mOverlayPitch+1)*(output_overlay->mOverlayHeight+1),0)] );
-    for (int pass = 0; pass < pass_num; pass++)
-    {
-        if(output_overlay->mOverlayWidth >= 3 && output_overlay->mOverlayHeight >= 3)
-        {
-            be_blur(blur_plan, tmp_buf.get(), output_overlay->mOverlayWidth, output_overlay->mOverlayHeight, pitch);
-        }
-    }
+    if (!BeBlurPasses(blur_plan, output_overlay->mOverlayWidth, output_overlay->mOverlayHeight, pitch, pass_num))
+        return false;
     if (scaled_be_strength>pass_num)
     {
         xy_be_blur(blur_plan, output_overlay->mOverlayWidth, output_overlay->mOverlayHeight, pitch, 

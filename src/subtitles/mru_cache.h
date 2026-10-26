@@ -1077,6 +1077,7 @@ public:
     }
     inline POSITION UpdateCache(const K& key, const V& value)
     {
+        if (_max_item_num == 0) return NULL;
         POSITION pos;
         POSITION pos_hash_value = NULL;
         bool new_item_added = false;
@@ -1101,6 +1102,12 @@ public:
     }
     inline POSITION AddHeadIfNotExists(const K& key, const V& value, bool *new_item_added)
     {
+        if (_max_item_num == 0)
+        {
+            // Disabled caches retain nothing and never return an evicted position.
+            if (new_item_added) *new_item_added = true;
+            return NULL;
+        }
         POSITION pos;
         POSITION pos_hash_value = NULL;
         bool new_hash_item_added = false;

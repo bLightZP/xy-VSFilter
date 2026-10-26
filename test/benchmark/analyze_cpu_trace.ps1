@@ -30,6 +30,7 @@ foreach ($module in $log.ModuleFiles) {
     }
 }
 $metadata = Get-Content (Join-Path $Folder 'metadata.json') -Raw | ConvertFrom-Json
+$samplePid = if ($metadata.profile_pid) { $metadata.profile_pid } else { $metadata.player_pid }
 $rows = Import-Csv (Join-Path $Folder 'renderer.csv')
 $captureStart = [datetimeoffset]::Parse($rows[0].utc).LocalDateTime
 $start = $captureStart.AddSeconds($StartElapsed)
@@ -50,7 +51,7 @@ function FrameName($address) {
     return ('{0}!0x{1:X}' -f $address.ModuleName, ($address.Address - $address.ModuleFile.ImageBase))
 }
 foreach ($ev in $log.Events) {
-    if ($ev.ProcessID -ne $metadata.player_pid -or $ev.EventName -ne 'PerfInfo/Sample' -or $ev.TimeStamp -lt $start -or $ev.TimeStamp -gt $end) { continue }
+    if ($ev.ProcessID -ne $samplePid -or $ev.EventName -ne 'PerfInfo/Sample' -or $ev.TimeStamp -lt $start -or $ev.TimeStamp -gt $end) { continue }
     ++$samples
     $address = [Microsoft.Diagnostics.Tracing.Etlx.TraceLogExtensions]::IntructionPointerCodeAddress($ev)
     $name = FrameName $address
@@ -84,7 +85,7 @@ $modules.GetEnumerator() | ForEach-Object { [pscustomobject]@{module=$_.Key; sam
     Sort-Object samples -Descending | Export-Csv (Join-Path $Folder 'cpu-modules.csv') -NoTypeInformation
 $modulePaths.GetEnumerator() | ForEach-Object { [pscustomobject]@{path=$_.Key; samples=$_.Value; percent=100.0*$_.Value/$samples} } |
     Sort-Object samples -Descending | Export-Csv (Join-Path $Folder 'cpu-module-paths.csv') -NoTypeInformation
-$loadedXy = @($log.Processes | Where-Object ProcessID -eq $metadata.player_pid |
+$loadedXy = @($log.Processes | Where-Object ProcessID -eq $samplePid |
     ForEach-Object { $_.LoadedModules } | Where-Object Name -eq 'xysubfilter' |
     ForEach-Object { [pscustomobject]@{path=$_.ModuleFile.FilePath; pdb_guid=$_.ModuleFile.PdbSignature; pdb_age=$_.ModuleFile.PdbAge} })
 [pscustomobject]@{samples=$samples; with_stacks=$stacks; events_lost=$log.EventsLost; trace_start=$log.SessionStartTime; trace_end=$log.SessionEndTime; capture_start=$start; capture_end=$end; loaded_xy_modules=$loadedXy} |

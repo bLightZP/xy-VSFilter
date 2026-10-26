@@ -1,0 +1,18 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 640
+PlayResY: 360
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,22,&H30FFFFFF,&H000000FF,&H20000000,&H80000000,0,0,0,0,100,100,0,0,1,2,1,5,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(320,28)\be0\bord0}{\kf150}progress{\kf250} unblurred
+Dialogue: 1,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(320,72)\be0.25\bord0}{\kf400}fractional body blur
+Dialogue: 2,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(320,116)\be1\bord0\t(0,4000,\fscx125\fscy80)}{\kf400}one pass, changing scale
+Dialogue: 3,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(320,160)\be2.5\bord5\blur0.7\t(0,4000,\frz2)}{\K400}mixed Gaussian and edge blur
+Dialogue: 4,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(320,210)\be8\xbord9\ybord2\shad0\t(0,4000,\fscx80\fscy120)}many passes, wide outline
+Dialogue: 5,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(110,275)\be1.75\bord0\p1\t(0,4000,\fscx125)}m 0 0 l 1 0 1 1 0 1
+Dialogue: 6,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(220,275)\be3\bord0\p1\t(0,4000,\fscy125)}m 0 0 l 0.1 0 0.1 0.1 0 0.1
+Dialogue: 7,0:22:20.00,0:22:24.00,Default,,0,0,0,,{\pos(430,275)\be0.9\bord1\clip(390,260,470,290)\p1\t(0,4000,\frz30)}m -30 -10 l 30 -10 30 10 -30 10

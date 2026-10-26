@@ -5,6 +5,7 @@
 #include <boost/flyweight/no_tracking.hpp>
 #include <boost/flyweight/no_locking.hpp>
 #include <boost/smart_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <afx.h>
 
 #include "mru_cache.h"
@@ -76,7 +77,7 @@ public:
         }
         else
         {
-            _v.reset(new V(v));
+            _v = boost::make_shared<V>(v);
             Intern();
         }
     }
@@ -87,7 +88,13 @@ private:
         ASSERT( cacher );
         bool new_item_added = false;
         POSITION pos = cacher->AddHeadIfNotExists(_v, INVALID_ID, &new_item_added);
-        if ( !new_item_added )
+        if (!pos)
+        {
+            // A zero-capacity cache bypasses interning. The value stays owned,
+            // and its fresh identity cannot alias a bitmap retained by a frame.
+            _id = AllocId();
+        }
+        else if ( !new_item_added )
         {
             cacher->UpdateCache(pos);
             _v = cacher->GetKeyAt(pos);

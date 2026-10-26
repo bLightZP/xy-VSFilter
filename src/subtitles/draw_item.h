@@ -71,7 +71,7 @@ public:
 struct GroupedDrawItems
 {
 public:
-    CAtlList<SharedPtrDrawItem> draw_item_list;
+    CInlineList<SharedPtrDrawItem> draw_item_list;
     CRectCoor2 clip_rect;
 public:
     void Draw(SharedPtrXyBitmap *bitmap, int *bitmap_identity_num, AlphaMaskBuffer& buffer);

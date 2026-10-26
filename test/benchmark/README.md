@@ -93,6 +93,9 @@ render_subtitles.exe --reconstruction-pool-contract
 render_subtitles.exe --layer-key-contract
 render_subtitles.exe --reconstruction-cache-contract
 render_subtitles.exe --word-key-cache-contract
+render_subtitles.exe --group-key-contract
+render_subtitles.exe --cache-capacity-contract
+render_subtitles.exe --karaoke-hash-contract
 render_subtitles.exe --fixtures <new-fixture.csv>
 render_subtitles.exe default.ass <font-directory> <new-output.csv>
 ```
@@ -111,6 +114,27 @@ The render check evaluates all 2,428 source frame midpoints within 22:20–EOF a
 
 CPU analysis also exports `cpu-stacks.csv`, with complete sampled call chains and counts. Counts are CPU samples, not allocation counts.
 
+`--cache-capacity-contract` checks zero-capacity bypass, enabling/shrinking and
+disabling caches, owned-key survival, fresh bypass identities and coupled bitmap
+capacities. `--karaoke-hash-contract` checks all six switch words and 1,000
+distinct progressing split positions. `--bitmap-cache-items 0` is an explicit
+cache bypass. Compare it against an enabled-cache pixel control, including
+retained frames across runtime changes. `fixtures/edge-blur-karaoke.ass` covers
+integer/fractional and mixed Gaussian/edge blur, tiny drawings, wide outlines,
+scale/rotation changes, clipping and progressing karaoke against a preserved
+pre-change executable. See the [implementation checkpoint](../../docs/performance-20261026-review-implementation.md)
+for recorded builds, pixel comparisons and playback results.
+
 ```powershell
 python test\benchmark\compare_rendered.py <control-render.csv> <candidate-render.csv> --output benchmark-results\pixel-comparison.json
 ```
+
+## x64 and resumed benchmarks
+
+Build `render_subtitles.vcxproj` with `/p:Platform=x64` for the native x64 gates. The DLL solution already has x64 targets. Keep PDBs and native executables with their matching DLL build.
+
+`benchmark_filter.py --engine external64 --dll <x64-DLL> --build-record <current-Debug-summary.json>` uses the player's native x64 helper and 64-bit COM view. `internal32` is the default; `external32` selects the x86 helper. Temporary engine enable/mode/extension choices are restored after the owned player closes. The runner verifies the actual helper architecture/hash and the expected DLL inside the actual engine process; an internal fallback fails setup. CPU covers both player and descendant helper. `--profile-session <unused-number>` attaches the installed sampler to the actual graph process after setup, including the x64 helper; it stops the sampler before closing the player.
+
+Counter snapshots are refreshed after setup while still paused at 22:20, immediately before the measured Run. Module snapshots use explicit WOW64-aware native enumeration. Comparisons reject changed engine, filter bitness, active dependency hashes, polling cadence and window geometry.
+
+MPC-VR may reset only `FramesDrawn` in the first Run interval. The raw reset flag remains saved. Summary validation permits that specific first-two-seconds case only when the dropped counter started from zero and stays independently monotonic, with continuous renderer and media position. Such drawn resets are explicitly listed in the summary; drawn frames never serve as a drop-percentage denominator. Decreases in dropped frames, later/unclassified resets, renderer replacement, seek discontinuities, missing values and inconsistent deltas fail validation. `test_compare_playback.py` checks these gates, including retention of first-interval drops and combined player/helper CPU and private-byte accounting.

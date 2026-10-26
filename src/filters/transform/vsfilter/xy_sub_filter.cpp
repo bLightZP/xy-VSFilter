@@ -118,8 +118,7 @@ XySubFilter::XySubFilter( LPUNKNOWN punk,
     CacheManager::GetOverlayNoBlurMruCache()->SetMaxItemNum(m_xy_int_opt[INT_OVERLAY_NO_BLUR_CACHE_MAX_ITEM_NUM]);
     CacheManager::GetOverlayMruCache()->SetMaxItemNum(m_xy_int_opt[INT_OVERLAY_CACHE_MAX_ITEM_NUM]);
 
-    XyFwGroupedDrawItemsHashKey::GetCacher()->SetMaxItemNum(m_xy_int_opt[INT_BITMAP_MRU_CACHE_ITEM_NUM]);
-    CacheManager::GetBitmapMruCache()->SetMaxItemNum(m_xy_int_opt[INT_BITMAP_MRU_CACHE_ITEM_NUM]);
+    CacheManager::SetBitmapCacheSize(m_xy_int_opt[INT_BITMAP_MRU_CACHE_ITEM_NUM]);
 
     CacheManager::GetClipperAlphaMaskMruCache()->SetMaxItemNum(m_xy_int_opt[INT_CLIPPER_MRU_CACHE_ITEM_NUM]);
     CacheManager::GetTextInfoCache()->SetMaxItemNum(m_xy_int_opt[INT_TEXT_INFO_CACHE_ITEM_NUM]);
@@ -421,7 +420,7 @@ HRESULT XySubFilter::OnOptionChanged( unsigned field )
         CacheManager::GetOverlayNoBlurMruCache()->SetMaxItemNum(m_xy_int_opt[field]);
         break;
     case INT_BITMAP_MRU_CACHE_ITEM_NUM:
-        CacheManager::GetBitmapMruCache()->SetMaxItemNum(m_xy_int_opt[field]);
+        CacheManager::SetBitmapCacheSize(m_xy_int_opt[field]);
         break;
     case INT_CLIPPER_MRU_CACHE_ITEM_NUM:
         CacheManager::GetClipperAlphaMaskMruCache()->SetMaxItemNum(m_xy_int_opt[field]);

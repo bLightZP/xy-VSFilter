@@ -354,6 +354,132 @@ static int LayerKeyContract()
     return 0;
 }
 
+static int GroupKeyContract()
+{
+    CCritSec lock;
+    CRenderedTextSubtitle context(&lock);
+    XyFwGroupedDrawItemsHashKey::GetCacher()->RemoveAll();
+    boost::shared_ptr<XyFwGroupedDrawItemsHashKey> retained;
+    boost::weak_ptr<CWord> wordLifetime;
+    boost::weak_ptr<DrawItemHashKey> childLifetime;
+    {
+        SharedPtrCWord word = boost::make_shared<CPolygon>(FwSTSStyle(), L"m 0 0 l 20 0 20 20 0 20", 0, 0, 0, 1., 1., 0);
+        wordLifetime = word;
+        SharedPtrOverlayPaintMachine body;
+        CWordPaintMachine::CreatePaintMachines(word,CPoint(),CPoint(),CPoint(),CPoint(),NULL,NULL,&body);
+        SharedPtrCClipperPaintMachine clipper = boost::make_shared<CClipperPaintMachine>(SharedPtrCClipper());
+        DWORD colors[6] = {0x80aabbcc,0xffffffff,0,0,0,0};
+        GroupedDrawItems group;
+        group.clip_rect = CRect(0,0,100,100);
+        for (int i = 0; i < 8; ++i)
+            group.draw_item_list.AddTail(DrawItem::CreateDrawItem(body,group.clip_rect,clipper,i*8,0,colors,true,false));
+        childLifetime = group.draw_item_list[0]->GetHashKey();
+        GroupedDrawItemsHashKey probe;
+        group.CreateHashKey(&probe);
+        retained = boost::make_shared<XyFwGroupedDrawItemsHashKey>(probe);
+        XyFwGroupedDrawItemsHashKey hit(probe);
+        XyFwGroupedDrawItemsHashKey owned(new GroupedDrawItemsHashKey(probe));
+        Require(retained->GetId() == hit.GetId() && hit.GetId() == owned.GetId(), "Borrowed and owned group probes changed identity");
+        Require(&retained->Get() != &probe, "Group interning retained a stack probe");
+        GroupedDrawItemsHashKey original(probe);
+        ++group.clip_rect.right;
+        group.CreateHashKey(&probe);
+        Require(XyFwGroupedDrawItemsHashKey(probe).GetId() != retained->GetId(), "Group key ignored clipping");
+        --group.clip_rect.right;
+        std::swap(group.draw_item_list[0],group.draw_item_list[1]);
+        group.CreateHashKey(&probe);
+        Require(XyFwGroupedDrawItemsHashKey(probe).GetId() != retained->GetId(), "Group key ignored drawing order");
+        group.draw_item_list.Truncate(0);
+        group.CreateHashKey(&probe);
+        Require(!(probe == original) && retained->Get() == original, "Group mutation changed an owned key");
+        XyFwGroupedDrawItemsHashKey::GetCacher()->RemoveAll();
+        Require(retained->Get() == original, "Eviction invalidated an owned group key");
+    }
+    XyFwGroupedDrawItemsHashKey::GetCacher()->RemoveAll();
+    Require(wordLifetime.expired() && !childLifetime.expired(), "Group keys retained their parent word or lost their child");
+    retained.reset();
+    Require(childLifetime.expired(), "Group key release retained a child key");
+    printf("group_key_contract=passed (borrowed probes, spill, identity, order, clipping, eviction, lifetime)\n");
+    return 0;
+}
+
+static int KaraokeHashContract()
+{
+    CCritSec lock;
+    CRenderedTextSubtitle context(&lock);
+    SharedPtrCWord word = boost::make_shared<CText>(FwSTSStyle(),L"karaoke",1,0,10000);
+    SharedPtrOverlayPaintMachine body;
+    CWordPaintMachine::CreatePaintMachines(word,CPoint(),CPoint(),CPoint(),CPoint(),NULL,NULL,&body);
+    SharedPtrCClipperPaintMachine clipper = boost::make_shared<CClipperPaintMachine>(SharedPtrCClipper());
+    DWORD colors[6] = {0xffaabbcc,0,0xff112233,0,0,0};
+    SharedPtrDrawItem item = DrawItem::CreateDrawItem(body,CRect(0,0,1920,1080),clipper,0,0,colors,true,false);
+    DrawItemHashKey original(*item);
+    original.UpdateHashValue();
+    std::set<ULONG> hashes;
+    for (int field = 0; field < 6; ++field) {
+        DrawItem changed = *item;
+        changed.switchpts[field] ^= 1;
+        DrawItemHashKey key(changed);
+        Require(key.UpdateHashValue() != original.GetHashValue() && !(key == original), "Switch word missing from draw hash");
+    }
+    for (DWORD split = 0; split < 1000; ++split) {
+        DrawItem changed = *item;
+        changed.switchpts[3] = split;
+        DrawItemHashKey key(changed);
+        hashes.insert(key.UpdateHashValue());
+        DrawItemHashKey equal(changed);
+        Require(equal.UpdateHashValue() == key.GetHashValue() && equal == key, "Equal karaoke keys have different hashes");
+    }
+    Require(hashes.size() == 1000, "Progressing karaoke hashes collapsed");
+    printf("karaoke_hash_contract=passed (six switch words, 1000 distinct positions, equal-key consistency)\n");
+    return 0;
+}
+
+static int CacheCapacityContract()
+{
+    EnhancedXyMru<int,int> cache(0);
+    bool added = false;
+    Require(cache.UpdateCache(1,2) == NULL && cache.AddHeadIfNotExists(1,2,&added) == NULL && added,
+        "Disabled MRU returned a position");
+    Require(cache.GetCurItemNum() == 0 && cache.Lookup(1) == NULL && cache.GetCacheHitCount() == 0,
+        "Disabled MRU retained an entry or reported a hit");
+    cache.SetMaxItemNum(2);
+    cache.UpdateCache(1,2); cache.UpdateCache(2,3);
+    Require(cache.Lookup(1) != NULL, "MRU did not enable after bypass");
+    cache.UpdateCache(cache.Lookup(1));
+    cache.SetMaxItemNum(1);
+    Require(cache.Lookup(1) != NULL && cache.Lookup(2) == NULL, "Shrink discarded the most recent entry");
+    cache.SetMaxItemNum(0);
+    Require(cache.GetCurItemNum() == 0 && cache.Lookup(1) == NULL, "Disabling MRU did not release entries");
+
+    const std::size_t previous = CacheManager::GetBitmapMruCache()->GetMaxItemNum();
+    const std::size_t previousKeys = XyFwGroupedDrawItemsHashKey::GetCacher()->GetMaxItemNum();
+    const std::size_t capacities[] = {0,4,1,0,8};
+    GroupedDrawItemsHashKey key;
+    GroupedDrawItems group;
+    group.clip_rect = CRect(0,0,32,32); group.CreateHashKey(&key);
+    boost::shared_ptr<XyFwGroupedDrawItemsHashKey> held;
+    for (std::size_t items : capacities) {
+        CacheManager::SetBitmapCacheSize(items);
+        Require(CacheManager::GetBitmapMruCache()->GetMaxItemNum() == items &&
+            XyFwGroupedDrawItemsHashKey::GetCacher()->GetMaxItemNum() == items, "Coupled capacities diverged");
+        held = boost::make_shared<XyFwGroupedDrawItemsHashKey>(key);
+        XyFwGroupedDrawItemsHashKey hit(key);
+        XyFwGroupedDrawItemsHashKey owned(new GroupedDrawItemsHashKey(key));
+        Require(items ? held->GetId() == hit.GetId() && hit.GetId() == owned.GetId() :
+            held->GetId() != hit.GetId() && hit.GetId() != owned.GetId() && held->GetId() != owned.GetId(),
+            "Interning identity does not match enabled/disabled policy");
+        Require(held->GetId() != XyFwGroupedDrawItemsHashKey::INVALID_ID && held->Get() == key, "Bypass lost owned key");
+        if (!items) Require(XyFwGroupedDrawItemsHashKey::GetCacher()->GetCurItemNum() == 0, "Disabled interning retained a key");
+    }
+    CacheManager::SetBitmapCacheSize(0);
+    Require(held->Get() == key, "Disabling cache invalidated a retained key");
+    CacheManager::GetBitmapMruCache()->SetMaxItemNum(previous);
+    XyFwGroupedDrawItemsHashKey::GetCacher()->SetMaxItemNum(previousKeys);
+    printf("cache_capacity_contract=passed (zero bypass, enable, shrink, disable, identity, owned lifetime)\n");
+    return 0;
+}
+
 static int WordKeyCacheContract()
 {
     CCritSec lock;
@@ -636,13 +762,9 @@ template<class Cache> static void PrintCache(const char* name, Cache* cache)
         static_cast<unsigned long long>(cache->GetCacheHitCount()), unsigned(cache->GetCurItemNum()));
 }
 
-static int Render(const wchar_t* script, const wchar_t* fonts, const wchar_t* output, int bitmapItems = 0)
+static int Render(const wchar_t* script, const wchar_t* fonts, const wchar_t* output, int bitmapItems = -1)
 {
-    if (bitmapItems > 0)
-    {
-        CacheManager::GetBitmapMruCache()->SetMaxItemNum(bitmapItems);
-        XyFwGroupedDrawItemsHashKey::GetCacher()->SetMaxItemNum(bitmapItems);
-    }
+    if (bitmapItems >= 0) CacheManager::SetBitmapCacheSize(bitmapItems);
     LoadFonts(fonts);
     CCritSec lock;
     CRenderedTextSubtitle renderer(&lock);
@@ -675,7 +797,7 @@ static int Render(const wchar_t* script, const wchar_t* fonts, const wchar_t* ou
     AssTagListMruCache* tags = CacheManager::GetAssTagListMruCache();
     printf("tag_cache_queries=%llu hits=%llu items=%u\n",
         static_cast<unsigned long long>(tags->GetQueryCount()),
-        static_cast<unsigned long long>(tags->GetCacheHitCount()), tags->GetCurItemNum());
+        static_cast<unsigned long long>(tags->GetCacheHitCount()), unsigned(tags->GetCurItemNum()));
     const CRenderedTextSubtitle::ParsedTagCacheStats syntax = renderer.GetParsedTagCacheStats();
     printf("event_tag_hits=%llu misses=%llu retained_bytes=%u peak_accounted_bytes=%u entries=%u\n",
         syntax.hits, syntax.misses, unsigned(syntax.bytes), unsigned(syntax.peakBytes), unsigned(syntax.entries));
@@ -719,11 +841,14 @@ int wmain(int argc, wchar_t** argv)
         if (argc == 2 && !wcscmp(argv[1], L"--reconstruction-pool-contract")) return ReconstructionPoolContract();
         if (argc == 2 && !wcscmp(argv[1], L"--layer-key-contract")) return LayerKeyContract();
         if (argc == 2 && !wcscmp(argv[1], L"--reconstruction-cache-contract")) return ReconstructionCacheContract();
+        if (argc == 2 && !wcscmp(argv[1], L"--group-key-contract")) return GroupKeyContract();
         if (argc == 2 && !wcscmp(argv[1], L"--word-key-cache-contract")) return WordKeyCacheContract();
+        if (argc == 2 && !wcscmp(argv[1], L"--karaoke-hash-contract")) return KaraokeHashContract();
+        if (argc == 2 && !wcscmp(argv[1], L"--cache-capacity-contract")) return CacheCapacityContract();
         if (argc == 3 && !wcscmp(argv[1], L"--fixtures")) return Fixtures(argv[2]);
         if (argc == 6 && !wcscmp(argv[1],L"--bitmap-cache-items")) {
             const int items = _wtoi(argv[2]);
-            Require(items > 0 && items <= 1024, "Bitmap experiment must use 1-1024 entries");
+            Require(items >= 0 && items <= 1024, "Bitmap experiment must use 0-1024 entries");
             return Render(argv[3],argv[4],argv[5],items);
         }
         if (argc == 4) return Render(argv[1], argv[2], argv[3]);

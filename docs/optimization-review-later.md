@@ -1,5 +1,33 @@
 # Optimization work for later review
 
+## Completed validation 2026-10-26
+
+The first localized review batch is compiled for x86 and x64. All 15 contracts,
+54 fixtures, all 2,428 sample frames at 256/zero bitmap capacity, and all seven
+extended scripts pass with zero pixel mismatches on both architectures. Eight
+Debug MAX Zoom Player captures completed. Observed mean CPU fell 4.13% on x86
+and 0.72% on x64, but drop ranges overlap (controls 48/39 and 49/45; candidates
+44/39 and 45/44). Zero drops is not achieved. All test processes are closed and
+temporary player/COM/cache settings are restored. See the
+[results and next steps](performance-20261026-review-implementation.md).
+
+Next: profile the actual x64 helper, measure phase/allocation costs, and target
+active-set ordering/expiry or remaining frame/group construction. Preserve
+streaming invalidation and pixel gates. The stopped/paused snapshots below are
+historical; the published v3.2.1.900 release remains unchanged.
+
+## Paused 2026-10-25
+
+The user explicitly paused optimization/testing. Do not resume builds, native tests, profiling or playback until requested. The manual Zoom Player closures are explained; the exit investigation was removed. The Z: drive is currently unavailable, which must be resolved before the next playback/profile capture. No replacement player path or drive mapping was created.
+
+Both x86 and x64 grouping candidates are compiled with matching DLLs/PDBs/harnesses under `benchmark-results/resume-20261025-grouped-Win32` and `resume-20261025-grouped-x64`. They pass 13 focused contracts, 54 fixture cases, all 2,428 sample frames, and six extended regression scripts. The first x64 candidate playback recorded 40 drops / 48.78125 CPU seconds versus the control's 53 / 46.640625; the higher CPU means improvement is not yet established. The published v3.2.1.900 release remains unchanged.
+
+Next: restore access to `Z:\zpAI`, repeat/isolate grouped draw storage versus borrowed-key lookup, complete x86 and 1,024-entry x64 playback captures, and profile the actual x64 helper. Session 85 never started; the most recent attempt failed before player launch or any temporary settings/COM changes. See [current results](performance-20261025-x64-grouping.md).
+
+## Resumed 2026-10-25
+
+The user requested continued optimization and x64 testing. The saved final CPU trace and six deferred x86 scripts have now been processed. See the [current x64/grouping report](performance-20261025-x64-grouping.md); the stopped-state snapshot below is historical.
+
 ## Release update
 
 The user subsequently requested publishing **v3.2.1.900**. All three DLLs were rebuilt with the new version; the renderer sources remain identical to the measured candidate. Playback testing and pending investigations remain paused. See [release notes](releases/v3.2.1.900.md) and [archived measurement summary](benchmarks/v3.2.1.900.json).

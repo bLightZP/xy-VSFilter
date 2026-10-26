@@ -344,8 +344,11 @@ ULONG DrawItemHashKey::UpdateHashValue()
     m_hash_value += m_fBody;
     m_hash_value += (m_hash_value<<5);
     m_hash_value += (m_xsub<<16) + m_ysub;
-    m_hash_value += (m_hash_value<<5);
-    m_hash_value += m_switchpts[0];//fix me: other m_switchpts elements?
+    for (int i = 0; i < countof(m_switchpts); ++i)
+    {
+        m_hash_value += (m_hash_value<<5);
+        m_hash_value += m_switchpts[i];
+    }
     return m_hash_value;
 }
 
@@ -584,4 +587,12 @@ BitmapMruCache* CacheManager::GetBitmapMruCache()
         s_caches.s_bitmap_cache = DEBUG_NEW BitmapMruCache(BITMAP_MRU_CACHE_ITEM_NUM);
     }
     return s_caches.s_bitmap_cache;
+}
+
+void CacheManager::SetBitmapCacheSize(std::size_t items)
+{
+    // Payloads are indexed by interned group identity. Both caches must follow
+    // the same policy when capacity changes, including a complete bypass at 0.
+    XyFwGroupedDrawItemsHashKey::GetCacher()->SetMaxItemNum(items);
+    GetBitmapMruCache()->SetMaxItemNum(items);
 }

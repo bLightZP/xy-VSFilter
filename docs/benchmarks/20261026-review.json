@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "scope": "Localized cache sizing/bypass, karaoke hash and edge-blur batch; both sides include the earlier grouping experiment.",
+  "base_commit": "e61a07fa41d17f23e2ee848354f5aedd9bb616fd",
+  "toolchain": {
+    "visual_studio": "18.11.12324.101",
+    "msbuild": "18.11.1.51303",
+    "platform_toolset": "v145",
+    "compiler": "19.51.36260.0",
+    "tools_directory": "14.51.36231",
+    "configuration": "Release"
+  },
+  "sample": {
+    "name": "Subtitles_CPU_killer_on_end_credits.mkv",
+    "sha256": "e85d3926112f7ccbc071b6e6d1034aa76bc75a65ae15c44721e8aef0aa237d2f",
+    "track": "Signs & Songs [eng] (ass) [default]",
+    "start_ms": 1340000,
+    "source_fps": "24000/1001"
+  },
+  "validation": {
+    "per_architecture_contracts": 15,
+    "per_architecture_fixture_cases": 54,
+    "per_sample_render_frames": 2428,
+    "sample_nonempty_frames": 2184,
+    "sample_bitmap_capacities": [
+      256,
+      0
+    ],
+    "extended_scripts": [
+      "reconstruction",
+      "zero-alpha",
+      "polygon-font-fields",
+      "geometry-reuse",
+      "multiline-inverse",
+      "omitted-numbers",
+      "edge-blur-karaoke"
+    ],
+    "extended_frames_each": 2428,
+    "pixel_mismatches": 0,
+    "python_metric_tests": 8
+  },
+  "playback": {
+    "Win32": {
+      "engine": "internal32",
+      "renderer": "MPC Video Renderer",
+      "main_window": {
+        "class": "TMainForm.UnicodeClass",
+        "minimized": false,
+        "rect": [
+          312,
+          48,
+          2242,
+          1138
+        ],
+        "client_size": [
+          1930,
+          1090
+        ]
+      },
+      "bitmap_entries": 256,
+      "poll_interval_s": 1,
+      "order": [
+        "control",
+        "candidate",
+        "candidate",
+        "control"
+      ],
+      "active_dependencies": [
+        {
+          "name": "LAVVideo.ax",
+          "path": "C:\\Program Files (x86)\\LAV Filters\\x86\\LAVVideo.ax",
+          "sha256": "ee84e7f3f5fd5898937ea8e12c3326d31b5c0039d099a68af9948e4e0ab4f693"
+        },
+        {
+          "name": "MpcVideoRenderer.ax",
+          "path": "C:\\Program Files (x86)\\MPC Video Renderer\\MpcVideoRenderer.ax",
+          "sha256": "2aeef4750282dfec1c59629f52221c4dbed83d3c238b6f40b6401adb5b3de16a"
+        }
+      ],
+      "control_cpu_mean_seconds": 49.1796875,
+      "candidate_cpu_mean_seconds": 47.1484375,
+      "cpu_reduction_percent": 4.13026211278793,
+      "control_drops": [
+        48,
+        39
+      ],
+      "candidate_drops": [
+        44,
+        39
+      ],
+      "captures": [
+        {
+          "drops": 48,
+          "cpu_seconds": 49.609375,
+          "wall_seconds": 102.00226149999071,
+          "mean_cpu_percent_machine": 6.079445478765748,
+          "peak_combined_private_bytes": 651628544,
+          "drawn_counter_resets": [
+            {
+              "elapsed_s": 1.000648,
+              "before": 44,
+              "after": 24,
+              "dropped_before": 0,
+              "dropped_after": 0
+            }
+          ],
+          "folder": "review-20261026-playback-Win32-control-01",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "7fca2f94b80e5df8466b38f496c418802ef4fbd7723d4934463bafc0474aa0a1"
+        },
+        {
+          "drops": 44,
+          "cpu_seconds": 46.0625,
+          "wall_seconds": 102.0013124999823,
+          "mean_cpu_percent_machine": 5.6448415798581015,
+          "peak_combined_private_bytes": 473116672,
+          "drawn_counter_resets": [
+            {
+              "elapsed_s": 1.00142,
+              "before": 50,
+              "after": 24,
+              "dropped_before": 0,
+              "dropped_after": 0
+            }
+          ],
+          "folder": "review-20261026-playback-Win32-candidate-02",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "d797f0367ac63237b0d5ade19042aa1a1d38e451bc82277bea020eb950121306"
+        },
+        {
+          "drops": 39,
+          "cpu_seconds": 48.234375,
+          "wall_seconds": 102.00150859996211,
+          "mean_cpu_percent_machine": 5.910987942978561,
+          "peak_combined_private_bytes": 469770240,
+          "drawn_counter_resets": [
+            {
+              "elapsed_s": 1.001153,
+              "before": 50,
+              "after": 23,
+              "dropped_before": 0,
+              "dropped_after": 0
+            }
+          ],
+          "folder": "review-20261026-playback-Win32-candidate-03",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "d797f0367ac63237b0d5ade19042aa1a1d38e451bc82277bea020eb950121306"
+        },
+        {
+          "drops": 39,
+          "cpu_seconds": 48.75,
+          "wall_seconds": 102.0017644999316,
+          "mean_cpu_percent_machine": 5.974161358751874,
+          "peak_combined_private_bytes": 473600000,
+          "drawn_counter_resets": [
+            {
+              "elapsed_s": 1.002546,
+              "before": 50,
+              "after": 24,
+              "dropped_before": 0,
+              "dropped_after": 0
+            }
+          ],
+          "folder": "review-20261026-playback-Win32-control-04",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "7fca2f94b80e5df8466b38f496c418802ef4fbd7723d4934463bafc0474aa0a1"
+        }
+      ],
+      "control_dll_sha256": "7fca2f94b80e5df8466b38f496c418802ef4fbd7723d4934463bafc0474aa0a1",
+      "candidate_dll_sha256": "d797f0367ac63237b0d5ade19042aa1a1d38e451bc82277bea020eb950121306",
+      "filter_performance_registry": {
+        "bitmap_mru_cache_item_num": 256,
+        "max_cache_size_mb": 8192
+      }
+    },
+    "x64": {
+      "engine": "external64",
+      "renderer": "MPC Video Renderer",
+      "main_window": {
+        "class": "TMainForm.UnicodeClass",
+        "minimized": false,
+        "rect": [
+          312,
+          48,
+          2242,
+          1138
+        ],
+        "client_size": [
+          1930,
+          1090
+        ]
+      },
+      "bitmap_entries": 256,
+      "poll_interval_s": 1,
+      "order": [
+        "control",
+        "candidate",
+        "candidate",
+        "control"
+      ],
+      "active_dependencies": [
+        {
+          "name": "LAVVideo.ax",
+          "path": "C:\\Program Files (x86)\\LAV Filters\\x64\\LAVVideo.ax",
+          "sha256": "e2a91e0e2d3f8ac73aad31ea5c21eef88c67bc98eecaf420df07e5cea0a2cf42"
+        },
+        {
+          "name": "MpcVideoRenderer64.ax",
+          "path": "C:\\Program Files (x86)\\MPC Video Renderer\\MpcVideoRenderer64.ax",
+          "sha256": "2926f25552b2891e63264e6168e5e3a6e5eb91f858b1bdf1f122fdc2120ec295"
+        }
+      ],
+      "control_cpu_mean_seconds": 51.9296875,
+      "candidate_cpu_mean_seconds": 51.5546875,
+      "cpu_reduction_percent": 0.7221302843387956,
+      "control_drops": [
+        49,
+        45
+      ],
+      "candidate_drops": [
+        45,
+        44
+      ],
+      "captures": [
+        {
+          "drops": 49,
+          "cpu_seconds": 52.734375,
+          "wall_seconds": 102.00253870000597,
+          "mean_cpu_percent_machine": 6.4623851121850695,
+          "peak_combined_private_bytes": 550379520,
+          "drawn_counter_resets": [
+            {
+              "elapsed_s": 1.000879,
+              "before": 24,
+              "after": 19,
+              "dropped_before": 0,
+              "dropped_after": 0
+            }
+          ],
+          "folder": "review-20261026-playback-x64-control-01",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "804650ad93fd0006b394a61896e0555dce6e180a208941e5ddf60686f5a970e3"
+        },
+        {
+          "drops": 45,
+          "cpu_seconds": 51.828125,
+          "wall_seconds": 102.00261059997138,
+          "mean_cpu_percent_machine": 6.351323350347484,
+          "peak_combined_private_bytes": 569053184,
+          "drawn_counter_resets": [],
+          "folder": "review-20261026-playback-x64-candidate-02",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "673c19b130e65cc70b3159b62ad9082671127b410bf5624fe3938b4a5d377be4"
+        },
+        {
+          "drops": 44,
+          "cpu_seconds": 51.28125,
+          "wall_seconds": 102.00196339993272,
+          "mean_cpu_percent_machine": 6.284345944270547,
+          "peak_combined_private_bytes": 544260096,
+          "drawn_counter_resets": [],
+          "folder": "review-20261026-playback-x64-candidate-03",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "673c19b130e65cc70b3159b62ad9082671127b410bf5624fe3938b4a5d377be4"
+        },
+        {
+          "drops": 45,
+          "cpu_seconds": 51.125,
+          "wall_seconds": 102.00195249996614,
+          "mean_cpu_percent_machine": 6.265198698036806,
+          "peak_combined_private_bytes": 545439744,
+          "drawn_counter_resets": [],
+          "folder": "review-20261026-playback-x64-control-04",
+          "completion": "end_of_file",
+          "verified_dll_sha256": "804650ad93fd0006b394a61896e0555dce6e180a208941e5ddf60686f5a970e3"
+        }
+      ],
+      "control_dll_sha256": "804650ad93fd0006b394a61896e0555dce6e180a208941e5ddf60686f5a970e3",
+      "candidate_dll_sha256": "673c19b130e65cc70b3159b62ad9082671127b410bf5624fe3938b4a5d377be4",
+      "filter_performance_registry": {
+        "bitmap_mru_cache_item_num": 256,
+        "max_cache_size_mb": 8192
+      }
+    }
+  },
+  "cleanup": {
+    "player_options_restored": true,
+    "both_registry_views_restored": true,
+    "all_test_players_helpers_builders_closed": true
+  },
+  "interpretation": "Small observed mean CPU reductions; drop ranges overlap controls and only two runs per binary/architecture were measured. No reliable smoothness improvement or zero-drop result established.",
+  "player": {
+    "configuration": "Debug",
+    "edition": "MAX",
+    "outputs": [
+      {
+        "name": "zplayer.exe",
+        "sha256": "9e53549328abfb70a513cbff851cc335a035e8181d4895031a6d789807a54484",
+        "machine": "014C"
+      },
+      {
+        "name": "zpmediaengine.exe",
+        "sha256": "110bb2d5c17e4c8c50bc962e05fccd8a9ae46fce356f18b443bc6542bb4dad84",
+        "machine": "014C"
+      },
+      {
+        "name": "zpmediaengine64.exe",
+        "sha256": "e04b82ab37a4b7830322bb96bad4d46188093ab3640725c03451adc4e6e343ce",
+        "machine": "8664"
+      }
+    ]
+  }
+}

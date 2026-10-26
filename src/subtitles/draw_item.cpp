@@ -529,20 +529,19 @@ void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num
 {
     ASSERT(bitmap && bitmap_identity_num);
     BitmapMruCache *bitmap_cache = CacheManager::GetBitmapMruCache();
-    GroupedDrawItemsHashKey *key = DEBUG_NEW GroupedDrawItemsHashKey();
-    CreateHashKey(key);
+    // Probe with frame-local storage; interning owns a copy only on a miss.
+    GroupedDrawItemsHashKey key;
+    CreateHashKey(&key);
     XyFwGroupedDrawItemsHashKey::IdType key_id = XyFwGroupedDrawItemsHashKey(key).GetId();
     POSITION pos = bitmap_cache->Lookup( key_id );
     if (pos==NULL)
     {
-        POSITION pos = draw_item_list.GetHeadPosition();
         XyBitmap *tmp = XySubRenderFrameCreater::GetDefaultCreater()->CreateBitmap(clip_rect);
         bitmap->reset(tmp);
 
-        while(pos)
+        for (size_t i = 0; i < draw_item_list.GetCount(); ++i)
         {
-            DrawItem& item = *draw_item_list.GetNext(pos);
-            DrawItem::Draw(tmp, item, clip_rect, buffer);
+            DrawItem::Draw(tmp, *draw_item_list[i], clip_rect, buffer);
         }
         XyColorSpace color_space;
         HRESULT hr = XySubRenderFrameCreater::GetDefaultCreater()->GetColorSpace(&color_space);
@@ -590,7 +589,6 @@ void GroupedDrawItems::CreateHashKey(GroupedDrawItemsHashKey *key)
     key->m_clip_rect = clip_rect;
     key->m_key.Truncate(0);
     key->m_key.Reserve(draw_item_list.GetCount());
-    POSITION pos = draw_item_list.GetHeadPosition();
-    while (pos) key->m_key.AddTail(draw_item_list.GetNext(pos)->GetHashKey());
+    for (size_t i = 0; i < draw_item_list.GetCount(); ++i) key->m_key.AddTail(draw_item_list[i]->GetHashKey());
     key->UpdateHashValue();
 }
