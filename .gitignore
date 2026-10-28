@@ -6,6 +6,7 @@
 *.suo
 *.user
 *.vspx
+__pycache__/
 /.git-rewrite
 /bin
 ipch
@@ -14,5 +15,8 @@ ipch
 /.vs
 /benchmark-results/
 /tools/yasm.exe
+/src/thirdparty/libass-deps/sources/
+/src/thirdparty/libass-deps/*.tar.gz
+/src/thirdparty/libass-deps/*.tar.xz
 
 /Subtitles_CPU_killer_on_end_credits.mkv

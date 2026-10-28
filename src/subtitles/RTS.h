@@ -22,6 +22,7 @@
 #pragma once
 
 #include "STS.h"
+#include "LibassRenderer.h"
 #include "Rasterizer.h"
 #include "../SubPic/SubPicProviderImpl.h"
 #include "../SubPic/ISimpleSubPic.h"
@@ -30,6 +31,7 @@
 #include <boost/smart_ptr.hpp>
 #include <map>
 #include <vector>
+#include <utility>
 #include "mru_cache.h"
 #include "xy_int_map.h"
 
@@ -57,7 +59,7 @@ class CClipper;
 typedef ::boost::shared_ptr<CClipper> SharedPtrCClipper;
 
 struct CompositeDrawItem;
-typedef CAtlList<CompositeDrawItem> CompositeDrawItemList;
+class CompositeDrawItemList;
 typedef CAtlList<CompositeDrawItemList> CompositeDrawItemListList;
 
 class CWord;
@@ -71,6 +73,38 @@ typedef ::boost::shared_ptr<CClipperPaintMachine> SharedPtrCClipperPaintMachine;
 class OverlayKey;
 class DrawItemHashKey;
 interface IXySubRenderFrame;
+
+// Optional native diagnostics. Normal playback leaves collection disabled.
+// Phase times overlap: COMPOSITE includes its subphases and their cleanup.
+struct RenderDiagnostics
+{
+    enum Phase { RENDER, PARSE, BUILD_DRAW, COMPOSITE, TREE, MERGE, GROUP, BITMAP, PHASE_COUNT };
+    unsigned __int64 ticks[PHASE_COUNT];
+    unsigned __int64 frames, inputItems, groups, memberReferences, uniqueMembers;
+    unsigned __int64 drawItems, drawVectorGrowths;
+    RenderDiagnostics() { Reset(); }
+    void Reset() { memset(this, 0, sizeof(*this)); }
+};
+
+class RenderPhaseTimer
+{
+    RenderDiagnostics* m_stats;
+    RenderDiagnostics::Phase m_phase;
+    LARGE_INTEGER m_start;
+public:
+    RenderPhaseTimer(RenderDiagnostics* stats, RenderDiagnostics::Phase phase) : m_stats(stats), m_phase(phase)
+    { if (m_stats) QueryPerformanceCounter(&m_start); }
+    ~RenderPhaseTimer()
+    {
+        if (m_stats) {
+            LARGE_INTEGER end; QueryPerformanceCounter(&end);
+            m_stats->ticks[m_phase] += end.QuadPart - m_start.QuadPart;
+        }
+    }
+private:
+    RenderPhaseTimer(const RenderPhaseTimer&);
+    RenderPhaseTimer& operator=(const RenderPhaseTimer&);
+};
 
 class CWord
 {
@@ -92,12 +126,14 @@ public:
     CWord(const CWord&);
     virtual ~CWord();
 
+    // Conservative charge for an immutable, unpainted layout prototype.
+    size_t GetPreparedStorageBytes() const;
     virtual SharedPtrCWord Copy() = 0;
     virtual bool Append(const SharedPtrCWord& w);
     
     bool operator==(const CWord& rhs)const;
 
-    static void PaintFromOverlay   (const CPointCoor2& p, const CPointCoor2& trans_org2, OverlayKey &subpixel_variance_key, SharedPtrOverlay& overlay);
+    static void PaintFromOverlay   (const CPointCoor2& p, const CPointCoor2& trans_org2, const OverlayKey &subpixel_variance_key, SharedPtrOverlay& overlay);
     void PaintFromNoneBluredOverlay(SharedPtrOverlay raterize_result, const OverlayKey& overlay_key, SharedPtrOverlay* overlay);
     bool PaintFromScanLineData2    (const CPointCoor2& psub, const ScanLineData2& scan_line_data2, const OverlayKey& key    , SharedPtrOverlay* overlay);
     bool PaintFromPathData         (const CPointCoor2& psub, const CPointCoor2& trans_org, const PathData& path_data, const OverlayKey& key, SharedPtrOverlay* overlay );
@@ -179,6 +215,8 @@ public:
         return count <= 16 && m_str.Get().GetLength() <= 128;
     }
     virtual ~CPolygon();
+    size_t GetPreparedPathBytes() const;
+    bool FreezePreparedPath();
 
     virtual SharedPtrCWord Copy();
     virtual bool Append(const SharedPtrCWord& w);
@@ -258,6 +296,7 @@ template<class T> class CInlineList
 public:
     CInlineList() : m_first(), m_hasFirst(false) {}
     size_t GetCount() const { return m_hasFirst ? m_rest.size() + 1 : 0; }
+    size_t GetCapacity() const { return 1 + m_rest.capacity(); }
     T& operator[](size_t i) { ASSERT(i < GetCount()); return i ? m_rest[i-1] : m_first; }
     const T& operator[](size_t i) const { ASSERT(i < GetCount()); return i ? m_rest[i-1] : m_first; }
     void AddTail(const T& value)
@@ -266,6 +305,13 @@ public:
         else { m_first = value; m_hasFirst = true; }
     }
     void Reserve(size_t count) { if (count > 1) m_rest.reserve(count-1); }
+    void Swap(CInlineList& other)
+    {
+        using std::swap;
+        swap(m_first, other.m_first);
+        m_rest.swap(other.m_rest);
+        swap(m_hasFirst, other.m_hasFirst);
+    }
     void Truncate(size_t count)
     {
         ASSERT(count <= GetCount());
@@ -274,9 +320,32 @@ public:
     }
 };
 
+// Metadata only. Raster images remain weak references governed by existing MRUs.
+struct DrawReuseBudget
+{
+    size_t limit, bytes, peakBytes, entries;
+    unsigned __int64 hits, misses, machineAllocations, drawAllocations, keyAllocations;
+    DrawReuseBudget() : limit(32*1024*1024), bytes(0), peakBytes(0), entries(0),
+        hits(0), misses(0), machineAllocations(0), drawAllocations(0), keyAllocations(0) {}
+};
+struct DrawReuseLease
+{
+    boost::shared_ptr<DrawReuseBudget> budget;
+    enum { CHARGE = 4096 };
+    explicit DrawReuseLease(const boost::shared_ptr<DrawReuseBudget>& b) : budget(b)
+    {
+        budget->bytes+=CHARGE; ++budget->entries;
+        budget->peakBytes=max(budget->peakBytes,budget->bytes);
+    }
+    ~DrawReuseLease() { budget->bytes-=CHARGE; --budget->entries; }
+};
+struct PreparedLineDraw;
+
 class CLine
 {
+    friend class CSubtitle;
     CInlineList<SharedPtrCWord> m_words;
+    boost::shared_ptr<PreparedLineDraw> m_drawPlan;
     CLine(const CLine&);
     CLine& operator=(const CLine&);
 public:
@@ -285,17 +354,58 @@ public:
 
     virtual ~CLine();
 
-    void Empty() { m_words.Truncate(0); }
+    void Empty() { m_drawPlan.reset(); m_words.Truncate(0); }
     void Compact();
 
     int GetWordCount();
-    void AddWord2Tail(SharedPtrCWord words);
+    void AddWord2Tail(const SharedPtrCWord& words);
     bool IsEmpty();
 
     CRectCoor2 PaintAll(CompositeDrawItemList* output, const CRectCoor2& clipRect, 
         const CPointCoor2& margin,
         const SharedPtrCClipperPaintMachine &clipper, 
-        CPoint p, const CPoint& org, const int time, const int alpha, POSITION outputPos = NULL);
+        CPoint p, const CPoint& org, const int time, const int alpha, POSITION outputPos = NULL,
+        const boost::shared_ptr<DrawReuseBudget>& budget = boost::shared_ptr<DrawReuseBudget>());
+};
+
+// Immutable layout only. Effects, clipping and tag evaluation remain per-frame.
+// Prototypes are never painted or modified; rendering gets independent copies.
+struct PreparedSubtitleLayout
+{
+    struct Line
+    {
+        std::vector<SharedPtrCWord> words;
+        int width, ascent, descent, borderX, borderY;
+    };
+    std::vector<SharedPtrCWord> rawWords;
+    std::vector<Line> lines;
+    FwSTSStyle style;
+    CRect margin, rect;
+    CSize size;
+    int alignment, wrap, polygon, baseline, ktype, kstart, kend;
+    int topBorder, bottomBorder;
+    double scaleX, scaleY, targetX, targetY;
+    size_t bytes;
+    // Separate bounded appearance cache. These words are never restyled in
+    // place; replacing the cache preserves every prior owner's word state.
+    mutable FwSTSStyle renderedStyle;
+    mutable CInlineList<SharedPtrCWord> renderedWords;
+    PreparedSubtitleLayout(const FwSTSStyle& initial) : style(initial), renderedStyle(initial) {}
+};
+typedef boost::shared_ptr<const PreparedSubtitleLayout> SharedPreparedSubtitleLayout;
+
+// Exact context for the conservative prepared event replay. Named resets and
+// geometry-changing transforms are excluded by the operation dependency check.
+struct PreparedEventContext
+{
+    STSStyle sourceStyle;
+    CString effect;
+    CRect margins;
+    CSize screen;
+    double par;
+    int parType, wrap;
+    bool scaledBorder;
+    PreparedEventContext(const STSStyle& style) : sourceStyle(style) {}
 };
 
 class CSubtitle
@@ -329,6 +439,7 @@ public:
     int                      m_reuseFrom, m_reuseUntil, m_reuseDelay;
     size_t                   m_reuseCharge;
     CStringW                 m_sourceText;
+    boost::shared_ptr<const PreparedEventContext> m_preparedContext;
     int                      m_hard_position_level;//-1: for no style override at all, others see @AssCmdPosLevel
 public:
     CSubtitle();
@@ -339,6 +450,13 @@ public:
     void CreateClippers(CSize size1, const CSizeCoor2& size_scale_to);
 
     void MakeLines(CSize size, CRect marginRect);
+    SharedPreparedSubtitleLayout PrepareLayout(size_t available, CSize size,
+        const CRect& margin, int polygon, int baseline) const;
+    bool ReuseLayout(const PreparedSubtitleLayout& layout, const FwSTSStyle& style,
+        CSize size, const CRect& margin, int polygon, int baseline,
+        int ktype, int kstart, int kend);
+    void UpdateLayoutAppearance(const PreparedSubtitleLayout& layout, const FwSTSStyle& style);
+    size_t PrepareStaticDrawing(size_t available, size_t sourceCharacters);
 
     POSITION GetHeadLinePosition();
     CLine* GetNextLine(POSITION& pos);
@@ -471,17 +589,69 @@ public:
     static const int MIN_CMD_LENGTH = 1;//c etc
     static const int MAX_CMD_LENGTH = 5;//alpha, iclip, xbord, xshad, ybord, yshad
     static CAtlMap<CStringW, AssCmdType, CStringElementTraits<CStringW>> m_cmdMap;
+    static AssCmdType LookupAssCommand(const WCHAR* text, int length, int& commandLength);
 
     static CAtlArray<AssCmdPosLevel> m_cmd_pos_level;
 
     struct AssTag;
-    typedef CAtlList<AssTag> AssTagList;
+    // Lazy packed nodes. Empty nested programs occupy one pointer, and nodes
+    // never move while a cached program or an evaluator retains their address.
+    class AssTagList
+    {
+        struct Header { AssTag* head; };
+        struct Storage;
+        Header* m_storage;
+        AssTagList(const AssTagList&);
+        AssTagList& operator=(const AssTagList&);
+    public:
+        AssTagList() : m_storage(NULL) {}
+        ~AssTagList();
+        size_t GetCount() const;
+        size_t GetCapacity() const;
+        size_t GetStorageBytes() const;
+        size_t GetBlockCount() const;
+        bool IsEmpty() const { return GetCount()==0; }
+        POSITION AddTail();
+        __forceinline POSITION GetHeadPosition() const { return m_storage ? reinterpret_cast<POSITION>(m_storage->head) : NULL; }
+        AssTag& GetAt(POSITION position);
+        const AssTag& GetAt(POSITION position) const;
+        AssTag& GetNext(POSITION& position);
+        const AssTag& GetNext(POSITION& position) const;
+    };
     typedef ::boost::shared_ptr<const AssTagList> SharedPtrConstAssTagList;
+    // One owned string stays inline. The optional allocation owns both the
+    // capacity header and uninitialized slots; only live arguments are built.
+    class AssTagParams
+    {
+        struct Spill;
+        CStringW m_first;
+        size_t m_count;
+        Spill* m_spill;
+        AssTagParams(const AssTagParams&);
+        AssTagParams& operator=(const AssTagParams&);
+        const CStringW& SpillAt(size_t index) const;
+    public:
+        AssTagParams() : m_count(0),m_spill(NULL) {}
+        ~AssTagParams();
+        bool IsEmpty() const { return !m_count; }
+        size_t GetCount() const { return m_count; }
+        size_t GetCapacity() const;
+        size_t GetStorageBytes() const;
+        __forceinline const CStringW& operator[](size_t index) const
+        { ASSERT(index<m_count);return index ? SpillAt(index-1) : m_first; }
+        __forceinline CStringW& operator[](size_t index)
+        { return const_cast<CStringW&>(static_cast<const AssTagParams&>(*this)[index]); }
+        void Reserve(size_t count);
+        void Add(const CStringW& value);
+        void Truncate(size_t count);
+    };
     struct AssTag
     {
         union Number { double real; long integer; };
+        AssTag* next;
+        AssTag() : next(NULL) {}
         AssCmdType cmdType;
-        CAtlArray<CStringW> strParams;
+        AssTagParams strParams;
         AssTagList embeded;
         Number firstNumber;
         boost::scoped_array<Number> extraNumbers;
@@ -502,6 +672,21 @@ public:
     static std::size_t SetMaxCacheSize(std::size_t max_cache_size);
     // Internal renderer diagnostics/control; this does not change the COM API.
     ParsedTagCacheStats GetParsedTagCacheStats() const;
+    struct ScalarParameterStats { unsigned __int64 hits, misses; size_t entries, bytes; };
+    ScalarParameterStats GetScalarParameterCacheStats() const;
+    void SetScalarParameterCacheEnabled(bool enabled);
+    DrawReuseBudget GetDrawReuseStats() const { return *m_drawReuse; }
+    void SetDrawReuseCacheLimit(size_t bytes) { m_drawReuse->limit=min(bytes,size_t(32*1024*1024)); }
+private:
+    boost::shared_ptr<DrawReuseBudget> m_drawReuse;
+public:
+    struct PreparedLayoutStats
+    {
+        unsigned __int64 hits, builds, fallbacks, updates;
+        size_t bytes, peakBytes, entries;
+    };
+    PreparedLayoutStats GetPreparedLayoutStats() const;
+    void SetPreparedLayoutCacheLimit(size_t bytes);
     void SetParsedTagCacheLimit(size_t bytes);
 private:
     struct ParsedTagBlock
@@ -515,18 +700,53 @@ private:
         CStringW text;
         std::vector<ParsedTagBlock> blocks;
         size_t bytes;
-        ParsedEventTags() : bytes(0) {}
+        SharedPreparedSubtitleLayout layout;
+        bool layoutDisabled;
+        ParsedEventTags() : bytes(0), layoutDisabled(false) {}
     };
     typedef boost::shared_ptr<ParsedEventTags> SharedParsedEventTags;
     typedef std::map<int, SharedParsedEventTags> ParsedEventTagMap;
     ParsedEventTagMap m_parsedEventTags;
+    class ScalarParameterCache;
+    boost::scoped_ptr<ScalarParameterCache> m_scalarParameters;
+    bool m_scalarParametersEnabled;
     size_t m_parsedTagBytes, m_parsedTagPeakBytes, m_parsedTagLimit;
     unsigned __int64 m_parsedTagHits, m_parsedTagMisses;
     REFERENCE_TIME m_parsedTagTime;
+    REFERENCE_TIME m_nextParsedExpiry, m_nextSubtitleExpiry;
+    struct OrderedEvent { int idx, layer, readorder; };
+    CAtlArray<OrderedEvent> m_orderSource, m_orderSorted;
+    bool m_maintenanceCacheEnabled;
+    unsigned __int64 m_orderBuilds, m_orderHits, m_parsedExpiryScans, m_subtitleExpiryScans;
+public:
+    struct MaintenanceStats { unsigned __int64 orderBuilds, orderHits, parsedScans, subtitleScans; };
+    MaintenanceStats GetMaintenanceStats() const
+    {
+        MaintenanceStats value = {m_orderBuilds,m_orderHits,m_parsedExpiryScans,m_subtitleExpiryScans};
+        return value;
+    }
+    void SetMaintenanceCacheEnabled(bool enabled);
+    // A synchronous preparation allowance inside RenderEx, never a worker.
+    void SetLookaheadBudget(unsigned microseconds) { m_lookaheadBudget = min(microseconds,4000u); }
+    struct LookaheadStats { unsigned __int64 attempted, retained, skipped; LONGLONG ticks, largestUnit; };
+    LookaheadStats GetLookaheadStats() const { return m_lookaheadStats; }
+private:
+    static int CompareOrderedEvents(const void* a, const void* b);
+    unsigned m_lookaheadBudget;
+    bool m_preparingAhead;
+    std::vector<BYTE> m_lookaheadAttempted;
+    size_t m_lookaheadSegment, m_lookaheadOffset, m_lookaheadSourceSegments, m_lookaheadSourceEntries;
+    bool m_lookaheadCursorValid;
+    LookaheadStats m_lookaheadStats;
+    void PrepareUpcoming(REFERENCE_TIME rt, double fps, LONGLONG renderStart);
+    size_t m_layoutBytes, m_layoutPeakBytes, m_layoutLimit;
+    unsigned __int64 m_layoutHits, m_layoutBuilds, m_layoutFallbacks, m_layoutUpdates;
+    void DropPreparedLayout(ParsedEventTags& event);
     void ClearParsedTags();
     void ExpireParsedTags(REFERENCE_TIME rt, double fps);
-    static size_t EstimateTagMemory(const AssTagList& tags);
-    static SharedPtrConstAssTagList GetParsedSSATags(const CStringW& text);
+    static size_t EstimateTagMemory(const AssTagList& tags, bool root = true);
+    static bool HasLayoutAnimation(const AssTagList& tags, bool inTransform = false, unsigned depth = 0);
+    SharedPtrConstAssTagList GetParsedSSATags(const CStringW& text);
     CSubtitlePool           m_subtitlePool;
     size_t m_reconstructionCount, m_reconstructionPeak, m_reconstructionLimit;
     size_t m_reconstructionBytes, m_reconstructionPeakBytes;
@@ -538,6 +758,8 @@ private:
     CAtlList<int>            m_subtitleCacheEntry;
 
     CScreenLayoutAllocator   m_sla;
+    bool m_collectDiagnostics;
+    RenderDiagnostics m_diagnostics;
 
     CRectCoor2               m_video_rect;//scaled video rect
     CRectCoor2               m_subtitle_target_rect;//NOT really supported yet
@@ -562,15 +784,19 @@ private:
     void ParseString (CSubtitle* sub, CStringW str, const FwSTSStyle& style);
     void ParsePolygon(CSubtitle* sub, const CStringW& str, const FwSTSStyle& style);
 
-    static bool ParseSSATag(AssTagList *assTags, const CStringW& str);
+    bool ParseSSATag(AssTagList *assTags, const CStringW& str);
     static void CacheTagNumbers(AssTag& tag);
-    bool ParseSSATag(CSubtitle* sub, const AssTagList& assTags, STSStyle& style, const STSStyle& org, bool fAnimate = false);
+    bool ParseSSATag(CSubtitle* sub, const AssTagList& assTags, STSStyle& style, const STSStyle& org, bool fAnimate = false, bool paintOnly = false);
 
     bool ParseHtmlTag(CSubtitle* sub, CStringW str, STSStyle& style, STSStyle& org);
 
     double CalcAnimation(double dst, double src, bool fAnimate);
 
+    bool MatchesPreparedContext(int entry, CSubtitle* sub, const CStringW& sourceText);
+    bool UpdatePreparedSubtitle(int entry, CSubtitle* sub, const CStringW& sourceText);
     CSubtitle* GetSubtitle(int entry);
+    CSubtitle* GetSubtitle(int entry, CSubtitle* cached, const CStringW& sourceText);
+    CSubtitle* CreateSubtitle(int entry, CSubtitle* cached, const CStringW& sourceText);
 
     void ClearUnCachedSubtitle(CSubtitle2List& sub2List);
     void ShrinkCache();
@@ -578,6 +804,10 @@ private:
     static std::size_t s_max_cache_size;
 protected:
     virtual void OnChanged();
+    virtual void OnSourceLoaded(CTextFile* file, ULONGLONG start);
+    boost::scoped_ptr<LibassRenderer> m_libass;
+    LibassRenderer::StyleBaseline m_libassOriginalStyles;
+    bool m_preferLibass, m_libassFontsLoaded;
     
 public:
     CRenderedTextSubtitle(CCritSec* pLock);
@@ -597,6 +827,19 @@ private:
         const SIZE& layout_size);
 public:
     void Deinit();
+    void SetPreferLibass(bool prefer) { m_preferLibass = prefer; m_movable = !IsUsingLibass(); }
+    bool IsUsingLibass() const { return m_preferLibass && m_libass && m_libass->HasSource(); }
+    LibassRenderer* GetLibassRenderer() { return m_libass.get(); }
+    void SetLibassEmbedded(bool embedded);
+    void AddLibassPacket(const BYTE* data, int length, REFERENCE_TIME start, REFERENCE_TIME stop);
+    void FlushLibass();
+    void LoadLibassGraphFonts(IFilterGraph* graph);
+    void EnableDiagnostics(bool enable) { m_collectDiagnostics = enable; m_diagnostics.Reset(); }
+    const RenderDiagnostics& GetDiagnostics() const { return m_diagnostics; }
+    // Offline-only seams: initialize geometry, then time production parsing or
+    // composition. Composite inputs are prepared outside the measured interval.
+    HRESULT BenchmarkNativePhase(IXySubRenderFrame** frame, REFERENCE_TIME time,
+        bool parseOnly, LONGLONG& ticks, ULONGLONG& cpuTicks);
     const CSubtitlePool& GetSubtitlePool() const { return m_subtitlePool; }
     void SetReconstructionCacheLimit(size_t entries);
     size_t GetReconstructionCacheCount() const { return m_reconstructionCount; }
@@ -626,11 +869,11 @@ public:
     STDMETHODIMP Render(SubPicDesc& spd, REFERENCE_TIME rt, double fps, RECTCoor2& bbox);
     STDMETHODIMP RenderEx(SubPicDesc& spd, REFERENCE_TIME rt, double fps, CAtlList<CRectCoor2>& rectList);
     HRESULT ParseScript(REFERENCE_TIME rt, double fps, CSubtitle2List *outputSub2List );
-    static void DoRender( const SIZECoor2& output_size, 
+    void DoRender( const SIZECoor2& output_size,
         const POINTCoor2& video_org, const RECTCoor2& margin_rect, 
         const CSubtitle2List& sub2List, 
         CompositeDrawItemListList *compDrawItemListList /*output*/);
-    static void RenderOneSubtitle(const SIZECoor2& output_size, 
+    void RenderOneSubtitle(const SIZECoor2& output_size,
         const POINTCoor2& video_org, const RECTCoor2& margin_rect, 
         const CSubtitle2& sub2, 
         CompositeDrawItemList* compDrawItemList /*output*/);
@@ -648,3 +891,18 @@ public:
     STDMETHODIMP SetStream(int iStream);
     STDMETHODIMP Reload();
 };
+
+// Keep hot immutable-program traversal visible to every caller. POSITION names
+// the stable tag node itself; links are never changed after publication.
+__forceinline const CRenderedTextSubtitle::AssTag& CRenderedTextSubtitle::AssTagList::GetAt(POSITION position) const
+{ ASSERT(position);return *reinterpret_cast<const AssTag*>(position); }
+__forceinline CRenderedTextSubtitle::AssTag& CRenderedTextSubtitle::AssTagList::GetAt(POSITION position)
+{ return const_cast<AssTag&>(static_cast<const AssTagList&>(*this).GetAt(position)); }
+__forceinline const CRenderedTextSubtitle::AssTag& CRenderedTextSubtitle::AssTagList::GetNext(POSITION& position) const
+{
+    const AssTag& tag=GetAt(position);
+    position=reinterpret_cast<POSITION>(tag.next);
+    return tag;
+}
+__forceinline CRenderedTextSubtitle::AssTag& CRenderedTextSubtitle::AssTagList::GetNext(POSITION& position)
+{ return const_cast<AssTag&>(static_cast<const AssTagList&>(*this).GetNext(position)); }

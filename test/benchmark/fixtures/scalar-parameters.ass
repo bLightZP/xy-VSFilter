@@ -1,0 +1,268 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 640
+PlayResY: 360
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,18,&H00FFFFFF,&H000000FF,&H00302010,&H80000000,0,0,0,0,100,100,0,0,1,1.5,1,7,10,10,10,1
+Style: Other,Tahoma,20,&H00C0D0FF,&H0000FF00,&H00112233,&H60000000,0,0,0,0,100,100,1,0,3,2,2,5,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H000000&\pos(10,10)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H000089&\pos(41,29)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H000112&\pos(72,48)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H00019B&\pos(103,67)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H000224&\pos(134,86)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H0002AD&\pos(165,105)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H000336&\pos(196,124)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0003BF&\pos(227,143)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H000448&\pos(258,162)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0004D1&\pos(289,181)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H00055A&\pos(320,200)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H0005E3&\pos(351,219)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H00066C&\pos(382,238)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0006F5&\pos(413,257)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H00077E&\pos(444,276)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H000807&\pos(475,295)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H000890&\pos(506,314)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H000919&\pos(537,13)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0009A2&\pos(568,32)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H000A2B&\pos(599,51)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H000AB4&\pos(40,70)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H000B3D&\pos(71,89)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H000BC6&\pos(102,108)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H000C4F&\pos(133,127)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H000CD8&\pos(164,146)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H000D61&\pos(195,165)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H000DEA&\pos(226,184)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H000E73&\pos(257,203)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H000EFC&\pos(288,222)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H000F85&\pos(319,241)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H00100E&\pos(350,260)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H001097&\pos(381,279)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H001120&\pos(412,298)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0011A9&\pos(443,317)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H001232&\pos(474,16)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H0012BB&\pos(505,35)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H001344&\pos(536,54)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0013CD&\pos(567,73)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H001456&\pos(598,92)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0014DF&\pos(39,111)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H001568&\pos(70,130)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H0015F1&\pos(101,149)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H00167A&\pos(132,168)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H001703&\pos(163,187)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H00178C&\pos(194,206)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H001815&\pos(225,225)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H00189E&\pos(256,244)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H001927&\pos(287,263)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0019B0&\pos(318,282)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H001A39&\pos(349,301)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H001AC2&\pos(380,320)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H001B4B&\pos(411,19)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H001BD4&\pos(442,38)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H001C5D&\pos(473,57)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H001CE6&\pos(504,76)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H001D6F&\pos(535,95)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H001DF8&\pos(566,114)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H001E81&\pos(597,133)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H001F0A&\pos(38,152)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H001F93&\pos(69,171)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H00201C&\pos(100,190)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0020A5&\pos(131,209)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H00212E&\pos(162,228)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0021B7&\pos(193,247)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H002240&\pos(224,266)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H0022C9&\pos(255,285)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H002352&\pos(286,304)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0023DB&\pos(317,323)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H002464&\pos(348,22)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0024ED&\pos(379,41)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H002576&\pos(410,60)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H0025FF&\pos(441,79)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H002688&\pos(472,98)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H002711&\pos(503,117)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H00279A&\pos(534,136)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H002823&\pos(565,155)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0028AC&\pos(596,174)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H002935&\pos(37,193)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0029BE&\pos(68,212)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H002A47&\pos(99,231)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H002AD0&\pos(130,250)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H002B59&\pos(161,269)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H002BE2&\pos(192,288)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H002C6B&\pos(223,307)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H002CF4&\pos(254,326)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H002D7D&\pos(285,25)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H002E06&\pos(316,44)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H002E8F&\pos(347,63)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H002F18&\pos(378,82)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H002FA1&\pos(409,101)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H00302A&\pos(440,120)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0030B3&\pos(471,139)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H00313C&\pos(502,158)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0031C5&\pos(533,177)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H00324E&\pos(564,196)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H0032D7&\pos(595,215)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H003360&\pos(36,234)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0033E9&\pos(67,253)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H003472&\pos(98,272)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0034FB&\pos(129,291)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H003584&\pos(160,310)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H00360D&\pos(191,329)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H003696&\pos(222,28)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H00371F&\pos(253,47)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H0037A8&\pos(284,66)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H003831&\pos(315,85)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0038BA&\pos(346,104)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H003943&\pos(377,123)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0039CC&\pos(408,142)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H003A55&\pos(439,161)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H003ADE&\pos(470,180)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H003B67&\pos(501,199)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H003BF0&\pos(532,218)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H003C79&\pos(563,237)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H003D02&\pos(594,256)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H003D8B&\pos(35,275)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H003E14&\pos(66,294)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H003E9D&\pos(97,313)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H003F26&\pos(128,12)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H003FAF&\pos(159,31)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H004038&\pos(190,50)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0040C1&\pos(221,69)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H00414A&\pos(252,88)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0041D3&\pos(283,107)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H00425C&\pos(314,126)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H0042E5&\pos(345,145)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H00436E&\pos(376,164)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0043F7&\pos(407,183)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H004480&\pos(438,202)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H004509&\pos(469,221)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H004592&\pos(500,240)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H00461B&\pos(531,259)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0046A4&\pos(562,278)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H00472D&\pos(593,297)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H0047B6&\pos(34,316)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H00483F&\pos(65,15)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0048C8&\pos(96,34)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H004951&\pos(127,53)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0049DA&\pos(158,72)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H004A63&\pos(189,91)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H004AEC&\pos(220,110)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H004B75&\pos(251,129)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H004BFE&\pos(282,148)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H004C87&\pos(313,167)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H004D10&\pos(344,186)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H004D99&\pos(375,205)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H004E22&\pos(406,224)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H004EAB&\pos(437,243)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H004F34&\pos(468,262)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H004FBD&\pos(499,281)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H005046&\pos(530,300)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0050CF&\pos(561,319)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H005158&\pos(592,18)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0051E1&\pos(33,37)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H00526A&\pos(64,56)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H0052F3&\pos(95,75)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H00537C&\pos(126,94)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H005405&\pos(157,113)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H00548E&\pos(188,132)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H005517&\pos(219,151)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0055A0&\pos(250,170)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H005629&\pos(281,189)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0056B2&\pos(312,208)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H00573B&\pos(343,227)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H0057C4&\pos(374,246)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H00584D&\pos(405,265)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0058D6&\pos(436,284)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H00595F&\pos(467,303)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0059E8&\pos(498,322)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H005A71&\pos(529,21)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H005AFA&\pos(560,40)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H005B83&\pos(591,59)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H005C0C&\pos(32,78)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H005C95&\pos(63,97)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H005D1E&\pos(94,116)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H005DA7&\pos(125,135)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H005E30&\pos(156,154)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H005EB9&\pos(187,173)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H005F42&\pos(218,192)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H005FCB&\pos(249,211)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H006054&\pos(280,230)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0060DD&\pos(311,249)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H006166&\pos(342,268)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0061EF&\pos(373,287)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H006278&\pos(404,306)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H006301&\pos(435,325)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H00638A&\pos(466,24)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H006413&\pos(497,43)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H00649C&\pos(528,62)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H006525&\pos(559,81)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0065AE&\pos(590,100)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H006637&\pos(31,119)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0066C0&\pos(62,138)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H006749&\pos(93,157)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H0067D2&\pos(124,176)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H00685B&\pos(155,195)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0068E4&\pos(186,214)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H00696D&\pos(217,233)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0069F6&\pos(248,252)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H006A7F&\pos(279,271)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H006B08&\pos(310,290)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H006B91&\pos(341,309)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H006C1A&\pos(372,328)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H006CA3&\pos(403,27)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H006D2C&\pos(434,46)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H006DB5&\pos(465,65)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H006E3E&\pos(496,84)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H006EC7&\pos(527,103)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H006F50&\pos(558,122)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H006FD9&\pos(589,141)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H007062&\pos(30,160)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0070EB&\pos(61,179)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H007174&\pos(92,198)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0071FD&\pos(123,217)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H007286&\pos(154,236)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H00730F&\pos(185,255)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H007398&\pos(216,274)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H007421&\pos(247,293)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H0074AA&\pos(278,312)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H007533&\pos(309,11)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H0075BC&\pos(340,30)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H007645&\pos(371,49)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H0076CE&\pos(402,68)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H007757&\pos(433,87)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H0077E0&\pos(464,106)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H007869&\pos(495,125)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H0078F2&\pos(526,144)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H00797B&\pos(557,163)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H007A04&\pos(588,182)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H007A8D&\pos(29,201)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H007B16&\pos(60,220)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H007B9F&\pos(91,239)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H007C28&\pos(122,258)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H007CB1&\pos(153,277)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H007D3A&\pos(184,296)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H007DC3&\pos(215,315)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H007E4C&\pos(246,14)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H007ED5&\pos(277,33)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H007F5E&\pos(308,52)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H007FE7&\pos(339,71)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H008070&\pos(370,90)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0080F9&\pos(401,109)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H008182&\pos(432,128)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H00820B&\pos(463,147)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H008294&\pos(494,166)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H00831D&\pos(525,185)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H0083A6&\pos(556,204)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-.25\1c&H00842F&\pos(587,223)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz1e-1\1c&H0084B8&\pos(28,242)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz01.5\1c&H008541&\pos(59,261)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz 2 \1c&H0085CA&\pos(90,280)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0junk\1c&H008653&\pos(121,299)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0\1c&H0086DC&\pos(152,318)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 1,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz-0\1c&H008765&\pos(183,17)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 2,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz+0\1c&H0087EE&\pos(214,36)}m 0 0 l 7 0 7 6 0 6
+Dialogue: 0,0:22:20.00,0:22:30.00,Default,,0,0,0,,{\an7\blur0\bord0\shad.01\1a&HFE&\p1\frz0.125\1c&H008877&\pos(245,55)}m 0 0 l 7 0 7 6 0 6

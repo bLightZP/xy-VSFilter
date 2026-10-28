@@ -64,6 +64,10 @@ protected:
 [uuid("60765CF5-01C2-4ee7-A44B-C791CF25FEA0")]
 class CDVSMainPPage : public CDVSBasePPage
 {
+	int m_LoadLevel;
+	bool m_fExternalLoad, m_fWebLoad, m_fEmbeddedLoad;
+	CComboBox m_load;
+	CButton m_extload, m_webload, m_embload;
 	void FreeLangs(), AllocLangs(int nLangs);
 
 	WCHAR m_fn[MAX_PATH];
@@ -71,6 +75,8 @@ class CDVSMainPPage : public CDVSBasePPage
 	WCHAR** m_ppLangs;
 	bool m_fOverridePlacement;
     bool m_fHideTrayIcon;
+    bool m_fPreferLibass;
+    CButton m_preferLibass;
 	int	m_PlacementXperc, m_PlacementYperc;
 	STSStyle m_defStyle;
 	bool m_fOnlyShowForcedVobSubs;
@@ -256,6 +262,8 @@ class CXySubFilterMainPPage : public CDVSBasePPage
     WCHAR** m_ppLangs;
     bool m_fOverridePlacement;
     bool m_fHideTrayIcon;
+    bool m_fPreferLibass;
+    CButton m_preferLibass;
     int m_PlacementXperc, m_PlacementYperc;
     STSStyle m_defStyle;
     bool m_fForceDefaultStyle;

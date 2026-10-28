@@ -227,3 +227,78 @@ Both architectures build and pass all pixel gates. Eight matching Debug Zoom
 Player captures show small observed CPU reductions but overlapping drop ranges;
 zero drops is not achieved. See the [implementation and measurement report](performance-20261026-review-implementation.md).
 The larger event/layout, ordering/expiry, grouping and validity work remains.
+
+### Grouping follow-up and code-only boundary
+
+A subsequent item-2 compact-storage candidate passed native x86/x64 validation
+before the user's code-only restriction. A newer borrowed group-key lookup is
+written but unbuilt/untested; fresh unprofiled playback has not run. See the
+[grouping checkpoint](performance-20261026-compact-grouping.md). Remaining review
+items are not implied to be implemented or tested by this follow-up.
+
+## Static libass and console follow-up, 2026-10-26
+
+[Results and remaining work](performance-20261026-libass-native.md): libass is an
+optional production backend, and the console supports full rendering, isolated
+parsing and composition replay. Borrowed group-key probes are enabled for x86;
+x64 keeps owned snapshots after mixed complete-render results. Other approaches
+in this review remain pending, including inline per-event final draw storage.
+
+## Native inline-storage follow-up, 2026-10-26
+
+The [inline-storage report](performance-20261026-inline-composite.md) records
+the replacement of per-event final draw linked lists with inline-first storage,
+focused on native x64 console comparisons. A new large, multiline inverse-clip
+fixture compares against the preserved pre-change renderer. Group-key policy
+is unchanged. No playback testing is authorized for this follow-up; remaining
+review approaches are still pending.
+
+## Event-parsing spike follow-up, 2026-10-26
+
+The [event-spike report](performance-20261026-event-spikes.md) records console-only
+CPU sampling, command-span/trie lookup and owned inline parameter storage. These
+changes target first-use tag work. Broader event/layout preparation, ordering,
+validity and composition proposals remain pending; this is not a claim that the
+entire review has been implemented or tested.
+
+## Font/style and word/layout follow-up, 2026-10-27
+
+The [font/layout report](performance-20261027-font-layout.md) records source-line
+attribution, lightweight cached-state lookup, direct style initialization and
+a single-word layout path. It includes Unicode/ANSI, PAR/forced-style and
+legacy-render fixtures. Broader preparation and dependency reuse remain pending.
+
+## Frame grouping scratch follow-up, 2026-10-27
+
+The [grouping scratch report](performance-20261027-grouping-scratch.md) records
+at most one item-metadata allocation per frame, event-range views, inline initial
+membership lists and a frame-owned pool for merged-list headers. The existing
+rectangle algorithm and layer ordering are preserved. This addresses part of
+finding 2; it does not implement stable cross-frame group reuse or a new sweep.
+Full-render and composition-only timings are recorded separately; the former
+show run-to-run variability. Blending, active ordering/expiry, conservative
+layout dependencies and provider-validity checks remain separate approaches.
+
+## General event preparation and layout reuse, 2026-10-27
+
+The [event/layout report](performance-20261027-event-layout.md) records a
+conservative implementation of finding 1: immutable uniform-span line/path
+prototypes, static event state, context guards and filtered legacy evaluation
+for color, clip, blur, shadow, rotation and shear. Layout-changing operations,
+style resets and mixed runs retain the full path. All first-use work remains
+inside measured calls. Mixed-run preparation, metric-changing reuse and bounded
+ahead-of-activation work remain pending. No playback is run for this batch.
+
+
+## General spike-reduction paths, 2026-10-27
+
+The [spike-reduction follow-up](performance-20261027-spike-paths.md) covers
+bounded timed lookahead and larger active-event admissions (1/10), combined
+paint-machine ownership and unique grouping boundaries (2), verified ordering
+and expiry deadlines (3), exact packed single-color mask/blend fusion (4),
+one-probe owned interning (6), and weak clip-mask reuse (9). The report maps
+every original finding to completed and pending portions. A further contiguous
+band-storage prototype passed pixels but regressed paired composition timing
+and was rejected. Sparse inverse clipping, output validity, fractional-key
+canonicalization, broader layout dependencies and coordinated raster-byte
+policy remain separate work. This follow-up uses the console only.

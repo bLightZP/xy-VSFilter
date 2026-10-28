@@ -21,8 +21,12 @@
 
 #include "stdafx.h"
 #include <new>
+#include <cstdint>
+#include <cstddef>
 #include <math.h>
 #include <time.h>
+#include <locale.h>
+#include <float.h>
 #include <boost/make_shared.hpp>
 #include "RTS.h"
 #include "draw_item.h"
@@ -31,6 +35,8 @@
 #include "xy_overlay_paint_machine.h"
 #include "xy_clipper_paint_machine.h"
 #include "..\dsutil\DSUtil.h"
+#include "../dsutil/DSMPropertyBag.h"
+#include <stdexcept>
 
 #if ENABLE_XY_LOG_TEXT_PARSER
 #  define TRACE_PARSER(msg) XY_LOG_TRACE(msg)
@@ -158,11 +164,10 @@ CWord::CWord( const FwSTSStyle& style, const CStringW& str, int ktype, int kstar
     m_width = 0;
 }
 
-CWord::CWord( const CWord& src):m_str(src.m_str), m_nextOverlayKey(0), m_nextDrawKey(0)
+CWord::CWord( const CWord& src):m_str(src.m_str), m_style(src.m_style), m_nextOverlayKey(0), m_nextDrawKey(0)
 {
     m_fWhiteSpaceChar                            = src.m_fWhiteSpaceChar;
     m_fLineBreak                                 = src.m_fLineBreak;
-    m_style                                      = src.m_style;
     m_pOpaqueBox                                 = src.m_pOpaqueBox;//allow since it is shared_ptr
     m_ktype                                      = src.m_ktype;
     m_kstart                                     = src.m_kstart;
@@ -173,6 +178,18 @@ CWord::CWord( const CWord& src):m_str(src.m_str), m_nextOverlayKey(0), m_nextDra
     m_target_scale_x                             = src.m_target_scale_x;
     m_target_scale_y                             = src.m_target_scale_y;
     m_round_to_whole_pixel_after_scale_to_target = src.m_round_to_whole_pixel_after_scale_to_target;
+}
+
+size_t CWord::GetPreparedStorageBytes() const
+{
+    // Prototypes have empty paint-key caches and no opaque box. Charge full
+    // referenced strings/style and polygon storage even when another owner
+    // shares them; this is conservative admission, not a process-memory limit.
+    size_t bytes = sizeof(CPolygon) + sizeof(STSStyle) + 256
+        + (m_str.Get().GetAllocLength()+1)*sizeof(WCHAR)
+        + (m_style.get().fontName.GetAllocLength()+1)*sizeof(TCHAR);
+    const CPolygon* polygon = dynamic_cast<const CPolygon*>(this);
+    return bytes + (polygon ? polygon->GetPreparedPathBytes() : 0);
 }
 
 CWord::~CWord()
@@ -194,7 +211,7 @@ bool CWord::Append(const SharedPtrCWord& w)
     return(true);
 }
 
-void CWord::PaintFromOverlay(const CPointCoor2& p, const CPointCoor2& trans_org2, OverlayKey &subpixel_variance_key, SharedPtrOverlay& overlay)
+void CWord::PaintFromOverlay(const CPointCoor2& p, const CPointCoor2& trans_org2, const OverlayKey &subpixel_variance_key, SharedPtrOverlay& overlay)
 {
     if( SubpixelPositionControler::GetGlobalControler().UseBilinearShift() )
     {
@@ -746,6 +763,25 @@ CPolygon::CPolygon(CPolygon& src) : CWord(src)
     m_pathPointsOrg.Copy(src.m_pathPointsOrg);
 }
 
+bool CPolygon::FreezePreparedPath()
+{
+    if (m_cachedPath || !m_pathTypesOrg.GetCount()) return true;
+    SharedPtrPathData path = boost::make_shared<PathData>();
+    if (!CreatePath(path.get())) return false;
+    m_cachedPath = path;
+    m_pathTypesOrg.RemoveAll();
+    m_pathPointsOrg.RemoveAll();
+    return true;
+}
+
+size_t CPolygon::GetPreparedPathBytes() const
+{
+    return 128 + sizeof(PathData)
+        + m_pathTypesOrg.GetCount()*sizeof(BYTE)
+        + m_pathPointsOrg.GetCount()*sizeof(CPoint)
+        + (m_cachedPath ? m_cachedPath->mPathPoints*(sizeof(BYTE)+sizeof(POINT)) : 0);
+}
+
 CPolygon::~CPolygon()
 {
 }
@@ -804,20 +840,30 @@ bool CPolygon::ParseStr()
     }
     CPoint p;
     int j, lastsplinestart = -1, firstmoveto = -1, lastmoveto = -1;
-    CStringW str = m_str.Get();
-    str.Replace(L"m", L"*m");
-    str.Replace(L"n", L"*n");
-    str.Replace(L"l", L"*l");
-    str.Replace(L"b", L"*b");
-    str.Replace(L"s", L"*s");
-    str.Replace(L"p", L"*p");
-    str.Replace(L"c", L"*c");
-    int k = 0;
-    for(CStringW s = str.Tokenize(L"*", k); !s.IsEmpty(); s = str.Tokenize(L"*", k))
+    const auto isCommand=[](WCHAR c) {
+        switch(c) { case L'm': case L'n': case L'l': case L'b': case L's': case L'p': case L'c': return true; }
+        return false;
+    };
+    const WCHAR* source=m_str.Get().GetString();
+    WCHAR local[256];
+    std::vector<WCHAR> spill;
+    // Preserve the legacy separators, including literal '*', command letters
+    // inside malformed numbers, and the original case/TrimLeft behavior.
+    // wcstod still receives a terminated command span; conversion/rounding is
+    // unchanged. Most commands need no heap buffer and no CString substring.
+    while(*source)
     {
-        WCHAR c = s[0];
-        s.TrimLeft(L"mnlbspc ");
-        const WCHAR* cursor = s.GetString();
+        while(*source==L'*') ++source;
+        if(!*source) break;
+        const WCHAR* begin=source++;
+        while(*source && *source!=L'*' && !isCommand(*source)) ++source;
+        const WCHAR c=*begin;
+        while(begin<source && (isCommand(*begin) || *begin==L' ')) ++begin;
+        const size_t length=source-begin;
+        WCHAR* buffer=local;
+        if(length>=_countof(local)) { spill.resize(length+1); buffer=spill.data(); }
+        memcpy(buffer,begin,length*sizeof(WCHAR)); buffer[length]=0;
+        const WCHAR* cursor=buffer;
         switch(c)
         {
         case 'm':
@@ -1232,12 +1278,54 @@ void CLine::Compact()
     }
 }
 
+struct PreparedLineDraw
+{
+    SharedPtrCWord word;
+    FwSTSStyle style;
+    CPoint p, org, margin;
+    CRect clip;
+    int alpha, subpixel, width, ascent;
+    double targetX,targetY;
+    XyColorSpace colorSpace;
+    bool correction,tv;
+    CompositeDrawItem item;
+    boost::shared_ptr<DrawReuseLease> lease;
+    explicit PreparedLineDraw(const SharedPtrCWord& w) : word(w),style(w->m_style) {}
+};
+
 CRectCoor2 CLine::PaintAll( CompositeDrawItemList* output, const CRectCoor2& clipRect, 
     const CPointCoor2& margin,
-    const SharedPtrCClipperPaintMachine &clipper, CPoint p, const CPoint& org, const int time, const int alpha, POSITION outputPos )
+    const SharedPtrCClipperPaintMachine &clipper, CPoint p, const CPoint& org, const int time, const int alpha, POSITION outputPos, const boost::shared_ptr<DrawReuseBudget>& budget )
 {
     CRectCoor2 bbox(0, 0, 0, 0);
     if (!outputPos) outputPos = output->GetHeadPosition();
+    const bool eligible=budget && budget->limit && m_words.GetCount()==1
+        && !m_words[0]->m_fLineBreak && m_words[0]->m_ktype==0
+        && m_words[0]->m_kstart==0 && m_words[0]->m_kend==0;
+    XySubRenderFrameCreater* creator=XySubRenderFrameCreater::GetDefaultCreater();
+    XyColorSpace colorSpace; creator->GetColorSpace(&colorSpace);
+    const int subpixel=SubpixelPositionControler::GetGlobalControler().GetSubpixelLevel();
+    if (eligible && m_drawPlan && m_drawPlan->lease->budget==budget
+        && budget->bytes<=budget->limit)
+    {
+        const PreparedLineDraw& d=*m_drawPlan;
+        const CWord& w=*m_words[0];
+        if (d.word==m_words[0] && d.style==w.m_style && d.p==p && d.org==org
+            && d.margin==margin && d.clip==clipRect && d.alpha==alpha && d.subpixel==subpixel
+            && d.width==w.m_width && d.ascent==m_ascent-w.m_ascent
+            && d.targetX==w.m_target_scale_x && d.targetY==w.m_target_scale_y
+            && d.colorSpace==colorSpace && d.correction==creator->GetVsfilterCompactRgbCorrection()
+            && d.tv==creator->GetRgbOutputTvLevel())
+        {
+            CompositeDrawItem& item=output->GetNext(outputPos);
+            item.shadow=d.item.shadow; item.outline=d.item.outline; item.body=d.item.body;
+            item.PinOverlays();
+            ++budget->hits;
+            return CompositeDrawItem::GetDirtyRect(item);
+        }
+    }
+    m_drawPlan.reset();
+    if (eligible) ++budget->misses;
     for (size_t i = 0; i < m_words.GetCount(); ++i)
     {
         const SharedPtrCWord& w = m_words[i];
@@ -1269,7 +1357,7 @@ CRectCoor2 CLine::PaintAll( CompositeDrawItemList* output, const CRectCoor2& cli
         CWordPaintMachine::CreatePaintMachines(w, shadowPos, outlinePos, bodyPos, org_coor2,
             hasShadow  ? &shadow_pm  : NULL, 
             hasOutline ? &outline_pm : NULL, 
-            hasBody    ? &body_pm    : NULL);
+            hasBody    ? &body_pm    : NULL,budget);
 
         //shadow
         if(hasShadow)
@@ -1359,12 +1447,37 @@ CRectCoor2 CLine::PaintAll( CompositeDrawItemList* output, const CRectCoor2& cli
             outputItem.body = DrawItem::CreateDrawItem(body_pm, clipRect, clipper, bodyPos.x, bodyPos.y, sw, true, false);
         }
         bbox |= CompositeDrawItem::GetDirtyRect(outputItem);
+        if (budget) budget->drawAllocations+=!!outputItem.shadow+!!outputItem.outline+!!outputItem.body;
+        if (eligible && budget->bytes+DrawReuseLease::CHARGE<=budget->limit)
+        {
+            bool valid=true;
+            SharedPtrDrawItem layers[]={outputItem.shadow,outputItem.outline,outputItem.body};
+            for (unsigned j=0;j<3;++j) if (layers[j] && !layers[j]->SealBounds()) valid=false;
+            if (valid)
+            {
+                boost::shared_ptr<PreparedLineDraw> d=boost::make_shared<PreparedLineDraw>(w);
+                d->p=p; d->org=org; d->margin=margin; d->clip=clipRect; d->alpha=alpha;
+                d->subpixel=subpixel; d->width=w->m_width; d->ascent=m_ascent-w->m_ascent;
+                d->targetX=w->m_target_scale_x; d->targetY=w->m_target_scale_y;
+                d->colorSpace=colorSpace; d->correction=creator->GetVsfilterCompactRgbCorrection();
+                d->tv=creator->GetRgbOutputTvLevel();
+                d->item.shadow=outputItem.shadow; d->item.outline=outputItem.outline; d->item.body=outputItem.body;
+                outputItem.PinOverlays();
+                d->lease=boost::make_shared<DrawReuseLease>(budget);
+                for (unsigned j=0;j<3;++j) if (layers[j])
+                {
+                    layers[j]->retention=d->lease;
+                    layers[j]->overlay_paint_machine->EnableWeakRetention();
+                }
+                m_drawPlan=d;
+            }
+        }
         p.x += w->m_width;
     }
     return(bbox);
 }
 
-void CLine::AddWord2Tail( SharedPtrCWord words )
+void CLine::AddWord2Tail( const SharedPtrCWord& words )
 {
     m_words.AddTail(words);
 }
@@ -1404,6 +1517,7 @@ void CSubtitle::Empty()
     m_inlineLine.Empty();
     m_lines.Truncate(0);
     m_words.Truncate(0);
+    m_preparedContext.reset();
     for(int i = 0; i < EF_NUMBEROFEFFECTS; i++)
         if(m_effects[i] && m_effects[i] != &m_inlineEffect) delete m_effects[i];
     memset(m_effects, 0, sizeof(Effect*)*EF_NUMBEROFEFFECTS);
@@ -1440,7 +1554,7 @@ int CSubtitle::GetFullLineWidth(size_t pos)
     int width = 0;
     while(pos < m_words.GetCount())
     {
-        SharedPtrCWord w = m_words[pos++];
+        const SharedPtrCWord& w = m_words[pos++];
         if(w->m_fLineBreak) break;
         width += w->m_width;
     }
@@ -1458,7 +1572,7 @@ int CSubtitle::GetWrapWidth(size_t pos, int maxwidth)
             int width = 0, wordwidth = 0;
             while(pos < m_words.GetCount() && width < minwidth)
             {
-                SharedPtrCWord w = m_words[pos++];
+                const SharedPtrCWord& w = m_words[pos++];
                 wordwidth = w->m_width;
                 if(abs(width + wordwidth) < abs(maxwidth)) width += wordwidth;
             }
@@ -1489,7 +1603,7 @@ CLine* CSubtitle::GetNextLine(size_t& pos, int maxwidth)
     bool fEmptyLine = true;
     while(pos < m_words.GetCount())
     {
-        SharedPtrCWord w = m_words[pos++];
+        const SharedPtrCWord& w = m_words[pos++];
         if(ret->m_ascent < w->m_ascent) ret->m_ascent = w->m_ascent;
         if(ret->m_descent < w->m_descent) ret->m_descent = w->m_descent;
         if(ret->m_borderX < w->m_style.get().outlineWidthX) ret->m_borderX = (int)(w->m_style.get().outlineWidthX+0.5);
@@ -1508,7 +1622,7 @@ CLine* CSubtitle::GetNextLine(size_t& pos, int maxwidth)
         {
             if(m_words[pos2]->m_fWhiteSpaceChar != fWSC
                     || m_words[pos2]->m_fLineBreak) break;
-            SharedPtrCWord w2 = m_words[pos2++];
+            const SharedPtrCWord& w2 = m_words[pos2++];
             width += w2->m_width;
         }
         if((ret->m_width += width) <= maxwidth || ret->IsEmpty())
@@ -1569,7 +1683,29 @@ void CSubtitle::MakeLines(CSize size, CRect marginRect)
     m_topborder = m_bottomborder = 0;
     CLine* l = NULL;
     size_t pos = 0;
-    while(pos < m_words.GetCount())
+    if (m_lines.GetCount() == 0 && m_words.GetCount() == 1 &&
+        !m_words[0]->m_fWhiteSpaceChar && !m_words[0]->m_fLineBreak)
+    {
+        // The general algorithm always accepts the first non-whitespace word,
+        // even if it exceeds the wrap width. No merge or trimming is possible.
+        const SharedPtrCWord& word = m_words[0];
+        l = &m_inlineLine;
+        ASSERT(l->IsEmpty());
+        l->m_width = word->m_width;
+        l->m_ascent = max(0, word->m_ascent);
+        l->m_descent = max(0, word->m_descent);
+        l->m_borderX = l->m_borderY = 0;
+        if (l->m_borderX < word->m_style.get().outlineWidthX)
+            l->m_borderX = (int)(word->m_style.get().outlineWidthX+0.5);
+        if (l->m_borderY < word->m_style.get().outlineWidthY)
+            l->m_borderY = (int)(word->m_style.get().outlineWidthY+0.5);
+        l->AddWord2Tail(word);
+        m_lines.AddTail(l);
+        m_topborder = l->m_borderY;
+        spaceNeeded.cx = max(0, l->m_width+l->m_borderX);
+        spaceNeeded.cy = l->m_ascent+l->m_descent;
+    }
+    else while(pos < m_words.GetCount())
     {
         l = GetNextLine(pos, size.cx - marginRect.left - marginRect.right);
         if(!l) break;
@@ -1587,6 +1723,165 @@ void CSubtitle::MakeLines(CSize size, CRect marginRect)
                         : m_scrAlignment <= 6 ? (marginRect.top + (size.cy - marginRect.bottom) - spaceNeeded.cy + 1) / 2
                         : marginRect.top),
                  spaceNeeded);
+}
+
+SharedPreparedSubtitleLayout CSubtitle::PrepareLayout(size_t available, CSize size,
+    const CRect& margin, int polygon, int baseline) const
+{
+    if (!m_words.GetCount() || m_words.GetCount() > 128 || m_lines.GetCount() > 128)
+        return SharedPreparedSubtitleLayout();
+    const FwSTSStyle& style = m_words[0]->m_style;
+    if (style.get().fontName.GetLength() > 128) return SharedPreparedSubtitleLayout();
+    size_t charge = sizeof(PreparedSubtitleLayout) + 128;
+    std::map<CWord*, SharedPtrCWord> prototypes;
+    const auto account = [&](const SharedPtrCWord& word) {
+        if (word->m_style != style) return false;
+        if (prototypes.insert(std::make_pair(word.get(), SharedPtrCWord())).second)
+            charge += word->GetPreparedStorageBytes();
+        return charge <= min(available, size_t(512*1024));
+    };
+    for (size_t i=0; i<m_words.GetCount(); ++i)
+        if (!account(m_words[i])) return SharedPreparedSubtitleLayout();
+    for (size_t i=0; i<m_lines.GetCount(); ++i)
+        for (size_t j=0; j<m_lines[i]->m_words.GetCount(); ++j)
+        {
+            const SharedPtrCWord& word = m_lines[i]->m_words[j];
+            // Reserve the last-appearance word plus bounded paint keys/box,
+            // including referenced path bytes even if shared with a prototype.
+            charge += word->GetPreparedStorageBytes() + 4096 + sizeof(SharedPtrCWord);
+            if (!account(word)) return SharedPreparedSubtitleLayout();
+        }
+    boost::shared_ptr<PreparedSubtitleLayout> layout = boost::make_shared<PreparedSubtitleLayout>(style);
+    layout->style = style;
+    layout->size = size; layout->margin = margin; layout->rect = m_rect;
+    layout->alignment = m_scrAlignment; layout->wrap = m_wrapStyle;
+    layout->polygon = polygon; layout->baseline = baseline;
+    layout->ktype = m_words[0]->m_ktype; layout->kstart = m_words[0]->m_kstart; layout->kend = m_words[0]->m_kend;
+    layout->topBorder = m_topborder; layout->bottomBorder = m_bottomborder;
+    layout->scaleX = m_scalex; layout->scaleY = m_scaley;
+    layout->targetX = m_target_scale_x; layout->targetY = m_target_scale_y;
+    for (auto& item : prototypes)
+    {
+        item.second = item.first->Copy();
+        item.second->m_pOpaqueBox.reset();
+        CPolygon* drawing = dynamic_cast<CPolygon*>(item.second.get());
+        if (drawing && !drawing->FreezePreparedPath()) return SharedPreparedSubtitleLayout();
+    }
+    layout->rawWords.reserve(m_words.GetCount());
+    for (size_t i=0; i<m_words.GetCount(); ++i) layout->rawWords.push_back(prototypes[m_words[i].get()]);
+    layout->lines.resize(m_lines.GetCount());
+    charge += layout->rawWords.capacity()*sizeof(SharedPtrCWord)
+        + layout->lines.capacity()*sizeof(PreparedSubtitleLayout::Line);
+    for (size_t i=0; i<m_lines.GetCount(); ++i)
+    {
+        const CLine& line = *m_lines[i];
+        PreparedSubtitleLayout::Line& copy = layout->lines[i];
+        copy.width = line.m_width; copy.ascent = line.m_ascent; copy.descent = line.m_descent;
+        copy.borderX = line.m_borderX; copy.borderY = line.m_borderY;
+        copy.words.reserve(line.m_words.GetCount());
+        for (size_t j=0; j<line.m_words.GetCount(); ++j) copy.words.push_back(prototypes[line.m_words[j].get()]);
+        charge += copy.words.capacity()*sizeof(SharedPtrCWord) + 64;
+    }
+    if (charge > min(available, size_t(512*1024))) return SharedPreparedSubtitleLayout();
+    layout->bytes = charge;
+    return layout;
+}
+
+static void PrepareLayoutAppearance(const PreparedSubtitleLayout& layout, const FwSTSStyle& style)
+{
+    size_t wordCount = 0;
+    for (const auto& line : layout.lines) wordCount += line.words.size();
+    if (layout.renderedStyle != style || layout.renderedWords.GetCount() != wordCount)
+    {
+        CInlineList<SharedPtrCWord> replacement;
+        replacement.Reserve(wordCount);
+        for (const auto& line : layout.lines)
+            for (const auto& prototype : line.words)
+            {
+                SharedPtrCWord word = prototype->Copy();
+                word->m_style = style;
+                word->m_pOpaqueBox.reset();
+                replacement.AddTail(word);
+            }
+        layout.renderedWords.Swap(replacement);
+        layout.renderedStyle = style;
+    }
+}
+
+bool CSubtitle::ReuseLayout(const PreparedSubtitleLayout& layout, const FwSTSStyle& style,
+    CSize size, const CRect& margin, int polygon, int baseline, int ktype, int kstart, int kend)
+{
+    // Compare every layout dependency exactly. Color/alpha, blur, shadow,
+    // rotation and shear affect painting; fontsize, spacing, scale and outline
+    // still require layout. Never substitute epsilon comparisons here.
+    STSStyle geometry(style.get());
+    memcpy(geometry.colors, layout.style.get().colors, sizeof(geometry.colors));
+    memcpy(geometry.alpha, layout.style.get().alpha, sizeof(geometry.alpha));
+    geometry.fBlur = layout.style.get().fBlur; geometry.fGaussianBlur = layout.style.get().fGaussianBlur;
+    geometry.shadowDepthX = layout.style.get().shadowDepthX; geometry.shadowDepthY = layout.style.get().shadowDepthY;
+    geometry.fontAngleX = layout.style.get().fontAngleX; geometry.fontAngleY = layout.style.get().fontAngleY;
+    geometry.fontAngleZ = layout.style.get().fontAngleZ;
+    geometry.fontShiftX = layout.style.get().fontShiftX; geometry.fontShiftY = layout.style.get().fontShiftY;
+    if (geometry != layout.style.get() || size != layout.size || margin != layout.margin
+        || abs(m_scrAlignment) != layout.alignment || m_wrapStyle != layout.wrap
+        || polygon != layout.polygon || baseline != layout.baseline
+        || ktype != layout.ktype || kstart != layout.kstart || kend != layout.kend
+        || m_scalex != layout.scaleX || m_scaley != layout.scaleY
+        || m_target_scale_x != layout.targetX || m_target_scale_y != layout.targetY)
+        return false;
+    ASSERT(!m_lines.GetCount() && !m_words.GetCount());
+    // Raw words are immutable metric/source prototypes; only the final lines
+    // are rendered. Preserve the original raw count for reconstruction policy.
+    for (size_t i=0; i<layout.rawWords.size(); ++i) m_words.AddTail(layout.rawWords[i]);
+    PrepareLayoutAppearance(layout, style);
+    size_t renderedWord = 0;
+    for (size_t i=0; i<layout.lines.size(); ++i)
+    {
+        const PreparedSubtitleLayout::Line& source = layout.lines[i];
+        CLine* line = i ? DEBUG_NEW CLine() : &m_inlineLine;
+        m_lines.AddTail(line);
+        line->m_width = source.width; line->m_ascent = source.ascent; line->m_descent = source.descent;
+        line->m_borderX = source.borderX; line->m_borderY = source.borderY;
+        for (size_t j=0; j<source.words.size(); ++j)
+        {
+            line->AddWord2Tail(layout.renderedWords[renderedWord++]);
+        }
+    }
+    m_rect = layout.rect; m_topborder = layout.topBorder; m_bottomborder = layout.bottomBorder;
+    return true;
+}
+
+void CSubtitle::UpdateLayoutAppearance(const PreparedSubtitleLayout& layout, const FwSTSStyle& style)
+{
+    PrepareLayoutAppearance(layout, style);
+    ASSERT(m_lines.GetCount() == layout.lines.size());
+    size_t word = 0;
+    for (size_t i=0; i<m_lines.GetCount(); ++i)
+    {
+        CLine& line = *m_lines[i];
+        ASSERT(line.m_words.GetCount() == layout.lines[i].words.size());
+        for (size_t j=0; j<line.m_words.GetCount(); ++j)
+            line.m_words[j] = layout.renderedWords[word++];
+    }
+}
+
+size_t CSubtitle::PrepareStaticDrawing(size_t available, size_t sourceCharacters)
+{
+    if (m_words.GetCount()==0 || m_words.GetCount()>128 || m_lines.GetCount()>128 || m_pClipper
+        || m_effects[EF_BANNER] || m_effects[EF_SCROLL] || m_effects[EF_ORG]) return 0;
+    size_t charge=sizeof(CSubtitle)+sizeof(PreparedEventContext)+(sourceCharacters+1)*sizeof(WCHAR)+8192;
+    for(size_t i=0;i<m_words.GetCount();++i)
+    {
+        CPolygon* polygon=dynamic_cast<CPolygon*>(m_words[i].get());
+        if (!polygon || polygon->m_style.get().fontName.GetLength()>128) return 0;
+        // The immutable vertices remain in this guarded state, not a new
+        // unbounded global path owner. No painting occurs during preparation.
+        if (!polygon->FreezePreparedPath()) return 0;
+        charge+=polygon->GetPreparedStorageBytes()+polygon->GetPreparedPathBytes()+4096;
+    }
+    for(size_t i=0;i<m_lines.GetCount();++i)
+        charge+=sizeof(CLine)+m_lines[i]->GetWordCount()*(sizeof(SharedPtrCWord)+64)+128;
+    return charge<=min(available,size_t(512*1024)) ? charge : 0;
 }
 
 POSITION CSubtitle::GetHeadLinePosition()
@@ -1722,13 +2017,268 @@ std::size_t CRenderedTextSubtitle::SetMaxCacheSize( std::size_t max_cache_size )
 
 CAtlArray<AssCmdPosLevel> CRenderedTextSubtitle::m_cmd_pos_level;
 
+// Parameter storage keeps scalar tags small. Spill slots are constructed only
+// when used, and copy-on-write strings preserve source and cached-program owners.
+struct CRenderedTextSubtitle::AssTagParams::Spill
+{
+    size_t capacity;
+    CStringW* Values() { return reinterpret_cast<CStringW*>(this+1); }
+    const CStringW* Values() const { return reinterpret_cast<const CStringW*>(this+1); }
+};
+CRenderedTextSubtitle::AssTagParams::~AssTagParams()
+{
+    for(size_t i=1;i<m_count;++i) m_spill->Values()[i-1].~CStringW();
+    ::operator delete(m_spill);
+    // m_first releases its owner directly through its member destructor.
+}
+size_t CRenderedTextSubtitle::AssTagParams::GetCapacity() const
+{ return 1+(m_spill ? m_spill->capacity : 0); }
+size_t CRenderedTextSubtitle::AssTagParams::GetStorageBytes() const
+{ return m_spill ? sizeof(Spill)+m_spill->capacity*sizeof(CStringW)+64 : 0; }
+const CStringW& CRenderedTextSubtitle::AssTagParams::SpillAt(size_t index) const
+{ return m_spill->Values()[index]; }
+void CRenderedTextSubtitle::AssTagParams::Reserve(size_t count)
+{
+    if(count<=GetCapacity()) return;
+    const size_t capacity=count-1;
+    if(capacity>(SIZE_MAX-sizeof(Spill))/sizeof(CStringW)) throw std::bad_alloc();
+    static_assert(sizeof(Spill)%alignof(CStringW)==0,"Unaligned parameter spill");
+    Spill* fresh=::new (::operator new(sizeof(Spill)+capacity*sizeof(CStringW))) Spill();
+    fresh->capacity=capacity;
+    size_t copied=0;
+    try
+    {
+        for(size_t i=1;i<m_count;++i,++copied)
+            ::new (static_cast<void*>(fresh->Values()+copied)) CStringW(m_spill->Values()[i-1]);
+    }
+    catch(...)
+    {
+        while(copied) fresh->Values()[--copied].~CStringW();
+        ::operator delete(fresh);
+        throw;
+    }
+    for(size_t i=1;i<m_count;++i) m_spill->Values()[i-1].~CStringW();
+    ::operator delete(m_spill);
+    m_spill=fresh;
+}
+void CRenderedTextSubtitle::AssTagParams::Add(const CStringW& value)
+{
+    if(!m_count) { m_first=value; m_count=1; return; }
+    if(m_count==GetCapacity())
+    {
+        const size_t capacity=GetCapacity()-1;
+        if(capacity>(SIZE_MAX-1)/2) throw std::bad_alloc();
+        if(m_spill)
+        {
+            // Own aliased spill arguments before growth releases their slot.
+            CStringW owned(value);
+            Reserve(1+max(size_t(3),capacity*2));
+            ::new (static_cast<void*>(m_spill->Values()+m_count-1)) CStringW(owned);
+        }
+        else
+        {
+            // The inline first argument and all external values stay in place.
+            Reserve(4);
+            ::new (static_cast<void*>(m_spill->Values())) CStringW(value);
+        }
+    }
+    else ::new (static_cast<void*>(m_spill->Values()+m_count-1)) CStringW(value);
+    ++m_count;
+}
+void CRenderedTextSubtitle::AssTagParams::Truncate(size_t count)
+{
+    ASSERT(count<=m_count);
+    for(size_t i=m_count;i>max(count,size_t(1));--i) m_spill->Values()[i-2].~CStringW();
+    if(!count) m_first=CStringW();
+    m_count=count;
+}
+
+// The first allocation combines list bookkeeping and eight stable nodes.
+// Further blocks hold sixteen nodes, avoiding an allocation per tag and an
+// embedded ATL list header in every scalar tag. There is no global arena/pool.
+struct CRenderedTextSubtitle::AssTagList::Storage : Header
+{
+    typedef AssTag Node;
+    struct Block { Block* previous; Node* nodes; size_t used,capacity; };
+    Block first;
+    Block* tail;
+    Node* last;
+    size_t count,capacity,bytes,blocks;
+    static size_t Aligned(size_t size) { return (size+alignof(Node)-1)&~(alignof(Node)-1); }
+    static Storage* Create()
+    {
+        static_assert(alignof(Node)<=alignof(std::max_align_t),"Tag node needs aligned allocation");
+        const size_t header=Aligned(sizeof(Storage));
+        const size_t bytes=header+8*sizeof(Node);
+        Storage* storage=::new (::operator new(bytes)) Storage();
+        storage->first.nodes=reinterpret_cast<Node*>(reinterpret_cast<BYTE*>(storage)+header);
+        storage->first.capacity=8;
+        storage->tail=&storage->first;
+        storage->capacity=8;
+        storage->bytes=bytes+64;
+        storage->blocks=1;
+        return storage;
+    }
+    void Grow()
+    {
+        const size_t header=Aligned(sizeof(Block));
+        const size_t bytes=header+16*sizeof(Node);
+        Block* block=::new (::operator new(bytes)) Block();
+        block->previous=tail;
+        block->nodes=reinterpret_cast<Node*>(reinterpret_cast<BYTE*>(block)+header);
+        block->capacity=16;
+        tail=block;
+        capacity+=16;this->bytes+=bytes+64;++blocks;
+    }
+};
+CRenderedTextSubtitle::AssTagList::~AssTagList()
+{
+    Storage* storage=static_cast<Storage*>(m_storage);
+    if(!storage) return;
+    Storage::Block* block=storage->tail;
+    while(block)
+    {
+        Storage::Block* previous=block->previous;
+        for(size_t i=block->used;i;--i) block->nodes[i-1].~AssTag();
+        if(block!=&storage->first) { block->~Block(); ::operator delete(block); }
+        block=previous;
+    }
+    storage->~Storage();
+    ::operator delete(storage);
+}
+size_t CRenderedTextSubtitle::AssTagList::GetCount() const
+{ return m_storage ? static_cast<const Storage*>(m_storage)->count : 0; }
+size_t CRenderedTextSubtitle::AssTagList::GetCapacity() const
+{ return m_storage ? static_cast<const Storage*>(m_storage)->capacity : 0; }
+size_t CRenderedTextSubtitle::AssTagList::GetStorageBytes() const
+{ return m_storage ? static_cast<const Storage*>(m_storage)->bytes : 0; }
+size_t CRenderedTextSubtitle::AssTagList::GetBlockCount() const
+{ return m_storage ? static_cast<const Storage*>(m_storage)->blocks : 0; }
+POSITION CRenderedTextSubtitle::AssTagList::AddTail()
+{
+    if(!m_storage) m_storage=Storage::Create();
+    Storage* storage=static_cast<Storage*>(m_storage);
+    if(storage->tail->used==storage->tail->capacity) storage->Grow();
+    Storage::Block& block=*storage->tail;
+    Storage::Node* node=::new (static_cast<void*>(block.nodes+block.used)) Storage::Node();
+    if(storage->last) storage->last->next=node; else storage->head=node;
+    storage->last=node;
+    ++block.used;++storage->count;
+    return reinterpret_cast<POSITION>(node);
+}
+
+// Owned by one renderer and used under its existing serialization. The key is
+// the exact command and raw parameter span; collisions always compare text.
+class CRenderedTextSubtitle::ScalarParameterCache
+{
+public:
+    enum { SLOTS=512, MAX_CHARACTERS=128 };
+    struct Entry
+    {
+        AssCmdType type;
+        CStringW raw, parameter;
+        AssTag::Number number;
+        bool invariant;
+        Entry() : type(CMD_COUNT),invariant(false) { number.real=0; }
+    };
+    Entry slots[SLOTS];
+    unsigned __int64 hits,misses;
+    ScalarParameterCache() : hits(0),misses(0) {}
+    static bool InvariantNumber(AssCmdType type,const CStringW& text)
+    {
+        bool hex=false,real=false;
+        switch(type)
+        {
+        case CMD_c: case CMD_1c: case CMD_2c: case CMD_3c: case CMD_4c:
+        case CMD_1a: case CMD_2a: case CMD_3a: case CMD_4a: case CMD_alpha: hex=true; break;
+        case CMD_an: case CMD_a: case CMD_b: case CMD_fe: case CMD_i:
+        case CMD_pbo: case CMD_p: case CMD_q: case CMD_s: case CMD_u: break;
+        case CMD_blur: case CMD_bord: case CMD_be: case CMD_fax: case CMD_fay:
+        case CMD_frx: case CMD_fry: case CMD_frz: case CMD_fr: case CMD_fscx:
+        case CMD_fscy: case CMD_fsp: case CMD_fs: case CMD_kt: case CMD_kf:
+        case CMD_K: case CMD_ko: case CMD_k: case CMD_shad: case CMD_xbord:
+        case CMD_xshad: case CMD_ybord: case CMD_yshad: real=true; break;
+        default: return false;
+        }
+        if(text.IsEmpty()) return true;
+        const auto space=[](WCHAR c) { return c==L' ' || (c>=L'\t' && c<=L'\r'); };
+        const WCHAR* p=text.GetString();while(space(*p)) ++p;
+        if(*p==L'+' || *p==L'-') ++p;
+        if(hex && p[0]==L'0' && (p[1]==L'x' || p[1]==L'X')) p+=2;
+        const WCHAR* first=p;
+        unsigned magnitude=0;
+        while((*p>=L'0' && *p<=L'9') || (hex && ((*p>=L'a' && *p<=L'f') || (*p>=L'A' && *p<=L'F'))))
+        {
+            // Real commands accept only small integral tokens here: their exact
+            // value (including signed zero) is independent of CRT locale and
+            // FP rounding/precision. Fractions/exponents retain wcstod.
+            if(real && (magnitude>6553 || (magnitude==6553 && *p>L'5'))) return false;
+            if(real) magnitude=magnitude*10+unsigned(*p-L'0');
+            ++p;
+        }
+        if(p==first) return false;
+        while(space(*p)) ++p;
+        return !*p;
+    }
+    Entry* Lookup(AssCmdType type,const WCHAR* raw,int length,bool& hit)
+    {
+        unsigned hash=2166136261u^unsigned(type);
+        for(int i=0;i<length;++i) hash=(hash^unsigned(raw[i]))*16777619u;
+        Entry& entry=slots[hash&(SLOTS-1)];
+        hit=entry.type==type && entry.raw.GetLength()==length
+            && !wmemcmp(entry.raw.GetString(),raw,length);
+        if(hit) ++hits; else ++misses;
+        return &entry;
+    }
+    void Store(Entry& entry,AssCmdType type,const WCHAR* raw,int length,const AssTag& tag)
+    {
+        const CStringW& parameter=tag.strParams[0];
+        // Non-color parameters share the same owned CString allocation for key
+        // and value. Trimmed color keys keep their exact pre-trim input too.
+        entry.raw=parameter.GetLength()==length && !wmemcmp(parameter.GetString(),raw,length)
+            ? parameter : CStringW(raw,length);
+        entry.parameter=parameter; entry.number=tag.firstNumber; entry.invariant=InvariantNumber(type,parameter); entry.type=type;
+    }
+    ScalarParameterStats Stats() const
+    {
+        ScalarParameterStats value={hits,misses,0,sizeof(*this)+4096};
+        for(const auto& entry:slots) if(entry.type!=CMD_COUNT)
+        {
+            ++value.entries;
+            value.bytes+=(entry.raw.GetAllocLength()+entry.parameter.GetAllocLength()+2)*sizeof(WCHAR)+128;
+        }
+        return value;
+    }
+};
+
+CRenderedTextSubtitle::ScalarParameterStats CRenderedTextSubtitle::GetScalarParameterCacheStats() const
+{
+    if(m_scalarParameters) return m_scalarParameters->Stats();
+    ScalarParameterStats empty={}; return empty;
+}
+void CRenderedTextSubtitle::SetScalarParameterCacheEnabled(bool enabled)
+{
+    m_scalarParametersEnabled=enabled;
+    if(!enabled) m_scalarParameters.reset();
+}
+
 CRenderedTextSubtitle::CRenderedTextSubtitle(CCritSec* pLock)
     : CSubPicProviderImpl(pLock)
     , m_target_scale_x(1.0), m_target_scale_y(1.0)
-    , m_parsedTagBytes(0), m_parsedTagPeakBytes(0), m_parsedTagLimit(16 * 1024 * 1024)
+    , m_scalarParametersEnabled(true)
+    , m_parsedTagBytes(0), m_parsedTagPeakBytes(0), m_parsedTagLimit(64 * 1024 * 1024)
     , m_parsedTagHits(0), m_parsedTagMisses(0), m_parsedTagTime(_I64_MIN)
-    , m_reconstructionCount(0), m_reconstructionPeak(0), m_reconstructionLimit(8192), m_reconstructionHits(0)
+    , m_nextParsedExpiry(_I64_MAX), m_nextSubtitleExpiry(_I64_MIN), m_maintenanceCacheEnabled(true)
+    , m_orderBuilds(0), m_orderHits(0), m_parsedExpiryScans(0), m_subtitleExpiryScans(0)
+    , m_lookaheadBudget(4000), m_preparingAhead(false), m_lookaheadSegment(0), m_lookaheadOffset(0)
+    , m_lookaheadSourceSegments(0), m_lookaheadSourceEntries(0), m_lookaheadCursorValid(false)
+    , m_layoutBytes(0), m_layoutPeakBytes(0), m_layoutLimit(32*1024*1024)
+    , m_layoutHits(0), m_layoutBuilds(0), m_layoutFallbacks(0), m_layoutUpdates(0)
+    , m_reconstructionCount(0), m_reconstructionPeak(0), m_reconstructionLimit(16384), m_reconstructionHits(0)
     , m_reconstructionBytes(0), m_reconstructionPeakBytes(0)
+    , m_collectDiagnostics(false)
+    , m_time(0), m_delay(0)
+    , m_preferLibass(false), m_libassFontsLoaded(false)
 {
     if( m_cmdMap.IsEmpty() )
     {
@@ -1744,6 +2294,8 @@ CRenderedTextSubtitle::CRenderedTextSubtitle(CCritSec* pLock)
     }
     g_hDC_refcnt++;
     m_movable = true;
+    m_drawReuse=boost::make_shared<DrawReuseBudget>();
+    memset(&m_lookaheadStats,0,sizeof(m_lookaheadStats));
 }
 
 CRenderedTextSubtitle::~CRenderedTextSubtitle()
@@ -1890,8 +2442,75 @@ void CRenderedTextSubtitle::Copy(CSimpleTextSubtitle& sts)
     }
 }
 
+void CRenderedTextSubtitle::OnSourceLoaded(CTextFile* file, ULONGLONG start)
+{
+    if (m_simple || m_mode != TIME || (m_subtitleType != EXTSSA && m_subtitleType != EXTASS)) return;
+    CStringA source;
+    CStringW line;
+    const ULONGLONG position = file->GetPosition();
+    file->Seek(start, CFile::begin);
+    while (file->ReadString(line)) { source += UTF16To8(line); source += "\n"; }
+    file->Seek(position, CFile::begin);
+    m_libass.reset(new LibassRenderer());
+    m_libass->SetSource(source, false);
+    m_libassOriginalStyles.clear();
+    POSITION pos = m_styles.GetStartPosition();
+    while (pos) {
+        CString name; STSStyle* style;
+        m_styles.GetNextAssoc(pos,name,style);
+        m_libassOriginalStyles[name] = *style;
+    }
+}
+
+void CRenderedTextSubtitle::SetLibassEmbedded(bool embedded)
+{
+    // ASS2 carries VSFilter-specific extended fields; keep its native path.
+    if (!embedded) m_libass.reset();
+    else if (m_libass) m_libass->SetEmbedded(true);
+}
+
+void CRenderedTextSubtitle::AddLibassPacket(const BYTE* data, int length, REFERENCE_TIME start, REFERENCE_TIME stop)
+{
+    if (m_libass) m_libass->AddPacket(data, length, start, stop);
+}
+
+void CRenderedTextSubtitle::FlushLibass()
+{
+    if (m_libass) m_libass->Flush();
+}
+
+void CRenderedTextSubtitle::LoadLibassGraphFonts(IFilterGraph* graph)
+{
+    if (!graph || !m_libass || m_libassFontsLoaded) return;
+    CComPtr<IEnumFilters> filters;
+    if (FAILED(graph->EnumFilters(&filters))) return;
+    CComPtr<IBaseFilter> filter;
+    while (filters->Next(1, &filter, NULL) == S_OK) {
+        CComQIPtr<IDSMResourceBag> resources(filter);
+        if (resources) for (DWORD i = 0; i < resources->ResGetCount(); ++i) {
+            CComBSTR name, mime;
+            BYTE* bytes = NULL;
+            DWORD size = 0;
+            if (SUCCEEDED(resources->ResGet(i, &name, NULL, &mime, &bytes, &size, NULL))) {
+                CStringW filename(name), type(mime), ext = filename.Right(4);
+                if (size && size <= INT_MAX && (!ext.CompareNoCase(L".ttf") || !ext.CompareNoCase(L".otf") ||
+                    type.Find(L"font") >= 0)) {
+                    try { m_libass->AddFont(UTF16To8(filename), bytes, static_cast<int>(size)); }
+                    catch (...) { CoTaskMemFree(bytes); throw; }
+                }
+            }
+            CoTaskMemFree(bytes);
+        }
+        filter.Release();
+    }
+    m_libassFontsLoaded = true;
+}
+
 void CRenderedTextSubtitle::Empty()
 {
+    m_libass.reset();
+    m_libassOriginalStyles.clear();
+    m_libassFontsLoaded = false;
     Deinit();
     __super::Empty();
 }
@@ -1899,6 +2518,7 @@ void CRenderedTextSubtitle::Empty()
 void CRenderedTextSubtitle::OnChanged()
 {
     __super::OnChanged();
+    m_scalarParameters.reset();
     ClearParsedTags();
     m_subtitlePool.Clear();
     POSITION pos = m_subtitleCacheEntry.GetHeadPosition();
@@ -1939,6 +2559,7 @@ bool CRenderedTextSubtitle::Init( const CRectCoor2& video_rect, const CRectCoor2
 
 void CRenderedTextSubtitle::Deinit()
 {
+    if (m_libass) m_libass->Invalidate();
     ClearParsedTags();
     m_subtitlePool.Clear();
     POSITION pos = m_subtitleCacheEntry.GetHeadPosition();
@@ -2061,6 +2682,76 @@ void CRenderedTextSubtitle::ParsePolygon(CSubtitle* sub, const CStringW& str, co
     m_kstart = m_kend;
 }
 
+CRenderedTextSubtitle::AssCmdType CRenderedTextSubtitle::LookupAssCommand(
+    const WCHAR* text, int length, int& commandLength)
+{
+    // Build once from the existing command vocabulary. Reads allocate no strings
+    // and retain the longest case-sensitive prefix, including legacy short tags.
+    struct CommandTrie
+    {
+        struct Node
+        {
+            WCHAR character;
+            unsigned child, sibling;
+            AssCmdType type;
+            Node(WCHAR c, unsigned next) : character(c), child(0), sibling(next), type(CMD_COUNT) {}
+        };
+        unsigned roots[128];
+        std::vector<Node> nodes;
+        CommandTrie(const CAtlMap<CStringW, AssCmdType, CStringElementTraits<CStringW>>& commands)
+        {
+            memset(roots, 0, sizeof(roots));
+            nodes.reserve(1 + commands.GetCount()*MAX_CMD_LENGTH);
+            nodes.push_back(Node(0, 0));
+            POSITION position = commands.GetStartPosition();
+            while (position)
+            {
+                const auto* command = commands.GetNext(position);
+                unsigned parent = 0;
+                for (int i=0; i<command->m_key.GetLength(); ++i)
+                {
+                    const WCHAR c = command->m_key[i];
+                    unsigned child = nodes[parent].child;
+                    while (child && nodes[child].character != c) child = nodes[child].sibling;
+                    if (!child)
+                    {
+                        child = static_cast<unsigned>(nodes.size());
+                        nodes.push_back(Node(c, nodes[parent].child));
+                        nodes[parent].child = child;
+                        if (!parent && c < _countof(roots)) roots[c] = child;
+                    }
+                    parent = child;
+                }
+                nodes[parent].type = command->m_value;
+            }
+        }
+        AssCmdType Find(const WCHAR* text, int length, int& matchedLength) const
+        {
+            matchedLength = 0;
+            if (length <= 0) return CMD_COUNT;
+            unsigned node = text[0] < _countof(roots) ? roots[text[0]] : nodes[0].child;
+            if (text[0] >= _countof(roots))
+                while (node && nodes[node].character != text[0]) node = nodes[node].sibling;
+            AssCmdType result = CMD_COUNT;
+            for (int i=0; node && i<min(length, MAX_CMD_LENGTH); ++i)
+            {
+                if (nodes[node].type != CMD_COUNT)
+                {
+                    result = nodes[node].type;
+                    matchedLength = i+1;
+                }
+                if (i+1 >= min(length, MAX_CMD_LENGTH)) break;
+                node = nodes[node].child;
+                while (node && nodes[node].character != text[i+1]) node = nodes[node].sibling;
+            }
+            return result;
+        }
+    };
+    if (m_cmdMap.IsEmpty()) InitCmdMap();
+    static const CommandTrie commands(m_cmdMap);
+    return commands.Find(text, length, commandLength);
+}
+
 bool CRenderedTextSubtitle::ParseSSATag( AssTagList *assTags, const CStringW& str )
 {
     if (!assTags) return(false);
@@ -2091,11 +2782,12 @@ bool CRenderedTextSubtitle::ParseSSATag( AssTagList *assTags, const CStringW& st
             pc++;
         }
 
-        const CStringW cmd(str_start, pc-str_start);
-        if(cmd.IsEmpty()) continue;
+        const int commandSize = static_cast<int>(pc-str_start);
+        if (!commandSize) continue;
 
-        CAtlArray<CStringW>& params = assTag.strParams;
-        if(str[j] == L'(')
+        AssTagParams& params = assTag.strParams;
+        const bool parenthesized=str[j] == L'(';
+        if(parenthesized)
         {
             j++;
             CStringW::PCXSTR str_start = str.GetString() + j;
@@ -2145,15 +2837,20 @@ bool CRenderedTextSubtitle::ParseSSATag( AssTagList *assTags, const CStringW& st
             }
         }
 
-        AssCmdType cmd_type = CMD_COUNT;
-        int cmd_length = min(MAX_CMD_LENGTH, cmd.GetLength());
-        for( ;cmd_length>=MIN_CMD_LENGTH;cmd_length-- )
-        {
-            if( m_cmdMap.Lookup(cmd.Left(cmd_length), cmd_type) )
-                break;
-        }
-        if(cmd_length<MIN_CMD_LENGTH)
-            cmd_type = CMD_COUNT;
+        int cmd_length;
+        const AssCmdType cmd_type = LookupAssCommand(str_start, commandSize, cmd_length);
+        ScalarParameterCache::Entry* scalarSlot=NULL;
+        bool scalarHit=false;
+        const WCHAR* scalarText=str_start+cmd_length;
+        const int scalarLength=commandSize-cmd_length;
+        const auto copyScalar=[&]() {
+            if(!m_scalarParametersEnabled || parenthesized || scalarLength<0
+                || scalarLength>ScalarParameterCache::MAX_CHARACTERS) return false;
+            if(!m_scalarParameters) m_scalarParameters.reset(new ScalarParameterCache());
+            scalarSlot=m_scalarParameters->Lookup(cmd_type,scalarText,scalarLength,scalarHit);
+            if(scalarHit) { params.Add(scalarSlot->parameter); if(scalarSlot->invariant) assTag.firstNumber=scalarSlot->number; }
+            return scalarHit;
+        };
         switch( cmd_type )
         {
         case CMD_fax  :
@@ -2193,7 +2890,7 @@ bool CRenderedTextSubtitle::ParseSSATag( AssTagList *assTags, const CStringW& st
         case CMD_ybord:
         case CMD_yshad:
             //        default:
-            params.Add(cmd.Mid(cmd_length));
+            if(!copyScalar()) params.Add(CStringW(str_start+cmd_length, commandSize-cmd_length));
             break;
         case CMD_c    :
         case CMD_1c   :
@@ -2205,7 +2902,7 @@ bool CRenderedTextSubtitle::ParseSSATag( AssTagList *assTags, const CStringW& st
         case CMD_3a   :
         case CMD_4a   :
         case CMD_alpha:
-            params.Add(cmd.Mid(cmd_length).Trim(L"&H"));
+            if(!copyScalar()) params.Add(CStringW(str_start+cmd_length, commandSize-cmd_length).Trim(L"&H"));
             break;
         case CMD_clip :
         case CMD_iclip:
@@ -2225,8 +2922,10 @@ bool CRenderedTextSubtitle::ParseSSATag( AssTagList *assTags, const CStringW& st
         }
 
         assTag.cmdType = cmd_type;
-        CacheTagNumbers(assTag);
-        
+        // Fractional, large real and noncanonical forms keep the CRT call in
+        // the current locale/FP environment, even when their owned text is shared.
+        if(!scalarHit || !scalarSlot->invariant) CacheTagNumbers(assTag);
+        if(scalarSlot && !scalarHit) m_scalarParameters->Store(*scalarSlot,cmd_type,scalarText,scalarLength,assTag);
         nTags++;
     }
     return(true);
@@ -2236,7 +2935,7 @@ void CRenderedTextSubtitle::CacheTagNumbers(AssTag& tag)
 {
     // Omitted arguments used to pass an empty string to the CRT and yield zero.
     tag.firstNumber.real = 0;
-    const CAtlArray<CStringW>& p = tag.strParams;
+    const AssTagParams& p = tag.strParams;
     if (p.IsEmpty()) return;
     // Use the same CRT conversions, bases, and argument-count guards as the
     // evaluator. In particular, three-argument \t truncates doubles, whereas
@@ -2309,7 +3008,7 @@ void CRenderedTextSubtitle::CacheTagNumbers(AssTag& tag)
     }
 }
 
-bool CRenderedTextSubtitle::ParseSSATag( CSubtitle* sub, const AssTagList& assTags, STSStyle& style, const STSStyle& org, bool fAnimate /*= false*/ )
+bool CRenderedTextSubtitle::ParseSSATag( CSubtitle* sub, const AssTagList& assTags, STSStyle& style, const STSStyle& org, bool fAnimate /*= false*/, bool paintOnly /*= false*/ )
 {
     if(!sub) return(false);
     
@@ -2319,7 +3018,22 @@ bool CRenderedTextSubtitle::ParseSSATag( CSubtitle* sub, const AssTagList& assTa
     {
         const AssTag& assTag = assTags.GetNext(pos);
         AssCmdType cmd_type = assTag.cmdType;
-        const CAtlArray<CStringW>& params = assTag.strParams;
+        if (paintOnly)
+        {
+            switch (cmd_type)
+            {
+            case CMD_c: case CMD_1c: case CMD_2c: case CMD_3c: case CMD_4c:
+            case CMD_alpha: case CMD_1a: case CMD_2a: case CMD_3a: case CMD_4a:
+            case CMD_clip: case CMD_iclip: case CMD_t:
+            case CMD_blur: case CMD_be: case CMD_shad: case CMD_xshad: case CMD_yshad:
+            case CMD_fr: case CMD_frx: case CMD_fry: case CMD_frz: case CMD_fax: case CMD_fay:
+            case CMD_p: case CMD_pbo:
+                break;
+            default:
+                continue;
+            }
+        }
+        const AssTagParams& params = assTag.strParams;
 
         sub->m_hard_position_level = sub->m_hard_position_level > m_cmd_pos_level[cmd_type] ?
                                      sub->m_hard_position_level : m_cmd_pos_level[cmd_type];
@@ -2759,7 +3473,7 @@ bool CRenderedTextSubtitle::ParseSSATag( CSubtitle* sub, const AssTagList& assTa
                     m_animEnd = assTag.GetNumber(1).integer;
                     m_animAccel = assTag.GetNumber(2).real;
                 }
-                ParseSSATag(sub, assTag.embeded, style, org, true);
+                ParseSSATag(sub, assTag.embeded, style, org, true, paintOnly);
                 sub->m_fAnimated = true;
                 sub->m_fAnimated2 = true;
                 break;
@@ -2822,9 +3536,9 @@ CRenderedTextSubtitle::SharedPtrConstAssTagList CRenderedTextSubtitle::GetParsed
     POSITION pos = ass_tag_cache->Lookup(str);
     if (pos==NULL)
     {
-        AssTagList *tmp = DEBUG_NEW AssTagList();
-        ParseSSATag(tmp, str);
-        assTags.reset(tmp);
+        boost::shared_ptr<AssTagList> tmp=boost::make_shared<AssTagList>();
+        ParseSSATag(tmp.get(), str);
+        assTags=tmp;
         ass_tag_cache->UpdateCache(str, assTags);
     }
     else
@@ -2843,7 +3557,7 @@ void CRenderedTextSubtitle::ClearReconstructedSubtitles()
         const POSITION previous = pos;
         const int entry = m_subtitleCacheEntry.GetNext(pos);
         CSubtitle* subtitle = m_subtitleCache.GetAt(entry);
-        if (subtitle->m_fAnimated)
+        if (subtitle->m_fAnimated || subtitle->m_preparedContext)
         {
             delete subtitle;
             m_subtitleCache.SetAt(entry, NULL);
@@ -2852,12 +3566,69 @@ void CRenderedTextSubtitle::ClearReconstructedSubtitles()
     }
     m_reconstructionCount = 0;
     m_reconstructionBytes = 0;
+    m_nextSubtitleExpiry = _I64_MIN;
 }
 
 void CRenderedTextSubtitle::SetReconstructionCacheLimit(size_t entries)
 {
     ClearReconstructedSubtitles();
-    m_reconstructionLimit = min(entries, size_t(8192));
+    m_reconstructionLimit = min(entries, size_t(16384));
+}
+
+bool CRenderedTextSubtitle::HasLayoutAnimation(const AssTagList& tags, bool inTransform, unsigned depth)
+{
+    if (depth > 32) return true;
+    POSITION position = tags.GetHeadPosition();
+    while (position)
+    {
+        const AssTag& tag = tags.GetNext(position);
+        if (tag.cmdType == CMD_r) return true;
+        if (tag.cmdType == CMD_t)
+        {
+            if (HasLayoutAnimation(tag.embeded, true, depth+1)) return true;
+        }
+        else if (inTransform)
+        {
+            switch (tag.cmdType)
+            {
+            case CMD_c: case CMD_1c: case CMD_2c: case CMD_3c: case CMD_4c:
+            case CMD_alpha: case CMD_1a: case CMD_2a: case CMD_3a: case CMD_4a:
+            case CMD_clip: case CMD_iclip:
+            case CMD_blur: case CMD_be: case CMD_shad: case CMD_xshad: case CMD_yshad:
+            case CMD_fr: case CMD_frx: case CMD_fry: case CMD_frz: case CMD_fax: case CMD_fay:
+            case CMD_p: case CMD_pbo:
+                break;
+            default:
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void CRenderedTextSubtitle::DropPreparedLayout(ParsedEventTags& event)
+{
+    if (event.layout)
+    {
+        ASSERT(m_layoutBytes >= event.layout->bytes);
+        m_layoutBytes -= event.layout->bytes;
+        event.layout.reset();
+    }
+}
+
+void CRenderedTextSubtitle::SetPreparedLayoutCacheLimit(size_t bytes)
+{
+    ClearParsedTags();
+    m_layoutLimit = min(bytes, size_t(32*1024*1024));
+}
+
+CRenderedTextSubtitle::PreparedLayoutStats CRenderedTextSubtitle::GetPreparedLayoutStats() const
+{
+    size_t count = 0;
+    for (const auto& event : m_parsedEventTags) if (event.second->layout) ++count;
+    PreparedLayoutStats result = {m_layoutHits, m_layoutBuilds, m_layoutFallbacks, m_layoutUpdates,
+        m_layoutBytes, m_layoutPeakBytes, count};
+    return result;
 }
 
 void CRenderedTextSubtitle::ClearParsedTags()
@@ -2865,7 +3636,14 @@ void CRenderedTextSubtitle::ClearParsedTags()
     ClearReconstructedSubtitles();
     m_parsedEventTags.clear();
     m_parsedTagBytes = 0;
+    m_layoutBytes = 0;
     m_parsedTagTime = _I64_MIN;
+    m_nextParsedExpiry = _I64_MAX;
+    m_nextSubtitleExpiry = _I64_MIN;
+    m_orderSource.RemoveAll();
+    m_orderSorted.RemoveAll();
+    std::vector<BYTE>().swap(m_lookaheadAttempted);
+    m_lookaheadCursorValid = false;
 }
 
 void CRenderedTextSubtitle::SetParsedTagCacheLimit(size_t bytes)
@@ -2885,33 +3663,50 @@ void CRenderedTextSubtitle::ExpireParsedTags(REFERENCE_TIME rt, double fps)
 {
     if (rt < m_parsedTagTime) ClearParsedTags();
     m_parsedTagTime = rt;
+    // TIME end points are stable until OnChanged. Embedded appends do not alter
+    // old entries; newly admitted entries lower the deadline below. FRAME mode
+    // keeps the original scan so changing FPS is observed immediately.
+    if (m_maintenanceCacheEnabled && m_mode == TIME && rt < m_nextParsedExpiry) return;
+    ++m_parsedExpiryScans;
+    m_nextParsedExpiry = _I64_MAX;
     for (ParsedEventTagMap::iterator it = m_parsedEventTags.begin(); it != m_parsedEventTags.end(); )
     {
         if (static_cast<size_t>(it->first) >= m_entries.GetCount() || TranslateEnd(it->first, fps) <= rt)
         {
             m_parsedTagBytes -= it->second->bytes;
+            DropPreparedLayout(*it->second);
             m_parsedEventTags.erase(it++);
         }
-        else ++it;
+        else
+        {
+            m_nextParsedExpiry = min(m_nextParsedExpiry, m_entries.GetAt(it->first).end);
+            ++it;
+        }
     }
 }
 
-size_t CRenderedTextSubtitle::EstimateTagMemory(const AssTagList& tags)
+void CRenderedTextSubtitle::SetMaintenanceCacheEnabled(bool enabled)
 {
-    // Account conservatively for ATL's ten-node list blocks, parameter-array
-    // growth, string buffers, and allocator bookkeeping. Shared tags are charged
-    // to every retained event, so sharing cannot increase the admission budget.
-    size_t bytes = ((tags.GetCount() + 9) / 10) * 10 * (sizeof(AssTag) + 2 * sizeof(void*) + 32);
+    m_maintenanceCacheEnabled = enabled;
+    m_orderSource.RemoveAll(); m_orderSorted.RemoveAll();
+    m_nextParsedExpiry = m_nextSubtitleExpiry = _I64_MIN;
+}
+
+size_t CRenderedTextSubtitle::EstimateTagMemory(const AssTagList& tags, bool root)
+{
+    // Charge packed capacity, spill headers, string buffers and conservative
+    // allocator overhead. Shared programs remain charged to every event.
+    size_t bytes=tags.GetStorageBytes()+(root ? sizeof(AssTagList)+128 : 0);
     POSITION pos = tags.GetHeadPosition();
     while (pos)
     {
         const AssTag& tag = tags.GetNext(pos);
         if (tag.extraNumbers.get())
             bytes += (min(static_cast<size_t>(7), tag.strParams.GetCount()) - 1) * sizeof(AssTag::Number) + 64;
-        bytes += (tag.strParams.GetCount() + 16) * sizeof(CStringW) + 32;
+        bytes+=tag.strParams.GetStorageBytes();
         for (size_t i = 0; i < tag.strParams.GetCount(); ++i)
-            bytes += (tag.strParams[i].GetLength() + 1) * sizeof(WCHAR) + 64;
-        bytes += EstimateTagMemory(tag.embeded);
+            bytes += (tag.strParams[i].GetAllocLength() + 1) * sizeof(WCHAR) + 64;
+        bytes += EstimateTagMemory(tag.embeded, false);
     }
     return bytes;
 }
@@ -3042,20 +3837,136 @@ double CRenderedTextSubtitle::CalcAnimation(double dst, double src, bool fAnimat
     return(dst);
 }
 
+bool CRenderedTextSubtitle::MatchesPreparedContext(int entry, CSubtitle* sub, const CStringW& sourceText)
+{
+    const PreparedEventContext& context = *sub->m_preparedContext;
+    const STSEntry& data = m_entries.GetAt(entry);
+    if (m_delay != sub->m_reuseDelay || context.sourceStyle != *GetStyle(entry)
+        || context.effect != data.effect || context.margins != data.marginRect
+        || context.screen != m_dstScreenSize || context.par != m_dPARCompensation
+        || context.parType != m_ePARCompensationType || context.wrap != m_defaultWrapStyle
+        || context.scaledBorder != m_fScaledBAS
+        || (sub->m_sourceText.GetString() != sourceText.GetString() && sub->m_sourceText != sourceText))
+        return false;
+    return true;
+}
+
+bool CRenderedTextSubtitle::UpdatePreparedSubtitle(int entry, CSubtitle* sub, const CStringW& sourceText)
+{
+    if (!MatchesPreparedContext(entry,sub,sourceText)) return false;
+    const PreparedEventContext& context = *sub->m_preparedContext;
+    if (m_time >= sub->m_reuseFrom && m_time < sub->m_reuseUntil)
+    {
+        ++m_reconstructionHits;
+        return true;
+    }
+    auto prepared = m_parsedEventTags.find(entry);
+    if (prepared == m_parsedEventTags.end() || !prepared->second->layout) return false;
+    const PreparedSubtitleLayout& layout = *prepared->second->layout;
+    STSStyle appearance(context.sourceStyle);
+    sub->m_clip.SetRect(0,0,m_size.cx>>3,m_size.cy>>3);
+    sub->m_clipInverse = false;
+    sub->m_pClipper.reset();
+    m_animStart = m_animEnd = 0; m_animAccel = 1;
+    m_nPolygon = m_polygonBaselineOffset = 0;
+    m_reconstructionFrom = INT_MIN; m_reconstructionUntil = INT_MAX; m_reconstructionStable = true;
+    for (const auto& block : prepared->second->blocks)
+    {
+        ParseSSATag(sub, *block.tags, appearance, context.sourceStyle, false, true);
+        ++m_parsedTagHits;
+    }
+    if (m_nPolygon != layout.polygon || m_polygonBaselineOffset != layout.baseline) return false;
+    STSStyle current(layout.style.get());
+    memcpy(current.colors, appearance.colors, sizeof(current.colors));
+    memcpy(current.alpha, appearance.alpha, sizeof(current.alpha));
+    current.fBlur = appearance.fBlur; current.fGaussianBlur = appearance.fGaussianBlur;
+    current.shadowDepthX = appearance.shadowDepthX;
+    current.shadowDepthY = appearance.shadowDepthY;
+    current.shadowDepthX *= (m_fScaledBAS ? sub->m_scalex : 1) * MAX_SUB_PIXEL;
+    current.shadowDepthY *= (m_fScaledBAS ? sub->m_scaley : 1) * MAX_SUB_PIXEL;
+    current.fontAngleX = appearance.fontAngleX; current.fontAngleY = appearance.fontAngleY;
+    current.fontAngleZ = appearance.fontAngleZ;
+    current.fontShiftX = appearance.fontShiftX; current.fontShiftY = appearance.fontShiftY;
+    sub->UpdateLayoutAppearance(layout, FwSTSStyle(current));
+    sub->CreateClippers(m_size, m_video_rect.Size());
+    // Hand small constant states back to the existing interval cache instead
+    // of replaying their program after an animation has stopped changing.
+    const CWord* word = sub->m_words.GetCount() == 1 ? sub->m_words[0].get() : NULL;
+    const CPolygon* polygon = dynamic_cast<const CPolygon*>(word);
+    const CText* text = dynamic_cast<const CText*>(word);
+    if (m_reconstructionStable && ((polygon && polygon->HasSmallRetainedPath() && sourceText.GetLength() <= 512)
+        || (text && text->HasSmallRetainedText() && sourceText.GetLength() <= 2048))
+        && !sub->m_pClipper && !sub->m_effects[EF_ORG] && !sub->m_effects[EF_BANNER] && !sub->m_effects[EF_SCROLL])
+    {
+        sub->m_reuseFrom = m_reconstructionFrom; sub->m_reuseUntil = m_reconstructionUntil;
+        // Retain the exact context guard even while reusing a constant interval.
+    }
+    ++m_layoutHits; ++m_layoutUpdates;
+    return true;
+}
+
 CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
 {
-    const STSEntry& entryData = m_entries.GetAt(entry);
-    const CStringW sourceText = entryData.fUnicode ? entryData.str : GetStrW(entry, true);
     CSubtitle* sub = m_subtitleCache.GetAt(entry);
+    if (sub && !sub->m_fAnimated && !sub->m_preparedContext) return sub;
+    const STSEntry& entryData = m_entries.GetAt(entry);
+    // Each branch calls separately: a CString-valued conditional expression
+    // would copy the Unicode string even when bound to a const reference.
+    if (entryData.fUnicode) return GetSubtitle(entry, sub, entryData.str);
+    return GetSubtitle(entry, sub, GetStrW(entry, true));
+}
+
+CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry, CSubtitle* sub, const CStringW& sourceText)
+{
+    // Keep cache hits out of the large construction frame. The source is either
+    // an entry-owned Unicode string or an ANSI conversion alive for this call.
     if (sub)
     {
-        if (!sub->m_fAnimated) return sub;
+        if (sub->m_preparedContext)
+        {
+            if (!sub->m_fAnimated)
+            {
+                if (MatchesPreparedContext(entry,sub,sourceText))
+                {
+                    // Activation returns this to the ordinary static cache.
+                    // Collision placement still happens below in ParseScript.
+                    --m_reconstructionCount; m_reconstructionBytes-=sub->m_reuseCharge;
+                    sub->m_reuseCharge=0; sub->m_preparedContext.reset();
+                    sub->m_sourceText.Empty();
+                    return sub;
+                }
+            }
+            else if (UpdatePreparedSubtitle(entry, sub, sourceText)) return sub;
+            return CreateSubtitle(entry, sub, sourceText);
+        }
         if (m_time >= sub->m_reuseFrom && m_time < sub->m_reuseUntil && m_delay == sub->m_reuseDelay
                 && (sub->m_sourceText.GetString() == sourceText.GetString() || sub->m_sourceText == sourceText))
         {
             ++m_reconstructionHits;
             return sub;
         }
+    }
+    return CreateSubtitle(entry, sub, sourceText);
+}
+
+static CRect ResolveSubtitleMargins(const STSEntry& entry, const STSStyle& style, double sx, double sy)
+{
+    CRect margin = entry.marginRect;
+    if (!margin.left) margin.left = style.marginRect.get().left;
+    if (!margin.top) margin.top = style.marginRect.get().top;
+    if (!margin.right) margin.right = style.marginRect.get().right;
+    if (!margin.bottom) margin.bottom = style.marginRect.get().bottom;
+    margin.left = (int)(sx*margin.left*MAX_SUB_PIXEL);
+    margin.top = (int)(sy*margin.top*MAX_SUB_PIXEL);
+    margin.right = (int)(sx*margin.right*MAX_SUB_PIXEL);
+    margin.bottom = (int)(sy*margin.bottom*MAX_SUB_PIXEL);
+    return margin;
+}
+
+CSubtitle* CRenderedTextSubtitle::CreateSubtitle(int entry, CSubtitle* sub, const CStringW& sourceText)
+{
+    if (sub)
+    {
         m_subtitleCacheEntry.RemoveAt(sub->m_cachePosition);
         m_subtitleCache.SetAt(entry, NULL);
         --m_reconstructionCount;
@@ -3072,6 +3983,7 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
         cached->second->text.GetString() != sourceText.GetString() && cached->second->text != sourceText)
     {
         m_parsedTagBytes -= cached->second->bytes;
+        DropPreparedLayout(*cached->second);
         m_parsedEventTags.erase(cached);
         cached = m_parsedEventTags.end();
     }
@@ -3079,8 +3991,7 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
     const bool cacheHit = !!parsed;
     bool retain = !cacheHit && m_parsedTagBytes < m_parsedTagLimit;
     size_t blockIndex = 0;
-    STSStyle stss, orgstss;
-    GetStyle(entry, &stss);
+    STSStyle stss(*GetStyle(entry));
     if (stss.fontScaleX == stss.fontScaleY && m_dPARCompensation != 1.0)
     {
         switch(m_ePARCompensationType)
@@ -3102,7 +4013,7 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
             break;
         }
     }
-    orgstss = stss;
+    STSStyle orgstss(stss);
     sub->m_clip.SetRect(0, 0, m_size.cx>>3, m_size.cy>>3);
     sub->m_scrAlignment = -stss.scrAlignment;
     sub->m_wrapStyle    = m_defaultWrapStyle;
@@ -3124,7 +4035,9 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
     m_polygonBaselineOffset = 0;
     ParseEffect(sub, m_entries.GetAt(entry).effect);
     const int textLength = sourceText.GetLength();
-    int offset = 0;
+    int offset = 0, textSpans = 0;
+    bool hadHtml = false, layoutCandidate = false, layoutReused = false, marginsResolved = false;
+    CRect marginRect;
     while(offset < textLength)
     {
         bool fParsed = false;
@@ -3171,6 +4084,7 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
         }
         else if(sourceText[offset] == L'<' && (i = sourceText.Find(L'>', offset)) > offset)
         {
+            hadHtml = true;
             fParsed = ParseHtmlTag(sub, sourceText.Mid(offset+1, i-offset-1), stss, orgstss);
             if(fParsed)
                 offset = i+1;
@@ -3210,13 +4124,32 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
         tmp.shadowDepthX  *= (m_fScaledBAS ? sub->m_scalex : 1) * MAX_SUB_PIXEL;
         tmp.shadowDepthY  *= (m_fScaledBAS ? sub->m_scaley : 1) * MAX_SUB_PIXEL;
         FwSTSStyle fw_tmp(tmp);
-        if(m_nPolygon)
+        ++textSpans;
+        // Uniform text/drawing spans preserve compaction boundaries under
+        // color/alpha changes. Mixed override/HTML runs use the legacy path.
+        layoutCandidate = textSpans == 1 && end == textLength && !hadHtml;
+        if (layoutCandidate && parsed && parsed->layout && m_layoutLimit)
         {
-            ParsePolygon(sub, text, fw_tmp);
+            marginRect = ResolveSubtitleMargins(m_entries.GetAt(entry), orgstss, sub->m_scalex, sub->m_scaley);
+            marginsResolved = true;
+            layoutReused = sub->ReuseLayout(*parsed->layout, fw_tmp, m_size, marginRect,
+                m_nPolygon, m_polygonBaselineOffset, m_ktype, m_kstart, m_kend);
+            if (layoutReused)
+            {
+                ++m_layoutHits;
+                m_kstart = m_kend;
+            }
+            else
+            {
+                DropPreparedLayout(*parsed);
+                parsed->layoutDisabled = true;
+                ++m_layoutFallbacks;
+            }
         }
-        else
+        if (!layoutReused)
         {
-            ParseString(sub, text, fw_tmp);
+            if(m_nPolygon) ParsePolygon(sub, text, fw_tmp);
+            else ParseString(sub, text, fw_tmp);
         }
         offset = end;
     }
@@ -3226,39 +4159,62 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
     if(sub->m_effects[EF_ORG] && (sub->m_effects[EF_MOVE] || sub->m_effects[EF_BANNER] || sub->m_effects[EF_SCROLL]))
         sub->m_fAnimated = true;
     sub->m_scrAlignment = abs(sub->m_scrAlignment);
-    const STSEntry& stse = m_entries.GetAt(entry);
-    CRect marginRect = stse.marginRect;
-    if(marginRect.left   == 0) marginRect.left   = orgstss.marginRect.get().left;
-    if(marginRect.top    == 0) marginRect.top    = orgstss.marginRect.get().top;
-    if(marginRect.right  == 0) marginRect.right  = orgstss.marginRect.get().right;
-    if(marginRect.bottom == 0) marginRect.bottom = orgstss.marginRect.get().bottom;
-    marginRect.left   = (int)(sub->m_scalex*marginRect.left  *MAX_SUB_PIXEL);
-    marginRect.top    = (int)(sub->m_scaley*marginRect.top   *MAX_SUB_PIXEL);
-    marginRect.right  = (int)(sub->m_scalex*marginRect.right *MAX_SUB_PIXEL);
-    marginRect.bottom = (int)(sub->m_scaley*marginRect.bottom*MAX_SUB_PIXEL);
-
+    if (!marginsResolved)
+        marginRect = ResolveSubtitleMargins(m_entries.GetAt(entry), orgstss, sub->m_scalex, sub->m_scaley);
     sub->CreateClippers(m_size, m_video_rect.Size());
-    sub->MakeLines(m_size, marginRect);
+    if (!layoutReused) sub->MakeLines(m_size, marginRect);
     if (sub->m_fAnimated && retain && parsed && !parsed->blocks.empty())
     {
         m_parsedEventTags.insert(std::make_pair(entry, parsed));
+        m_nextParsedExpiry = min(m_nextParsedExpiry, m_entries.GetAt(entry).end);
         m_parsedTagBytes += parsed->bytes;
         m_parsedTagPeakBytes = max(m_parsedTagPeakBytes, m_parsedTagBytes);
     }
     // Bound both ownership shape and retained source/word data. Charge extra
-    // for text (including a possible opaque box) under a shared 32 MiB budget.
+    // for text (including a possible opaque box) under a shared 64 MiB budget.
     const CWord* word = sub->m_words.GetCount() == 1 ? sub->m_words[0].get() : NULL;
     const CPolygon* polygon = dynamic_cast<const CPolygon*>(word);
     const bool smallPolygon = polygon && polygon->HasSmallRetainedPath() && sourceText.GetLength() <= 512;
     const CText* textWord = dynamic_cast<const CText*>(word);
     const bool smallText = textWord && textWord->HasSmallRetainedText()
         && sourceText.GetLength() <= 2048;
-    const size_t charge = smallPolygon ? 4096 : 8192;
-    const bool reuse = sub->m_fAnimated && m_reconstructionStable && m_mode == TIME
+    size_t charge = smallPolygon ? 4096 : 8192;
+    const bool reuse = sub->m_fAnimated && !m_preparingAhead && m_reconstructionStable && m_mode == TIME
         && m_reconstructionCount < m_reconstructionLimit && (smallPolygon || smallText)
-        && m_reconstructionBytes + charge <= 32*1024*1024 && word->m_style.get().fontName.GetLength() <= 128
+        && m_reconstructionBytes + charge <= 64*1024*1024 && word->m_style.get().fontName.GetLength() <= 128
         && !sub->m_pClipper && !sub->m_effects[EF_ORG] && !sub->m_effects[EF_BANNER] && !sub->m_effects[EF_SCROLL];
-    if (!sub->m_fAnimated || reuse)
+    if (sub->m_fAnimated && !reuse && !layoutReused && parsed && (cacheHit || retain)
+        && m_layoutLimit && !parsed->layoutDisabled)
+    {
+        if (layoutCandidate)
+            for (const auto& block : parsed->blocks)
+                if (HasLayoutAnimation(*block.tags)) { layoutCandidate = false; break; }
+        if (layoutCandidate)
+            parsed->layout = sub->PrepareLayout(m_layoutLimit-m_layoutBytes, m_size, marginRect,
+                m_nPolygon, m_polygonBaselineOffset);
+        if (parsed->layout)
+        {
+            m_layoutBytes += parsed->layout->bytes;
+            m_layoutPeakBytes = max(m_layoutPeakBytes, m_layoutBytes);
+            ++m_layoutBuilds;
+        }
+        else
+        {
+            parsed->layoutDisabled = true;
+            ++m_layoutFallbacks;
+        }
+    }
+    const size_t preparedMinimum = smallPolygon ? 4096 : 8192;
+    const size_t staticCharge = m_preparingAhead && !sub->m_fAnimated && m_mode==TIME && m_layoutLimit
+        && m_reconstructionCount<m_reconstructionLimit
+        ? sub->PrepareStaticDrawing(64*1024*1024-m_reconstructionBytes,sourceText.GetLength()) : 0;
+    const bool stagedStatic = staticCharge != 0;
+    const bool preparedReuse = sub->m_fAnimated && !reuse && parsed && parsed->layout && m_mode == TIME
+        && m_reconstructionCount < m_reconstructionLimit
+        && m_reconstructionBytes + max(preparedMinimum, parsed->layout->bytes) + sizeof(PreparedEventContext) <= 64*1024*1024;
+    if (stagedStatic) charge = staticCharge;
+    if (preparedReuse) charge = max(preparedMinimum, parsed->layout->bytes) + sizeof(PreparedEventContext);
+    if (!sub->m_fAnimated || reuse || preparedReuse || stagedStatic)
     {
         if (!m_subtitleCache.SetAt(entry, sub))
         {
@@ -3267,8 +4223,20 @@ CSubtitle* CRenderedTextSubtitle::GetSubtitle(int entry)
             return NULL;
         }
         sub->m_cachePosition = m_subtitleCacheEntry.AddTail(entry);
-        if (reuse)
+        m_nextSubtitleExpiry = min(m_nextSubtitleExpiry, m_entries.GetAt(entry).end);
+        if (reuse || preparedReuse || stagedStatic)
         {
+            if (preparedReuse || stagedStatic)
+            {
+                boost::shared_ptr<PreparedEventContext> context = boost::make_shared<PreparedEventContext>(*GetStyle(entry));
+                context->effect = m_entries.GetAt(entry).effect; context->margins = m_entries.GetAt(entry).marginRect;
+                context->screen = m_dstScreenSize; context->par = m_dPARCompensation;
+                context->parType = m_ePARCompensationType; context->wrap = m_defaultWrapStyle;
+                context->scaledBorder = m_fScaledBAS;
+                sub->m_preparedContext = context;
+                // A failed context check must reconstruct, never use an old interval.
+                m_reconstructionFrom = 1; m_reconstructionUntil = 0;
+            }
             sub->m_sourceText = sourceText;
             sub->m_reuseFrom = m_reconstructionFrom;
             sub->m_reuseUntil = m_reconstructionUntil;
@@ -3373,6 +4341,7 @@ STDMETHODIMP_(VOID) CRenderedTextSubtitle::GetStartStop(POSITION pos, double fps
 
 STDMETHODIMP_(bool) CRenderedTextSubtitle::IsAnimated(POSITION pos)
 {
+    if (IsUsingLibass()) return true; // Re-evaluate libass animation at every requested frame.
     unsigned int iSegment = (int)pos-1;
     if(iSegment<m_segments.GetCount())
         return m_segments[iSegment].animated;
@@ -3381,13 +4350,91 @@ STDMETHODIMP_(bool) CRenderedTextSubtitle::IsAnimated(POSITION pos)
     //return(true);
 }
 
-struct LSub {int idx, layer, readorder;};
-
-static int lscomp(const void* ls1, const void* ls2)
+int CRenderedTextSubtitle::CompareOrderedEvents(const void* a, const void* b)
 {
-    int ret = ((LSub*)ls1)->layer - ((LSub*)ls2)->layer;
-    if(!ret) ret = ((LSub*)ls1)->readorder - ((LSub*)ls2)->readorder;
-    return(ret);
+    const OrderedEvent& lhs = *static_cast<const OrderedEvent*>(a);
+    const OrderedEvent& rhs = *static_cast<const OrderedEvent*>(b);
+    // Preserve qsort and its input sequence for equal layer/read-order pairs.
+    if (lhs.layer != rhs.layer) return lhs.layer < rhs.layer ? -1 : 1;
+    return lhs.readorder == rhs.readorder ? 0 : lhs.readorder < rhs.readorder ? -1 : 1;
+}
+
+
+void CRenderedTextSubtitle::PrepareUpcoming(REFERENCE_TIME rt, double fps, LONGLONG renderStart)
+{
+    // Offline and embedded ASS use the same segment traversal. No event is
+    // rendered early, and no raster/bitmap is cached at a different time.
+    if (!m_lookaheadBudget || m_mode != TIME || !(fps>0 && fps<1000) ||
+        m_entries.GetCount()>1024*1024 || m_parsedTagBytes>=m_parsedTagLimit) return;
+    LARGE_INTEGER frequency, now;
+    QueryPerformanceFrequency(&frequency); QueryPerformanceCounter(&now);
+    const LONGLONG deadline=min(now.QuadPart+frequency.QuadPart*m_lookaheadBudget/1000000,
+        renderStart+LONGLONG(frequency.QuadPart*(0.75/fps)));
+    if (now.QuadPart>=deadline) return;
+    const LONGLONG began=now.QuadPart;
+    if (!m_lookaheadCursorValid || m_lookaheadSourceSegments!=m_segments.GetCount() ||
+        m_lookaheadSourceEntries!=m_entries.GetCount())
+    {
+        // Locate the next boundary without scanning the source or sorting an
+        // untimed index. A streaming insertion can split the current segment.
+        size_t lo=0,hi=m_segments.GetCount();
+        while(lo<hi) { const size_t mid=lo+(hi-lo)/2; if(m_segments[mid].start<=rt) lo=mid+1; else hi=mid; }
+        m_lookaheadSegment=lo; m_lookaheadOffset=0;
+        m_lookaheadAttempted.resize(m_entries.GetCount(),0);
+        m_lookaheadSourceSegments=m_segments.GetCount(); m_lookaheadSourceEntries=m_entries.GetCount();
+        m_lookaheadCursorValid=true;
+    }
+    const int savedTime=m_time,savedDelay=m_delay;
+    while(m_lookaheadSegment<m_segments.GetCount())
+    {
+        const STSSegment& next=m_segments[m_lookaheadSegment];
+        if(next.start>rt+UNITS) break; // General one-second horizon.
+        if(next.start<=rt || m_lookaheadOffset>=next.subs.GetCount())
+        { ++m_lookaheadSegment; m_lookaheadOffset=0; continue; }
+        QueryPerformanceCounter(&now); if(now.QuadPart>=deadline) break;
+        const int entry=next.subs[m_lookaheadOffset++];
+        const STSEntry& source=m_entries[entry];
+        if(source.start<=rt || source.end<=rt || m_lookaheadAttempted[entry]) continue;
+        m_lookaheadAttempted[entry]=1;
+        // Reverse seeks can leave static states cached for future events.
+        // Preparation must not discard/rebuild any existing cached state.
+        if (m_subtitleCache.GetAt(entry)) continue;
+        // One event is the non-preemptible unit. Avoid large scripts/strings in
+        // this path; arbitrary complex events always retain on-demand behavior.
+        if(source.str.GetLength()>8192 || !source.fUnicode) { ++m_lookaheadStats.skipped; continue; }
+        ++m_lookaheadStats.attempted;
+        const LONGLONG unitStart=now.QuadPart;
+        m_time=0; m_delay=int(RT2MS(source.end-source.start));
+        struct PreparingScope
+        {
+            bool& flag;
+            PreparingScope(bool& value) : flag(value) { flag=true; }
+            ~PreparingScope() { flag=false; }
+        };
+        CSubtitle* subtitle;
+        { PreparingScope preparing(m_preparingAhead); subtitle=GetSubtitle(entry); }
+        if(subtitle)
+        {
+            // Only the prepared replay has a complete source/style/context
+            // guard. Other states are discarded; immutable syntax/path/layout
+            // work can still be reused at the actual activation timestamp.
+            if(subtitle->m_preparedContext) ++m_lookaheadStats.retained;
+            else
+            {
+                if(m_subtitleCache.GetAt(entry)==subtitle)
+                {
+                    m_subtitleCacheEntry.RemoveAt(subtitle->m_cachePosition);
+                    m_subtitleCache.SetAt(entry,NULL);
+                    if(subtitle->m_fAnimated || subtitle->m_preparedContext) { --m_reconstructionCount; m_reconstructionBytes-=subtitle->m_reuseCharge; }
+                }
+                m_subtitlePool.Recycle(subtitle);
+            }
+        }
+        QueryPerformanceCounter(&now);
+        m_lookaheadStats.largestUnit=max(m_lookaheadStats.largestUnit,now.QuadPart-unitStart);
+    }
+    m_time=savedTime; m_delay=savedDelay;
+    QueryPerformanceCounter(&now); m_lookaheadStats.ticks+=now.QuadPart-began;
 }
 
 HRESULT CRenderedTextSubtitle::ParseScript(REFERENCE_TIME rt, double fps, CSubtitle2List *outputSub2List )
@@ -3398,8 +4445,11 @@ HRESULT CRenderedTextSubtitle::ParseScript(REFERENCE_TIME rt, double fps, CSubti
     int segment;
     //const
     STSSegment* stss = SearchSubs2(rt, fps, &segment);
-    // clear any cached subs that has been passed
+    // A deadline avoids revisiting every retained subtitle on unchanged frames.
+    if (!m_maintenanceCacheEnabled || m_mode != TIME || rt >= m_nextSubtitleExpiry)
     {
+        ++m_subtitleExpiryScans;
+        m_nextSubtitleExpiry = _I64_MAX;
         TRACE_RENDERER_REQUEST("Begin clear parsed subtitle cache. m_subtitleCache.size:"<<m_subtitleCacheEntry.GetCount());
         POSITION pos = m_subtitleCacheEntry.GetHeadPosition();
         while(pos)
@@ -3410,7 +4460,7 @@ HRESULT CRenderedTextSubtitle::ParseScript(REFERENCE_TIME rt, double fps, CSubti
             if(stse.end <= rt)
             {
                 CSubtitle* expired = m_subtitleCache.GetAt(key);
-                if (expired->m_fAnimated)
+                if (expired->m_fAnimated || expired->m_preparedContext)
                 {
                     --m_reconstructionCount;
                     m_reconstructionBytes -= expired->m_reuseCharge;
@@ -3419,22 +4469,41 @@ HRESULT CRenderedTextSubtitle::ParseScript(REFERENCE_TIME rt, double fps, CSubti
                 m_subtitleCache.SetAt(key, NULL);
                 m_subtitleCacheEntry.RemoveAt(pos_old);
             }
+            else m_nextSubtitleExpiry = min(m_nextSubtitleExpiry, stse.end);
         }
     }
     if(!stss) return S_FALSE;
     m_sla.AdvanceToSegment(segment, stss->subs);
     TRACE_RENDERER_REQUEST("Begin copy LSub. subs.size:"<<stss->subs.GetCount());
-    CAtlArray<LSub> subs;
-    for(int i = 0, j = stss->subs.GetCount(); i < j; i++)
+    CAtlArray<OrderedEvent> scratch;
+    const size_t count = stss->subs.GetCount();
+    // Two trivial arrays retain less than 1 MiB, including ATL growth slack. Large sets use
+    // call-local storage, released after this request.
+    const bool retainOrder = m_maintenanceCacheEnabled && count <= 32768;
+    bool same = retainOrder && m_orderSource.GetCount() == count;
+    for (size_t i=0; same && i<count; ++i)
     {
-        LSub ls;
-        ls.idx       = stss->subs[i];
-        ls.layer     = m_entries.GetAt(stss->subs[i]).layer;
-        ls.readorder = m_entries.GetAt(stss->subs[i]).readorder;
-        subs.Add(ls);
+        const OrderedEvent& old = m_orderSource[i];
+        const STSEntry& current = m_entries.GetAt(stss->subs[i]);
+        same = old.idx == stss->subs[i] && old.layer == current.layer && old.readorder == current.readorder;
     }
-    TRACE_RENDERER_REQUEST("Begin sort LSub.");
-    qsort(subs.GetData(), subs.GetCount(), sizeof(LSub), lscomp);
+    if (!same)
+    {
+        CAtlArray<OrderedEvent>& source = retainOrder ? m_orderSource : scratch;
+        source.SetCount(count);
+        for (size_t i=0; i<count; ++i)
+        {
+            OrderedEvent& item = source[i];
+            const STSEntry& current = m_entries.GetAt(stss->subs[i]);
+            item.idx = stss->subs[i]; item.layer = current.layer; item.readorder = current.readorder;
+        }
+        if (retainOrder) m_orderSorted.Copy(source);
+        CAtlArray<OrderedEvent>& sorted = retainOrder ? m_orderSorted : scratch;
+        if (count > 1) qsort(sorted.GetData(), count, sizeof(OrderedEvent), CompareOrderedEvents);
+        ++m_orderBuilds;
+    }
+    else ++m_orderHits;
+    const CAtlArray<OrderedEvent>& subs = retainOrder ? m_orderSorted : scratch;
     TRACE_RENDERER_REQUEST("Begin parse subs.");
     for(int i = 0, j = subs.GetCount(); i < j; i++)
     {
@@ -3624,6 +4693,59 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx(SubPicDesc& spd, REFERENCE_TIME rt,
     return (!rectList.IsEmpty()) ? S_OK : S_FALSE;
 }
 
+HRESULT CRenderedTextSubtitle::BenchmarkNativePhase(IXySubRenderFrame** output,
+    REFERENCE_TIME time, bool parseOnly, LONGLONG& ticks, ULONGLONG& cpuTicks)
+{
+    if (!output || IsUsingLibass()) return E_INVALIDARG;
+    *output = NULL;
+    const CRect video(0,0,1920,1080);
+    const SIZE storage = m_layout_size.cx > 0 && m_layout_size.cy > 0 ? SIZE(m_layout_size) : SIZE{1920,1080};
+    if (m_size.cx == 0 && !Init(video,video,storage)) return E_FAIL;
+    XySubRenderFrameCreater* creator = XySubRenderFrameCreater::GetDefaultCreater();
+    creator->SetOutputRect(video); creator->SetClipRect(video); creator->SetColorSpace(XY_CS_ARGB);
+    const auto cpu = []() -> ULONGLONG {
+        FILETIME created, ended, kernel, user;
+        if (!GetThreadTimes(GetCurrentThread(),&created,&ended,&kernel,&user)) return 0;
+        ULARGE_INTEGER k,u;
+        k.LowPart=kernel.dwLowDateTime; k.HighPart=kernel.dwHighDateTime;
+        u.LowPart=user.dwLowDateTime; u.HighPart=user.dwHighDateTime;
+        return k.QuadPart+u.QuadPart;
+    };
+    HRESULT result = S_OK;
+    LARGE_INTEGER start, stop;
+    ULONGLONG cpuStart;
+    if (parseOnly) {
+        cpuStart=cpu(); QueryPerformanceCounter(&start);
+        {
+            RenderPhaseTimer timer(m_collectDiagnostics ? &m_diagnostics : NULL, RenderDiagnostics::PARSE);
+            CSubtitle2List subtitles;
+            result=ParseScript(time,24000.0/1001,&subtitles);
+            ClearUnCachedSubtitle(subtitles);
+        }
+        QueryPerformanceCounter(&stop); cpuTicks=cpu()-cpuStart;
+    } else {
+        CompositeDrawItemListList draws;
+        {
+            CSubtitle2List subtitles;
+            result=ParseScript(time,24000.0/1001,&subtitles);
+            if (FAILED(result)) return result;
+            if (result==S_FALSE) { ticks=0; cpuTicks=0; return result; }
+            const CRect margins(0,0,0,0);
+            DoRender(m_video_rect.Size(),m_video_rect.TopLeft(),margins,subtitles,&draws);
+            ClearUnCachedSubtitle(subtitles);
+        }
+        XySubRenderFrame* frame = NULL;
+        cpuStart=cpu(); QueryPerformanceCounter(&start);
+        CompositeDrawItem::Draw(&frame,draws,m_collectDiagnostics ? &m_diagnostics : NULL);
+        QueryPerformanceCounter(&stop); cpuTicks=cpu()-cpuStart;
+        if (frame) { frame->AddRef(); *output=frame; }
+        ShrinkCache();
+    }
+    ticks=stop.QuadPart-start.QuadPart;
+    if (m_collectDiagnostics) ++m_diagnostics.frames;
+    return result;
+}
+
 STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame, int spd_type,
     const RECT& video_rect, const RECT& subtitle_target_rect,
     const SIZE& original_video_size,
@@ -3699,11 +4821,29 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame,
         render_frame_creater->SetClipRect(subtitle_target_rect);
     }
 
+    if (IsUsingLibass()) {
+        try {
+            m_libass->Configure(m_defaultStyle, m_fForcedDefaultStyle, m_styles, m_libassOriginalStyles);
+            return m_libass->Render(subRenderFrame, video_rect, original_video_size, rt, render_frame_creater);
+        } catch (const std::bad_alloc&) { return E_OUTOFMEMORY; }
+          catch (const std::exception& error) { XY_LOG_ERROR("libass: " << error.what()); return E_FAIL; }
+    }
+
+    LARGE_INTEGER preparationStart;
+    QueryPerformanceCounter(&preparationStart);
     TRACE_RENDERER_REQUEST("Begin ParseScript");
+    RenderDiagnostics* diagnostics = m_collectDiagnostics ? &m_diagnostics : NULL;
+    RenderPhaseTimer renderTimer(diagnostics, RenderDiagnostics::RENDER);
+    if (diagnostics) ++diagnostics->frames;
     CSubtitle2List sub2List;
-    HRESULT hr = ParseScript(rt, fps, &sub2List);
+    HRESULT hr;
+    {
+        RenderPhaseTimer timer(diagnostics, RenderDiagnostics::PARSE);
+        hr = ParseScript(rt, fps, &sub2List);
+    }
     if(hr!=S_OK)
     {
+        if (hr==S_FALSE) { PrepareUpcoming(rt,fps,preparationStart.QuadPart); ShrinkCache(); }
         return hr;
     }
 
@@ -3730,15 +4870,19 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame,
         m_subtitle_target_rect.right - m_video_rect.right,
         m_subtitle_target_rect.bottom - m_video_rect.bottom);
     CompositeDrawItemListList compDrawItemListList;
-    DoRender(m_video_rect.Size(), m_video_rect.TopLeft(), margin_rect, sub2List, &compDrawItemListList);
-    ClearUnCachedSubtitle(sub2List);
+    {
+        RenderPhaseTimer timer(diagnostics, RenderDiagnostics::BUILD_DRAW);
+        DoRender(m_video_rect.Size(), m_video_rect.TopLeft(), margin_rect, sub2List, &compDrawItemListList);
+        ClearUnCachedSubtitle(sub2List);
+    }
 
     TRACE_RENDERER_REQUEST("Begin Draw");
     XySubRenderFrame *sub_render_frame;
-    CompositeDrawItem::Draw(&sub_render_frame, compDrawItemListList);
+    CompositeDrawItem::Draw(&sub_render_frame, compDrawItemListList, diagnostics);
     sub_render_frame->MoveTo(video_rect.left, video_rect.top);
     (*subRenderFrame = sub_render_frame)->AddRef();
 
+    PrepareUpcoming(rt,fps,preparationStart.QuadPart);
     ShrinkCache();
 
     TRACE_RENDERER_REQUEST("Finished");
@@ -3817,6 +4961,11 @@ void CRenderedTextSubtitle::RenderOneSubtitle( const SIZECoor2& output_size,
     iclipRect[1] = CRect(0             , clipRect.top   , clipRect.left    , clipRect.bottom  );
     iclipRect[2] = CRect(clipRect.right, clipRect.top   , output_size.cx>>3, clipRect.bottom  );
     iclipRect[3] = CRect(0             , clipRect.bottom, output_size.cx>>3, output_size.cy>>3);
+    const Effect* move=s->m_effects[EF_MOVE];
+    const bool stable=s->m_cachePosition && !s->m_pClipper && !s->m_clipInverse
+        && !s->m_effects[EF_FADE] && !s->m_effects[EF_BANNER] && !s->m_effects[EF_SCROLL]
+        && (!move || (move->param[0]==move->param[2] && move->param[1]==move->param[3]));
+    const boost::shared_ptr<DrawReuseBudget> budget=stable ? m_drawReuse : boost::shared_ptr<DrawReuseBudget>();
     CRect bbox2(0,0,0,0);
     POSITION pos = s->GetHeadLinePosition();
     CPoint p = p2;
@@ -3839,7 +4988,7 @@ void CRenderedTextSubtitle::RenderOneSubtitle( const SIZECoor2& output_size,
                 if (!first) first = added;
             }
             const CRect& regionClip = s->m_clipInverse ? iclipRect[region] : clipRect;
-            bbox2 |= l->PaintAll(compDrawItemList, regionClip, margin, clipper, p, org2, time, alpha, first);
+            bbox2 |= l->PaintAll(compDrawItemList, regionClip, margin, clipper, p, org2, time, alpha, first,budget);
         }
         p.y += l->m_ascent + l->m_descent;
     }

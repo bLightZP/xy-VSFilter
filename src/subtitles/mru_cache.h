@@ -82,6 +82,23 @@ public:
         /* _In_ */ VINARGTYPE value,
         bool *new_item_added);
 
+    template<class Factory>
+    POSITION SetAtIfNotExistsOwned(KINARGTYPE probe, VINARGTYPE value, Factory factory, bool* added)
+    {
+        UINT bin, hash; CNode* previous;
+        CNode* node = GetNode(probe, bin, hash, previous);
+        *added = node == NULL;
+        if (!node)
+        {
+            K owned = factory();
+            ASSERT(KTraits::Hash(owned) == hash && KTraits::CompareElements(probe, owned));
+            node = CreateNode(owned, bin, hash);
+            _ATLTRY { node->m_value = value; }
+            _ATLCATCHALL() { RemoveAtPos(POSITION(node)); _ATLRETHROW; }
+        }
+        return POSITION(node);
+    }
+
     POSITION SetAt(
         /* _In_ */ KINARGTYPE key,
         /* _In_ */ VINARGTYPE value);
@@ -1136,6 +1153,27 @@ public:
         }
         return pos_hash_value;
     }
+    template<class Factory>
+    POSITION FindOrAddOwned(const K& probe, const V& value, Factory factory, bool* added)
+    {
+        *added = true;
+        if (!_max_item_num) return NULL;
+        POSITION hashPos = _hash.SetAtIfNotExistsOwned(probe, POSITION(NULL), factory, added);
+        POSITION listPos;
+        if (*added)
+        {
+            try { listPos = _list.AddHead(ListItem(hashPos, value)); }
+            catch (...) { _hash.RemoveAtPos(hashPos); throw; }
+            _hash.SetValueAt(hashPos, listPos);
+            if (_list.GetCount() > _max_item_num) RemoveTail();
+        }
+        else
+        {
+            listPos = _hash.GetValueAt(hashPos);
+            _list.MoveToHead(listPos);
+        }
+        return listPos;
+    }
     inline void RemoveAll() 
     { 
         _hash.RemoveAll();
@@ -1237,6 +1275,15 @@ public:
         _cache_hit += (tmp==false);
         if(new_item_added)
             *new_item_added = tmp;
+        return pos;
+    }
+
+    template<class Factory>
+    POSITION FindOrAddOwned(const K& probe, const V& value, Factory factory, bool* added)
+    {
+        ++_query_count;
+        POSITION pos = __super::FindOrAddOwned(probe,value,factory,added);
+        _cache_hit += !*added;
         return pos;
     }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32"><Configuration>Release</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals"><ProjectGuid>{F44881BF-4F26-45D9-9A80-7268E161F48B}</ProjectGuid><ProjectName>streaming_subtitles</ProjectName></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="..\..\src\configuration.props" />
+  <PropertyGroup Label="Configuration"><ConfigurationType>Application</ConfigurationType><UseOfMfc>Static</UseOfMfc><CharacterSet>Unicode</CharacterSet></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="..\..\src\common.props" />
+  <Import Project="..\..\src\filters\transform\vsfilter\VSFilter.props" />
+  <PropertyGroup>
+    <TargetExt>.exe</TargetExt>
+    <TargetName>streaming_subtitles</TargetName>
+    <IncludePath>$(SolutionDir)src\subtitles;$(SolutionDir)src\filters\transform\vsfilter;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile><PrecompiledHeader>NotUsing</PrecompiledHeader></ClCompile>
+    <Link><SubSystem>Console</SubSystem><AdditionalDependencies>bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies></Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="streaming_subtitles.cpp" />
+    <ClCompile Include="..\..\src\filters\transform\vsfilter\xy_logger.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

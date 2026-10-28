@@ -38,4 +38,5 @@
       <Profile>false</Profile>
     </Link>
   </ItemDefinitionGroup>
+  <Import Project="..\..\..\thirdparty\libass-deps\libass.props" />
 </Project>

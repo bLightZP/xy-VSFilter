@@ -430,6 +430,11 @@ CDVSMainPPage::CDVSMainPPage(LPUNKNOWN pUnk, HRESULT* phr)
     BindControl(IDC_ONLYSHOWFORCEDSUBS, m_forcedsubs);
     BindControl(IDC_PARCOMBO, m_PARCombo);
     BindControl(IDC_CHECKBOX_HideTrayIcon, m_hide_tray_icon);
+    BindControl(IDC_PREFER_LIBASS, m_preferLibass);
+    BindControl(IDC_LOADCOMBO, m_load);
+    BindControl(IDC_EXTLOAD, m_extload);
+    BindControl(IDC_WEBLOAD, m_webload);
+    BindControl(IDC_EMBLOAD, m_embload);
 }
 
 CDVSMainPPage::~CDVSMainPPage()
@@ -456,6 +461,12 @@ void CDVSMainPPage::AllocLangs(int nLangs)
 
 bool CDVSMainPPage::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    if (uMsg == WM_COMMAND && HIWORD(wParam) == CBN_SELCHANGE && LOWORD(wParam) == IDC_LOADCOMBO) {
+        m_extload.EnableWindow(m_load.GetCurSel() == 1);
+        m_webload.EnableWindow(m_load.GetCurSel() == 1);
+        m_embload.EnableWindow(m_load.GetCurSel() == 1);
+        return true;
+    }
     switch(uMsg)
     {
     case WM_COMMAND:
@@ -502,6 +513,7 @@ void CDVSMainPPage::UpdateObjectData(bool fSave)
     HRESULT hr = NOERROR;
     if(fSave)
     {
+        m_pDirectVobSub->put_LoadSettings(m_LoadLevel, m_fExternalLoad, m_fWebLoad, m_fEmbeddedLoad);
         hr = m_pDirectVobSub->put_FileName(m_fn);
         CHECK_N_LOG(hr, "Failed to set option");
         if(hr == S_OK)
@@ -528,11 +540,14 @@ void CDVSMainPPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSub->put_AspectRatioSettings(&m_ePARCompensationType);
         CHECK_N_LOG(hr, "Failed to set option");
+        hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, m_fPreferLibass);
+        CHECK_N_LOG(hr, "Failed to set libass preference");
         hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to set option");
     }
     else
     {
+        m_pDirectVobSub->get_LoadSettings(&m_LoadLevel, &m_fExternalLoad, &m_fWebLoad, &m_fEmbeddedLoad);
         hr = m_pDirectVobSub->get_FileName(m_fn);
         CHECK_N_LOG(hr, "Failed to get option");
         int nLangs = 0;
@@ -553,6 +568,9 @@ void CDVSMainPPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to get option");
         hr = m_pDirectVobSub->get_AspectRatioSettings(&m_ePARCompensationType);
         CHECK_N_LOG(hr, "Failed to get option");
+        m_fPreferLibass = false;
+        hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, &m_fPreferLibass);
+        CHECK_N_LOG(hr, "Failed to get libass preference");
         hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, &m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to get option");
     }
@@ -580,6 +598,11 @@ void CDVSMainPPage::UpdateControlData(bool fSave)
         else
             m_ePARCompensationType = CSimpleTextSubtitle::EPCTDisabled;
         m_fHideTrayIcon = !!m_hide_tray_icon.GetCheck();
+        m_fPreferLibass = !!m_preferLibass.GetCheck();
+        if (m_load.GetCurSel() >= 0) m_LoadLevel = (int)m_load.GetItemData(m_load.GetCurSel());
+        m_fExternalLoad = !!m_extload.GetCheck();
+        m_fWebLoad = !!m_webload.GetCheck();
+        m_fEmbeddedLoad = !!m_embload.GetCheck();
     }
     else
     {
@@ -618,6 +641,18 @@ void CDVSMainPPage::UpdateControlData(bool fSave)
         if (m_ePARCompensationType == CSimpleTextSubtitle::EPCTAccurateSize)
             m_PARCombo.SetCurSel(3);
         m_hide_tray_icon.SetCheck(m_fHideTrayIcon);
+        m_preferLibass.SetCheck(m_fPreferLibass);
+        m_load.ResetContent();
+        m_load.AddString(ResStr(IDS_DONOTLOAD)); m_load.SetItemData(0, 2);
+        m_load.AddString(ResStr(IDS_LOADWHENNEEDED)); m_load.SetItemData(1, 0);
+        m_load.AddString(ResStr(IDS_ALWAYSLOAD)); m_load.SetItemData(2, 1);
+        m_load.SetCurSel(!m_LoadLevel ? 1 : m_LoadLevel == 1 ? 2 : 0);
+        m_extload.SetCheck(m_fExternalLoad);
+        m_webload.SetCheck(m_fWebLoad);
+        m_embload.SetCheck(m_fEmbeddedLoad);
+        m_extload.EnableWindow(m_LoadLevel == 0);
+        m_webload.EnableWindow(m_LoadLevel == 0);
+        m_embload.EnableWindow(m_LoadLevel == 0);
     }
 }
 
@@ -1667,6 +1702,7 @@ CXySubFilterMainPPage::CXySubFilterMainPPage(LPUNKNOWN pUnk, HRESULT* phr)
     BindControl(IDC_CHECKBOX_FORCE_DEFAULT_STYLE, m_force_default_style);
     BindControl(IDC_ONLYSHOWFORCEDSUBS, m_forcedsubs);
     BindControl(IDC_CHECKBOX_HideTrayIcon, m_hide_tray_icon);
+    BindControl(IDC_PREFER_LIBASS, m_preferLibass);
 
     BindControl(IDC_LOADCOMBO, m_load);
     BindControl(IDC_EXTLOAD, m_extload);
@@ -1782,6 +1818,8 @@ void CXySubFilterMainPPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSub->put_AspectRatioSettings(&m_ePARCompensationType);
         CHECK_N_LOG(hr, "Failed to set option");
+        hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, m_fPreferLibass);
+        CHECK_N_LOG(hr, "Failed to set libass preference");
         hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSub->put_LoadSettings(m_LoadLevel, m_fExternalLoad, m_fWebLoad, m_fEmbeddedLoad);
@@ -1811,6 +1849,9 @@ void CXySubFilterMainPPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to get option");
         hr = m_pDirectVobSub->get_AspectRatioSettings(&m_ePARCompensationType);
         CHECK_N_LOG(hr, "Failed to get option");
+        m_fPreferLibass = false;
+        hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, &m_fPreferLibass);
+        CHECK_N_LOG(hr, "Failed to get libass preference");
         hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, &m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to get option");
         hr = m_pDirectVobSub->get_LoadSettings(&m_LoadLevel, &m_fExternalLoad, &m_fWebLoad, &m_fEmbeddedLoad);
@@ -1839,6 +1880,7 @@ void CXySubFilterMainPPage::UpdateControlData(bool fSave)
         m_fForceDefaultStyle = !!m_force_default_style.GetCheck();
         m_fOnlyShowForcedVobSubs = !!m_forcedsubs.GetCheck();
         m_fHideTrayIcon = !!m_hide_tray_icon.GetCheck();
+        m_fPreferLibass = !!m_preferLibass.GetCheck();
 
         if(m_load.GetCurSel() >= 0) m_LoadLevel = m_load.GetItemData(m_load.GetCurSel());
         m_fExternalLoad = !!m_extload.GetCheck();
@@ -1863,6 +1905,7 @@ void CXySubFilterMainPPage::UpdateControlData(bool fSave)
         m_langs.SetCurSel(m_iSelectedLanguage);
 
         m_hide_tray_icon.SetCheck(m_fHideTrayIcon);
+        m_preferLibass.SetCheck(m_fPreferLibass);
 
         m_load.ResetContent();
         m_load.AddString(ResStr(IDS_DONOTLOAD)); m_load.SetItemData(0, 2);

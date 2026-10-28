@@ -13,6 +13,13 @@
 
 void OverlayPaintMachine::Paint(SharedPtrOverlay* overlay)
 {
+    if (m_weakRetention && !m_framePins)
+    {
+        SharedPtrOverlay result=m_weakOverlay.lock();
+        if (!result) { m_inner_paint_machine->Paint(m_layer,&result); m_weakOverlay=result; }
+        if (overlay) *overlay=result;
+        return;
+    }
     if (!m_overlay)
     {
         m_inner_paint_machine->Paint(m_layer, &m_overlay);
@@ -21,16 +28,40 @@ void OverlayPaintMachine::Paint(SharedPtrOverlay* overlay)
         *overlay = m_overlay;
 }
 
+void OverlayPaintMachine::EnableWeakRetention()
+{
+    if (m_weakRetention) return;
+    m_weakOverlay=m_overlay;
+    if (!m_framePins) m_overlay.reset();
+    m_weakRetention=true;
+}
+
+void OverlayPaintMachine::BeginFrame()
+{
+    if (!m_framePins++ && m_weakRetention) m_overlay=m_weakOverlay.lock();
+}
+
+void OverlayPaintMachine::EndFrame()
+{
+    ASSERT(m_framePins);
+    if (!--m_framePins && m_weakRetention)
+    {
+        if (m_overlay) m_weakOverlay=m_overlay;
+        m_overlay.reset();
+    }
+}
+
 CRectCoor2 OverlayPaintMachine::CalcDirtyRect()
 {
     ASSERT(m_inner_paint_machine);
-    if (!m_overlay) m_inner_paint_machine->Paint(m_layer, &m_overlay);
-    if (m_overlay)
+    SharedPtrOverlay overlay;
+    Paint(&overlay);
+    if (overlay)
     {
-        int x = m_overlay->mOffsetX;
-        int y = m_overlay->mOffsetY;
-        int w = 8*m_overlay->mOverlayWidth;
-        int h = 8*m_overlay->mOverlayHeight;
+        int x = overlay->mOffsetX;
+        int y = overlay->mOffsetY;
+        int w = 8*overlay->mOverlayWidth;
+        int h = 8*overlay->mOverlayHeight;
         return CRect(x, y, x+w, y+h);
     }
     return CRect(0,0,0,0);
@@ -63,18 +94,18 @@ void CWordPaintMachine::Paint( LAYER layer, SharedPtrOverlay* overlay )
     switch (layer)
     {
     case SHADOW:
-        PaintShadow(m_word, m_shadow_pos, overlay);
+        PaintShadow(m_word, m_shadow_pos, overlay,m_shadow_key);
         break;
     case OUTLINE:
-        PaintOutline(m_word, m_outline_pos, overlay);
+        PaintOutline(m_word, m_outline_pos, overlay,m_border_key);
         break;
     case BODY:
-        PaintBody(m_word, m_body_pos, overlay);
+        PaintBody(m_word, m_body_pos, overlay,m_body_key);
         break;
     }
 }
 
-void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay )
+void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay, const SharedPtrOverlayKey& key )
 {
     if(!word->m_str.Get() || overlay==NULL) return;
     bool error = false;
@@ -89,8 +120,7 @@ void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2
         }
 
         CPoint psub_true( (p.x&SubpixelPositionControler::EIGHT_X_EIGHT_MASK), (p.y&SubpixelPositionControler::EIGHT_X_EIGHT_MASK) );
-        OverlayKey sub_key(*word, psub_true, trans_org2);
-        sub_key.UpdateHashValue();
+        const OverlayKey& sub_key=*key;
         if( SubpixelPositionControler::GetGlobalControler().UseBilinearShift() )
         {
             OverlayMruCache* overlay_cache = CacheManager::GetSubpixelVarianceCache();
@@ -105,23 +135,20 @@ void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2
         if( !overlay->get() )
         {
             CPoint psub = SubpixelPositionControler::GetGlobalControler().GetSubpixel(p);
-            OverlayKey overlay_key(*word, psub, trans_org2);
-            overlay_key.UpdateHashValue();
-            OverlayMruCache* overlay_cache = CacheManager::GetOverlayMruCache();
-            POSITION pos = overlay_cache->Lookup(overlay_key);
-            if(pos==NULL)
-            {
-                if( !word->DoPaint(psub, trans_org2, overlay, overlay_key) )
-                {
-                    error = true;
-                    break;
-                }                
-            }
+            const auto resolve=[&](const OverlayKey& overlay_key) {
+                OverlayMruCache* overlay_cache=CacheManager::GetOverlayMruCache();
+                POSITION pos=overlay_cache->Lookup(overlay_key);
+                if (!pos) return word->DoPaint(psub,trans_org2,overlay,overlay_key);
+                *overlay=overlay_cache->GetAt(pos); overlay_cache->UpdateCache(pos);
+                return true;
+            };
+            if (psub==psub_true) error=!resolve(sub_key);
             else
             {
-                *overlay = overlay_cache->GetAt(pos);
-                overlay_cache->UpdateCache( pos );
+                OverlayKey quantized(*word,psub,trans_org2); quantized.UpdateHashValue();
+                error=!resolve(quantized);
             }
+            if (error) break;
             CWord::PaintFromOverlay(p, trans_org2, sub_key, *overlay);
         }
     } while(false);
@@ -131,32 +158,47 @@ void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2
     }
 }
 
-void CWordPaintMachine::PaintOutline( const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay )
+void CWordPaintMachine::PaintOutline( const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay, const SharedPtrOverlayKey& key )
 {
     if (word->m_style.get().borderStyle==0)
     {
-        PaintBody(word, p, overlay);
+        PaintBody(word, p, overlay,key);
     }
     else if (word->m_style.get().borderStyle==1)
     {
         if(word->CreateOpaqueBox())
         {
-            PaintBody(word->m_pOpaqueBox, p, overlay);
+            PaintBody(word->m_pOpaqueBox, p, overlay,key);
         }
     }
 }
 
-void CWordPaintMachine::PaintShadow( const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay )
+void CWordPaintMachine::PaintShadow( const SharedPtrCWord& word, const CPointCoor2& p, SharedPtrOverlay* overlay, const SharedPtrOverlayKey& key )
 {
-    PaintOutline(word, p, overlay);
+    PaintOutline(word, p, overlay,key);
 }
 
 void CWordPaintMachine::CreatePaintMachines( const SharedPtrCWord& word
     , const CPointCoor2& shadow_pos, const CPointCoor2& outline_pos, const CPointCoor2& body_pos
     , const CPointCoor2& org
-    , SharedPtrOverlayPaintMachine *shadow, SharedPtrOverlayPaintMachine *outline, SharedPtrOverlayPaintMachine *body)
+    , SharedPtrOverlayPaintMachine *shadow, SharedPtrOverlayPaintMachine *outline, SharedPtrOverlayPaintMachine *body,
+    const boost::shared_ptr<DrawReuseBudget>& budget)
 {
-    SharedCWordPaintMachine machine = boost::make_shared<CWordPaintMachine>(AllocationTag());
+    struct MachineAllocation : CWordPaintMachine
+    {
+        OverlayPaintMachine shadowLayer, outlineLayer, bodyLayer;
+        MachineAllocation() : CWordPaintMachine(AllocationTag()),
+            shadowLayer(SharedCWordPaintMachine(SharedCWordPaintMachine(),this),SHADOW),
+            outlineLayer(SharedCWordPaintMachine(SharedCWordPaintMachine(),this),OUTLINE),
+            bodyLayer(SharedCWordPaintMachine(SharedCWordPaintMachine(),this),BODY) {}
+    };
+    // One allocation owns the word machine and all its layer wrappers. Returned
+    // aliases own this allocation; embedded wrappers borrow their parent without
+    // a control block, so there is no ownership cycle or pointer relocation.
+    boost::shared_ptr<MachineAllocation> allocation=boost::make_shared<MachineAllocation>();
+    SharedCWordPaintMachine machine=allocation;
+    machine->m_budget=budget;
+    if (budget) ++budget->machineAllocations;
     machine->m_word = word;
     if (shadow!=NULL)
     {
@@ -198,18 +240,18 @@ void CWordPaintMachine::CreatePaintMachines( const SharedPtrCWord& word
 
     if (body)
     {
-        *body = boost::make_shared<OverlayPaintMachine>(machine, BODY);
+        *body = SharedPtrOverlayPaintMachine(allocation,&allocation->bodyLayer);
     }
     if (outline)
     {
         if (body && machine->m_border_key == machine->m_body_key) *outline = *body;
-        else *outline = boost::make_shared<OverlayPaintMachine>(machine, OUTLINE);
+        else *outline = SharedPtrOverlayPaintMachine(allocation,&allocation->outlineLayer);
     }
     if (shadow)
     {
         if (outline && machine->m_shadow_key == machine->m_border_key) *shadow = *outline;
         else if (body && machine->m_shadow_key == machine->m_body_key) *shadow = *body;
-        else *shadow = boost::make_shared<OverlayPaintMachine>(machine, SHADOW);
+        else *shadow = SharedPtrOverlayPaintMachine(allocation,&allocation->shadowLayer);
     }
 }
 
@@ -220,7 +262,7 @@ void CWordPaintMachine::PaintBody( const SharedPtrCWord& word, const CPointCoor2
     machine.m_trans_org = org - p;//IMPORTANT! NOTE: not totally initiated
     machine.m_body_pos = p;
     machine.m_body_key = machine.CreateBodyOverlayHashKey(word, machine.m_body_pos);
-    machine.PaintBody(word, p, overlay);
+    machine.PaintBody(word, p, overlay,machine.m_body_key);
 }
 
 const SharedPtrOverlayKey& CWordPaintMachine::GetHashKey(LAYER layer)
@@ -255,6 +297,7 @@ SharedPtrOverlayKey CWordPaintMachine::CreateBodyOverlayHashKey( const SharedPtr
     for (unsigned i = 0; i < 3; ++i)
         if (word->m_overlayKeyCache[i] && word->m_overlayKeyCache[i]->MatchesWord(*word,psub_true,trans_org2))
             return word->m_overlayKeyCache[i];
+    if (m_budget) ++m_budget->keyAllocations;
     SharedPtrOverlayKey key = boost::make_shared<OverlayKey>(*word, psub_true, trans_org2);
     key->UpdateHashValue();
     word->m_overlayKeyCache[word->m_nextOverlayKey] = key;

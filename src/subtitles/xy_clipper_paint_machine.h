@@ -24,6 +24,8 @@ public:
 private:
     SharedPtrCClipper m_clipper;
     ClipperAlphaMaskCacheKey m_hash_key;
+    // No strong ownership beyond the bounded mask MRU (or a caller painting).
+    boost::weak_ptr<GrayImage2> m_mask;
 };
 
 #endif // __XY_CLIPPER_PAINT_MACHINE_98D7A2E7_B2FA_44BC_9678_8B27CE8EB9DB_H__

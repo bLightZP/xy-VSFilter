@@ -40,6 +40,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
+    <!-- Busy-PC x64 full-render comparisons were inconclusive; retain the
+         owned snapshot path until its complete-render benefit is established.
+         Set this property explicitly to false to test borrowed x64 probes. -->
+    <XyBenchmarkOwnedGroupKeys Condition="'$(XyBenchmarkOwnedGroupKeys)'=='' And '$(Platform)'=='x64'">true</XyBenchmarkOwnedGroupKeys>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <!-- Keep static-library types with their objects. VS 18.11 emitted
+           LNK4020 for the shared compiler PDB even after serial clean builds. -->
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <PropertyGroup>
     <IncludePath>$(KIT_SHARED_IncludePath);$(UM_IncludePath);$(VC_IncludePath);$(UniversalCRT_IncludePath);$(SolutionDir)src\filters\transform\vsfilter;$(SolutionDir)src\thirdparty\log4cplus\include\;$(SolutionDir)src\filters\BaseClasses;$(SolutionDir)src\thirdparty\boost_lib\;$(SolutionDir)include\;$(SolutionDir)include\unrar\;$(SolutionDir)src\thirdparty\;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(VisualStudioVersion)'&gt;'10.0'">$(WindowsSdkDir)include\shared;$(WindowsSdkDir)include\um;$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -72,7 +85,10 @@
     <ClCompile Include="cache_manager.cpp" />
     <ClCompile Include="CCDecoder.cpp" />
     <ClCompile Include="CompositionObject.cpp" />
-    <ClCompile Include="draw_item.cpp" />
+    <ClCompile Include="draw_item.cpp">
+      <PreprocessorDefinitions Condition="'$(XyBenchmarkOwnedGroupKeys)'=='true'">XY_BENCHMARK_OWNED_GROUP_KEYS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(XyBenchmarkOwnedGroupKeys)'=='true'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="DVBSub.cpp" />
     <ClCompile Include="GFN.cpp" />
     <ClCompile Include="HdmvSub.cpp" />
@@ -82,6 +98,7 @@
     </ClCompile>
     <ClCompile Include="RealTextParser.cpp" />
     <ClCompile Include="RenderedHdmvSubtitle.cpp" />
+    <ClCompile Include="LibassRenderer.cpp" />
     <ClCompile Include="RTS.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
@@ -125,6 +142,7 @@
     <ClInclude Include="RealTextParser.h" />
     <ClInclude Include="RenderedHdmvSubtitle.h" />
     <ClInclude Include="RTS.h" />
+    <ClInclude Include="LibassRenderer.h" />
     <ClInclude Include="SeparableFilter.h" />
     <ClInclude Include="SSF.h" />
     <ClInclude Include="stdafx.h" />
@@ -145,6 +163,7 @@
     <ClInclude Include="xy_overlay_paint_machine.h" />
     <ClInclude Include="xy_widen_regoin.h" />
   </ItemGroup>
+  <Import Project="..\thirdparty\libass-deps\libass.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

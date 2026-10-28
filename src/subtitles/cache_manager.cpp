@@ -395,13 +395,56 @@ bool DrawItemHashKey::operator==( const DrawItemHashKey& key ) const
 
 // GroupedDrawItemsHashKey
 
+GroupedDrawItemsHashKey::GroupedDrawItemsHashKey()
+    : m_hash_value(0), m_clip_rect(0,0,0,0), m_borrowedItems(NULL)
+{
+    UpdateHashValue();
+}
+
+GroupedDrawItemsHashKey::GroupedDrawItemsHashKey(const GroupedDrawItems& items)
+    : m_hash_value(0), m_clip_rect(items.clip_rect), m_borrowedItems(&items)
+{
+    UpdateHashValue();
+}
+
+GroupedDrawItemsHashKey::GroupedDrawItemsHashKey(const GroupedDrawItemsHashKey& key)
+    : m_hash_value(key.m_hash_value), m_clip_rect(key.m_clip_rect), m_borrowedItems(NULL)
+{
+    const size_t count = key.GetCount();
+    m_key.Reserve(count);
+    for (size_t i = 0; i < count; ++i) m_key.AddTail(key.GetKey(i));
+}
+
+GroupedDrawItemsHashKey& GroupedDrawItemsHashKey::operator=(const GroupedDrawItemsHashKey& key)
+{
+    if (this != &key) {
+        GroupedDrawItemsHashKey owned(key);
+        m_key.Swap(owned.m_key);
+        m_clip_rect = owned.m_clip_rect;
+        m_hash_value = owned.m_hash_value;
+        m_borrowedItems = NULL;
+    }
+    return *this;
+}
+
+size_t GroupedDrawItemsHashKey::GetCount() const
+{
+    return m_borrowedItems ? m_borrowedItems->draw_item_list.GetCount() : m_key.GetCount();
+}
+
+const GroupedDrawItemsHashKey::PKey& GroupedDrawItemsHashKey::GetKey(size_t i) const
+{
+    return m_borrowedItems ? m_borrowedItems->draw_item_list[i]->GetHashKey() : m_key[i];
+}
+
 ULONG GroupedDrawItemsHashKey::UpdateHashValue()
 {
     m_hash_value = hash_value(m_clip_rect);
-    for( unsigned i=0;i<m_key.GetCount();i++)
+    const size_t count = GetCount();
+    for (size_t i = 0; i < count; ++i)
     {
         m_hash_value += (m_hash_value<<5);
-        m_hash_value += m_key[i]->GetHashValue();
+        m_hash_value += GetKey(i)->GetHashValue();
     }
     return m_hash_value;
 }
@@ -413,15 +456,16 @@ bool GroupedDrawItemsHashKey::operator==( const GroupedDrawItemsHashKey& key ) c
     {
         return true;
     }
-    else if ( m_key.GetCount()!=key.m_key.GetCount() || m_clip_rect!=key.m_clip_rect)
+    else if (GetCount()!=key.GetCount() || m_clip_rect!=key.m_clip_rect)
     {
         return false;
     }
     else
     {
-        for( unsigned i=0;i<m_key.GetCount();i++)
+        const size_t count = GetCount();
+        for (size_t i = 0; i < count; ++i)
         {
-            if( !(*m_key[i] == *key.m_key[i]) )
+            if (!(*GetKey(i) == *key.GetKey(i)))
                 return false;
         }
         return true;

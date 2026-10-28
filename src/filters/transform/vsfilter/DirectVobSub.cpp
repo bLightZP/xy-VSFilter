@@ -1121,6 +1121,7 @@ CDirectVobSub::CDirectVobSub( const Option *options, CCritSec * pLock )
     m_SubtitleSpeedNormalizedDiv = m_SubtitleSpeedDiv / gcd;
 
     m_xy_int_opt[INT_ASPECT_RATIO_SETTINGS] = static_cast<CSimpleTextSubtitle::EPARCompensationType>(theApp.GetProfileInt(ResStr(IDS_R_TEXT), ResStr(IDS_RT_AUTOPARCOMPENSATION), 0));
+    m_xy_bool_opt[BOOL_PREFER_LIBASS] = !!theApp.GetProfileInt(ResStr(IDS_R_GENERAL), _T("PreferLibassRendering"), 0);
     m_xy_bool_opt[BOOL_HIDE_TRAY_ICON] =  !!theApp.GetProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_HIDE_TRAY_ICON), 0);
 
     m_xy_int_opt[INT_OVERLAY_CACHE_MAX_ITEM_NUM] = GetCompatibleProfileInt(ResStr(IDS_R_PERFORMANCE), ResStr(IDS_RP_OVERLAY_CACHE_MAX_ITEM_NUM)
@@ -1359,6 +1360,7 @@ STDMETHODIMP CDirectVobSub::UpdateRegistry()
 
     theApp.WriteProfileInt(ResStr(IDS_R_TEXT), ResStr(IDS_RT_AUTOPARCOMPENSATION), m_xy_int_opt[INT_ASPECT_RATIO_SETTINGS]);
 
+    theApp.WriteProfileInt(ResStr(IDS_R_GENERAL), _T("PreferLibassRendering"), m_xy_bool_opt[BOOL_PREFER_LIBASS]);
     theApp.WriteProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_HIDE_TRAY_ICON), m_xy_bool_opt[BOOL_HIDE_TRAY_ICON]);
 
     theApp.WriteProfileInt(ResStr(IDS_R_PERFORMANCE), ResStr(IDS_RP_BITMAP_MRU_CACHE_ITEM_NUM), m_xy_int_opt[INT_BITMAP_MRU_CACHE_ITEM_NUM]);
@@ -1531,6 +1533,7 @@ CDVS4XySubFilter::CDVS4XySubFilter( const Option *options, CCritSec * pLock )
     m_SubtitleSpeedNormalizedMul = m_SubtitleSpeedMul / gcd;
     m_SubtitleSpeedNormalizedDiv = m_SubtitleSpeedDiv / gcd;
 
+    m_xy_bool_opt[BOOL_PREFER_LIBASS] = !!theApp.GetProfileInt(ResStr(IDS_R_GENERAL), _T("PreferLibassRendering"), 0);
     m_xy_bool_opt[BOOL_HIDE_TRAY_ICON]      = !!theApp.GetProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_HIDE_TRAY_ICON), 0);
 
     m_xy_int_opt[INT_OVERLAY_CACHE_MAX_ITEM_NUM] = GetCompatibleProfileInt(ResStr(IDS_R_PERFORMANCE), ResStr(IDS_RP_OVERLAY_CACHE_MAX_ITEM_NUM)
@@ -1766,6 +1769,7 @@ STDMETHODIMP CDVS4XySubFilter::UpdateRegistry()
     theApp.WriteProfileInt(ResStr(IDS_R_TIMING), ResStr(IDS_RTM_SUBTITLESPEEDMUL), m_SubtitleSpeedMul);
     theApp.WriteProfileInt(ResStr(IDS_R_TIMING), ResStr(IDS_RTM_SUBTITLESPEEDDIV), m_SubtitleSpeedDiv);
 
+    theApp.WriteProfileInt(ResStr(IDS_R_GENERAL), _T("PreferLibassRendering"), m_xy_bool_opt[BOOL_PREFER_LIBASS]);
     theApp.WriteProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_HIDE_TRAY_ICON), m_xy_bool_opt[BOOL_HIDE_TRAY_ICON]);
 
     theApp.WriteProfileInt(ResStr(IDS_R_PERFORMANCE), ResStr(IDS_RP_BITMAP_MRU_CACHE_ITEM_NUM), m_xy_int_opt[INT_BITMAP_MRU_CACHE_ITEM_NUM]);

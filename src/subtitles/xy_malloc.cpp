@@ -8,6 +8,14 @@
 #include <string.h>
 
 extern std::size_t g_xy_malloc_used_size = 0;
+static XyAllocationStats* s_allocation_stats = NULL;
+
+XyAllocationStats* xy_set_allocation_stats(XyAllocationStats* stats)
+{
+    XyAllocationStats* previous = s_allocation_stats;
+    s_allocation_stats = stats;
+    return previous;
+}
 
 //gathered from x264
 /****************************************************************************
@@ -15,6 +23,10 @@ extern std::size_t g_xy_malloc_used_size = 0;
  ****************************************************************************/
 void *xy_malloc( std::size_t i_size, int align_shift )
 {
+    if (s_allocation_stats) {
+        ++s_allocation_stats->allocCalls;
+        s_allocation_stats->requestedBytes += i_size;
+    }
     const int ALIGNMENT = 16;
     const int MASK = ALIGNMENT - 1;
     uint8_t * buf;
@@ -24,6 +36,7 @@ void *xy_malloc( std::size_t i_size, int align_shift )
               sizeof( i_size ) );
     if (!buf)
     {
+        if (s_allocation_stats) ++s_allocation_stats->failures;
         return NULL;
     }
     align_buf = buf + MASK + sizeof( void ** ) + sizeof( i_size );
@@ -31,6 +44,8 @@ void *xy_malloc( std::size_t i_size, int align_shift )
     *( (void **) ( align_buf - sizeof( void ** ) ) ) = buf;
     *( (std::size_t *) ( align_buf - sizeof( void ** ) - sizeof( i_size ) ) ) = i_size;
     g_xy_malloc_used_size += i_size;
+    if (s_allocation_stats && g_xy_malloc_used_size > s_allocation_stats->peakUsed)
+        s_allocation_stats->peakUsed = g_xy_malloc_used_size;
     return align_buf;
 }
 
@@ -41,6 +56,7 @@ void xy_free( void *p )
 {
     if( p )
     {
+        if (s_allocation_stats) ++s_allocation_stats->freeCalls;
         g_xy_malloc_used_size -= *( (std::size_t*) ( (uint8_t*) p - sizeof( void ** ) -
             sizeof( std::size_t ) ) );
         free( *( ( ( void **) p ) - 1 ) );

@@ -3296,6 +3296,7 @@ bool CSimpleTextSubtitle::Open(CTextFile* f, int CharSet, CString name)
         CreateSegments();
 
         ChangeUnknownStylesToDefault();
+        OnSourceLoaded(f, pos);
 
         if(m_dstScreenSize == CSize(0, 0)) m_dstScreenSize = CSize(384, 288);
 

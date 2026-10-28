@@ -270,6 +270,12 @@ public:
         int xsub, int ysub, const DWORD* switchpts, bool fBody, bool fBorder, 
         CRect *outputDirtyRect, AlphaMaskBuffer& buffer);
 
+    // Exact single-color packed blending, without an intermediate alpha image.
+    // Returns false for formats/color sequences requiring the legacy path.
+    static bool DrawSingleColorFused(XyBitmap* bitmap, const SharedPtrOverlay& overlay,
+        const CRect& clipRect, const GrayImage2* mask, int xsub, int ysub,
+        const DWORD* switchpts, bool body, bool border, CRect* dirty);
+
     static void Draw(XyBitmap* bitmap, 
         SharedPtrOverlay overlay, 
         const CRect& clipRect, 

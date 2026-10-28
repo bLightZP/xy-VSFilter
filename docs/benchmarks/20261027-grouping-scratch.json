@@ -1,0 +1,4741 @@
+{
+  "date": "2026-10-27",
+  "base_commit": "52768c309237f646cb8fbe8d5521af186a8269c4",
+  "scope": "Native contiguous grouping metadata and frame-owned memberships; no playback",
+  "scheduling": "One render thread, logical CPU 7, affinity 0x80, Above Normal process priority",
+  "sample": {
+    "ass_sha256": "1ece3acc51ef4b091a6af7ab9f87d989e314c15d95e25ed883283d47f9656d72",
+    "first_frame": 32128,
+    "last_frame": 34555,
+    "frames": 2428,
+    "nonempty_frames": 2184,
+    "size": [
+      1920,
+      1080
+    ],
+    "fps": "24000/1001",
+    "bitmap_cache_items": 256
+  },
+  "burst_cohort": {
+    "criterion": "At least 1000 ASS events start since preceding source frame; selected from source timestamps before timing comparison",
+    "frames": [
+      {
+        "frame": 32693,
+        "new_events": 3587,
+        "position_ms": 1363591.3958
+      },
+      {
+        "frame": 32780,
+        "new_events": 3200,
+        "position_ms": 1367220.0208
+      },
+      {
+        "frame": 32854,
+        "new_events": 2492,
+        "position_ms": 1370306.4375
+      },
+      {
+        "frame": 32928,
+        "new_events": 2171,
+        "position_ms": 1373392.8541
+      },
+      {
+        "frame": 33082,
+        "new_events": 3200,
+        "position_ms": 1379815.9375
+      },
+      {
+        "frame": 33157,
+        "new_events": 3587,
+        "position_ms": 1382944.0625
+      },
+      {
+        "frame": 33254,
+        "new_events": 1595,
+        "position_ms": 1386989.7708
+      },
+      {
+        "frame": 33378,
+        "new_events": 2492,
+        "position_ms": 1392161.6041
+      },
+      {
+        "frame": 33448,
+        "new_events": 3996,
+        "position_ms": 1395081.1875
+      },
+      {
+        "frame": 33518,
+        "new_events": 2492,
+        "position_ms": 1398000.7708
+      },
+      {
+        "frame": 33586,
+        "new_events": 1595,
+        "position_ms": 1400836.9375
+      },
+      {
+        "frame": 33648,
+        "new_events": 3200,
+        "position_ms": 1403422.8541
+      },
+      {
+        "frame": 33741,
+        "new_events": 1107,
+        "position_ms": 1407301.7291
+      },
+      {
+        "frame": 33797,
+        "new_events": 2835,
+        "position_ms": 1409637.3958
+      },
+      {
+        "frame": 33898,
+        "new_events": 2835,
+        "position_ms": 1413849.9375
+      },
+      {
+        "frame": 33973,
+        "new_events": 2171,
+        "position_ms": 1416978.0625
+      },
+      {
+        "frame": 34048,
+        "new_events": 2835,
+        "position_ms": 1420106.1875
+      }
+    ]
+  },
+  "profile": {
+    "samples": 3665,
+    "with_stacks": 3642,
+    "events_lost": 0,
+    "trace_start": "2026-10-27T02:50:33.9946221+02:00",
+    "trace_end": "2026-10-27T02:51:11.8055439+02:00",
+    "capture_start": "2026-10-27T02:50:33.521597+02:00",
+    "capture_end": "2026-10-27T02:51:14.824242+02:00",
+    "loaded_xy_modules": [
+      {
+        "path": "f:\\git\\xysubfilter\\benchmark-results\\font-layout-20261026\\stable-x64\\render_subtitles.exe",
+        "pdb_guid": "81b47e80-9bb7-4b74-9d39-fd3e5d92e055",
+        "pdb_age": 1
+      }
+    ]
+  },
+  "limitations": [
+    "PC activity/frequency/cache interference remains despite one CPU and Above Normal priority",
+    "Inclusive phase/profile counts overlap",
+    "Console results do not establish dropped playback frames"
+  ],
+  "architectures": {
+    "x64": {
+      "render": {
+        "mode": "render",
+        "batches": [
+          {
+            "raw_directory": "abba-x64",
+            "comparison": {
+              "thread_cpu_ms": {
+                "candidate": 33335.9375,
+                "control": 34750.0,
+                "reduction_percent": 4.069244604316546
+              },
+              "render_ms": {
+                "candidate": 33559.11515,
+                "control": 34938.6667,
+                "reduction_percent": 3.9484951210230435
+              },
+              "parse_ms": {
+                "candidate": 5353.3994,
+                "control": 5414.1703,
+                "reduction_percent": 1.1224416047644348
+              },
+              "build_draw_ms": {
+                "candidate": 7471.1176,
+                "control": 7450.16575,
+                "reduction_percent": -0.28122662908538487
+              },
+              "composite_ms": {
+                "candidate": 18294.25905,
+                "control": 19624.9483,
+                "reduction_percent": 6.780600028383255
+              },
+              "bitmap_ms": {
+                "candidate": 13607.8097,
+                "control": 13670.086,
+                "reduction_percent": 0.4555662634455948
+              },
+              "tree_ms": {
+                "candidate": 1079.574,
+                "control": 1674.34875,
+                "reduction_percent": 35.522751756466505
+              },
+              "merge_ms": {
+                "candidate": 1757.18205,
+                "control": 1893.9867,
+                "reduction_percent": 7.223105104169958
+              },
+              "group_ms": {
+                "candidate": 1225.633,
+                "control": 1358.30855,
+                "reduction_percent": 9.767703369017289
+              }
+            },
+            "builds": {
+              "candidate": "0378768e43ba9236ddbd002778a4514307a39fc9fad1755dba4681513b940e9c",
+              "control": "b7aa02b5ff8f43cbb6b51e31e3ff492bf3c02d8fa764b624b7ceb94a327d24be"
+            },
+            "runs": [
+              {
+                "name": "control",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 35484.375,
+                  "render_ms": 35525.7035,
+                  "parse_ms": 5501.7569,
+                  "build_draw_ms": 7557.8478000000005,
+                  "composite_ms": 19964.0982,
+                  "bitmap_ms": 13911.8584,
+                  "tree_ms": 1690.8417,
+                  "merge_ms": 1914.9615,
+                  "group_ms": 1389.8441
+                },
+                "render_distribution_ms": {
+                  "total": 35525.7035,
+                  "mean": 14.63167359967051,
+                  "median": 11.289850000000001,
+                  "p95": 36.7902,
+                  "p99": 66.9514,
+                  "maximum": 150.2184
+                },
+                "burst_parse_ms": 845.4858,
+                "burst_render_ms": 1610.8603,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810870,
+                    "hits": 4806445,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 447053824
+              },
+              {
+                "name": "candidate",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 32718.75,
+                  "render_ms": 32699.0738,
+                  "parse_ms": 5192.2773,
+                  "build_draw_ms": 7294.7978,
+                  "composite_ms": 17876.1145,
+                  "bitmap_ms": 13320.1487,
+                  "tree_ms": 1044.2998,
+                  "merge_ms": 1721.3868,
+                  "group_ms": 1188.4147
+                },
+                "render_distribution_ms": {
+                  "total": 32699.0738,
+                  "mean": 13.467493327841845,
+                  "median": 11.25155,
+                  "p95": 31.0366,
+                  "p99": 61.2026,
+                  "maximum": 119.9277
+                },
+                "burst_parse_ms": 771.0847,
+                "burst_render_ms": 1458.4681,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810872,
+                    "hits": 4806447,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 451510272
+              },
+              {
+                "name": "candidate",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 33953.125,
+                  "render_ms": 34419.1565,
+                  "parse_ms": 5514.5215,
+                  "build_draw_ms": 7647.4374,
+                  "composite_ms": 18712.4036,
+                  "bitmap_ms": 13895.4707,
+                  "tree_ms": 1114.8482,
+                  "merge_ms": 1792.9773,
+                  "group_ms": 1262.8513
+                },
+                "render_distribution_ms": {
+                  "total": 34419.1565,
+                  "mean": 14.175929365733113,
+                  "median": 11.18055,
+                  "p95": 33.9466,
+                  "p99": 61.8389,
+                  "maximum": 130.5422
+                },
+                "burst_parse_ms": 828.6009,
+                "burst_render_ms": 1547.4299,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810871,
+                    "hits": 4806446,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 446357504
+              },
+              {
+                "name": "control",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 34015.625,
+                  "render_ms": 34351.6299,
+                  "parse_ms": 5326.5837,
+                  "build_draw_ms": 7342.4837,
+                  "composite_ms": 19285.7984,
+                  "bitmap_ms": 13428.3136,
+                  "tree_ms": 1657.8558,
+                  "merge_ms": 1873.0119,
+                  "group_ms": 1326.773
+                },
+                "render_distribution_ms": {
+                  "total": 34351.6299,
+                  "mean": 14.148117751235585,
+                  "median": 11.4753,
+                  "p95": 32.8391,
+                  "p99": 65.7551,
+                  "maximum": 149.569
+                },
+                "burst_parse_ms": 815.2074,
+                "burst_render_ms": 1542.0415,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810866,
+                    "hits": 4806441,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 436584448
+              }
+            ]
+          },
+          {
+            "raw_directory": "abba-x64-repeat",
+            "comparison": {
+              "thread_cpu_ms": {
+                "candidate": 35070.3125,
+                "control": 34796.875,
+                "reduction_percent": -0.7858105074090682
+              },
+              "render_ms": {
+                "candidate": 34964.09255,
+                "control": 34686.63545,
+                "reduction_percent": -0.7998962609099047
+              },
+              "parse_ms": {
+                "candidate": 5553.27205,
+                "control": 5386.14505,
+                "reduction_percent": -3.102905667198841
+              },
+              "build_draw_ms": {
+                "candidate": 7757.4558,
+                "control": 7393.923199999999,
+                "reduction_percent": -4.916640194477551
+              },
+              "composite_ms": {
+                "candidate": 19084.74775,
+                "control": 19452.7932,
+                "reduction_percent": 1.8919928167436706
+              },
+              "bitmap_ms": {
+                "candidate": 14174.3639,
+                "control": 13591.490699999998,
+                "reduction_percent": -4.288515607783938
+              },
+              "tree_ms": {
+                "candidate": 1137.4388,
+                "control": 1653.55485,
+                "reduction_percent": 31.212514661972058
+              },
+              "merge_ms": {
+                "candidate": 1802.6976,
+                "control": 1855.2618499999999,
+                "reduction_percent": 2.8332523519523645
+              },
+              "group_ms": {
+                "candidate": 1319.97455,
+                "control": 1336.6444999999999,
+                "reduction_percent": 1.2471491110762845
+              }
+            },
+            "builds": {
+              "candidate": "0378768e43ba9236ddbd002778a4514307a39fc9fad1755dba4681513b940e9c",
+              "control": "b7aa02b5ff8f43cbb6b51e31e3ff492bf3c02d8fa764b624b7ceb94a327d24be"
+            },
+            "runs": [
+              {
+                "name": "control",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 35609.375,
+                  "render_ms": 35478.7028,
+                  "parse_ms": 5467.889,
+                  "build_draw_ms": 7518.7054,
+                  "composite_ms": 19958.7835,
+                  "bitmap_ms": 13905.0338,
+                  "tree_ms": 1720.0004,
+                  "merge_ms": 1897.7923,
+                  "group_ms": 1390.2767
+                },
+                "render_distribution_ms": {
+                  "total": 35478.7028,
+                  "mean": 14.612315815485998,
+                  "median": 12.0457,
+                  "p95": 33.2962,
+                  "p99": 64.4291,
+                  "maximum": 125.2202
+                },
+                "burst_parse_ms": 817.4035,
+                "burst_render_ms": 1544.4208,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810866,
+                    "hits": 4806441,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 436510720
+              },
+              {
+                "name": "candidate",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 36687.5,
+                  "render_ms": 36589.4288,
+                  "parse_ms": 5804.843,
+                  "build_draw_ms": 8168.6421,
+                  "composite_ms": 19923.634,
+                  "bitmap_ms": 14759.5329,
+                  "tree_ms": 1197.2206,
+                  "merge_ms": 1885.7295,
+                  "group_ms": 1402.8195
+                },
+                "render_distribution_ms": {
+                  "total": 36589.4288,
+                  "mean": 15.069781219110379,
+                  "median": 11.355599999999999,
+                  "p95": 37.9293,
+                  "p99": 70.6391,
+                  "maximum": 131.9391
+                },
+                "burst_parse_ms": 875.6963,
+                "burst_render_ms": 1627.7965,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810870,
+                    "hits": 4806445,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 445149184
+              },
+              {
+                "name": "candidate",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 33453.125,
+                  "render_ms": 33338.7563,
+                  "parse_ms": 5301.7011,
+                  "build_draw_ms": 7346.2695,
+                  "composite_ms": 18245.8615,
+                  "bitmap_ms": 13589.1949,
+                  "tree_ms": 1077.657,
+                  "merge_ms": 1719.6657,
+                  "group_ms": 1237.1296
+                },
+                "render_distribution_ms": {
+                  "total": 33338.7563,
+                  "mean": 13.73095399505766,
+                  "median": 11.14575,
+                  "p95": 32.043,
+                  "p99": 62.8912,
+                  "maximum": 135.7819
+                },
+                "burst_parse_ms": 807.184,
+                "burst_render_ms": 1536.0575000000001,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810871,
+                    "hits": 4806446,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 447418368
+              },
+              {
+                "name": "control",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 33984.375,
+                  "render_ms": 33894.5681,
+                  "parse_ms": 5304.4011,
+                  "build_draw_ms": 7269.141,
+                  "composite_ms": 18946.8029,
+                  "bitmap_ms": 13277.9476,
+                  "tree_ms": 1587.1093,
+                  "merge_ms": 1812.7314,
+                  "group_ms": 1283.0123
+                },
+                "render_distribution_ms": {
+                  "total": 33894.5681,
+                  "mean": 13.959871540362439,
+                  "median": 11.06035,
+                  "p95": 32.8724,
+                  "p99": 64.6117,
+                  "maximum": 134.7367
+                },
+                "burst_parse_ms": 809.5522,
+                "burst_render_ms": 1516.4858,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810870,
+                    "hits": 4806445,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 447287296
+              }
+            ]
+          }
+        ],
+        "median_pass_totals_ms": {
+          "thread_cpu_ms": {
+            "control": 34750.0,
+            "candidate": 33703.125,
+            "reduction_percent": 3.012589928057552
+          },
+          "render_ms": {
+            "control": 34915.16635,
+            "candidate": 33878.956399999995,
+            "reduction_percent": 2.967793249537254
+          },
+          "parse_ms": {
+            "control": 5397.23635,
+            "candidate": 5408.1113000000005,
+            "reduction_percent": -0.2014910834875705
+          },
+          "build_draw_ms": {
+            "control": 7430.59455,
+            "candidate": 7496.8534500000005,
+            "reduction_percent": -0.8917038812190414
+          },
+          "composite_ms": {
+            "control": 19622.290950000002,
+            "candidate": 18479.132550000002,
+            "reduction_percent": 5.825815155390912
+          },
+          "bitmap_ms": {
+            "control": 13666.6737,
+            "candidate": 13742.3328,
+            "reduction_percent": -0.5536028858287745
+          },
+          "tree_ms": {
+            "control": 1674.34875,
+            "candidate": 1096.2525999999998,
+            "reduction_percent": 34.52662714383729
+          },
+          "merge_ms": {
+            "control": 1885.4021,
+            "candidate": 1757.18205,
+            "reduction_percent": 6.800673978245819
+          },
+          "group_ms": {
+            "control": 1358.30855,
+            "candidate": 1249.99045,
+            "reduction_percent": 7.974484147950034
+          }
+        },
+        "burst_frame_count": 17,
+        "burst_median_pass_totals_ms": {
+          "burst_parse_ms": {
+            "control": 816.3054500000001,
+            "candidate": 817.89245,
+            "reduction_percent": -0.19441252046032975
+          },
+          "burst_render_ms": {
+            "control": 1543.23115,
+            "candidate": 1541.7437,
+            "reduction_percent": 0.09638543130755517
+          }
+        },
+        "selected_frames": {
+          "33448": {
+            "parse_ms": {
+              "control": 69.78685,
+              "candidate": 67.1505
+            },
+            "render_ms": {
+              "control": 142.15285,
+              "candidate": 124.70320000000001
+            }
+          },
+          "33157": {
+            "parse_ms": {
+              "control": 60.7457,
+              "candidate": 71.71600000000001
+            },
+            "render_ms": {
+              "control": 116.4002,
+              "candidate": 130.93105
+            }
+          },
+          "32780": {
+            "parse_ms": {
+              "control": 57.96725,
+              "candidate": 56.9473
+            },
+            "render_ms": {
+              "control": 121.49705,
+              "candidate": 112.4267
+            }
+          }
+        },
+        "renderer_caches": {
+          "control": [
+            {
+              "overlay": {
+                "queries": 4810870,
+                "hits": 4806445,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810866,
+                "hits": 4806441,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810866,
+                "hits": 4806441,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810870,
+                "hits": 4806445,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            }
+          ],
+          "candidate": [
+            {
+              "overlay": {
+                "queries": 4810872,
+                "hits": 4806447,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810871,
+                "hits": 4806446,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810870,
+                "hits": 4806445,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810871,
+                "hits": 4806446,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            }
+          ]
+        },
+        "cache_work_counts": {
+          "control": [
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            }
+          ],
+          "candidate": [
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            }
+          ]
+        },
+        "median_peak_process_commit_bytes": {
+          "control": 441819136.0,
+          "candidate": 446887936.0
+        },
+        "median_per_pass_wall_tails_ms": {
+          "p95": {
+            "control": 33.0843,
+            "candidate": 32.9948
+          },
+          "p99": {
+            "control": 65.1834,
+            "candidate": 62.36505
+          },
+          "maximum": {
+            "control": 142.15285,
+            "candidate": 131.24065000000002
+          }
+        },
+        "source_budget_ms": 41.708333333333336,
+        "frames_over_budget_using_per_frame_medians": {
+          "control": 46,
+          "candidate": 49
+        }
+      },
+      "validation": {
+        "contracts_passed": [
+          "font-layout",
+          "ass-command",
+          "libass",
+          "group-view",
+          "hash",
+          "cache",
+          "intern",
+          "geometry",
+          "inline-list",
+          "alpha-buffer",
+          "zero-alpha",
+          "effect",
+          "reconstruction-pool",
+          "layer-key",
+          "reconstruction-cache",
+          "word-key-cache",
+          "group-key",
+          "cache-capacity",
+          "karaoke-hash",
+          "grouping",
+          "allocation-probe"
+        ],
+        "fixtures": 54,
+        "sample_frames": 2428,
+        "sample_capacities": [
+          256,
+          0
+        ],
+        "extended_scripts_frames_each": 2428,
+        "extended_scripts": [
+          "reconstruction",
+          "zero-alpha",
+          "polygon-font-fields",
+          "geometry-reuse",
+          "multiline-inverse",
+          "omitted-numbers",
+          "edge-blur-karaoke",
+          "grouping-stress",
+          "draw-slot-spill",
+          "ass-command-prefixes",
+          "font-style-layout",
+          "font-style-layout-ansi"
+        ]
+      },
+      "binaries": [
+        {
+          "name": "render_subtitles.exe",
+          "bytes": 3172864,
+          "sha256": "0378768e43ba9236ddbd002778a4514307a39fc9fad1755dba4681513b940e9c"
+        },
+        {
+          "name": "render_subtitles.pdb",
+          "bytes": 27742208,
+          "sha256": "7ff5c48b58da39eaf8e2a6a279ebcd3d73e3c45ab26c0a60be5fee8000cc0428"
+        },
+        {
+          "name": "VSFilter.dll",
+          "bytes": 4142592,
+          "sha256": "0a3c182d83c3d3335dd265248c4edbbe683ed80b38b16af0c881ea243554aaa6"
+        },
+        {
+          "name": "VSFilter.pdb",
+          "bytes": 33345536,
+          "sha256": "b07eb8e5e5e28678573e3843c890f3d7aee2ec7608b4da5164199ff3fd597e30"
+        },
+        {
+          "name": "XySubFilter.dll",
+          "bytes": 3850752,
+          "sha256": "a177dc96c24695b7fd3ed914f419a062857d3c4add2c28e3c051be4e92a6c31f"
+        },
+        {
+          "name": "XySubFilter.pdb",
+          "bytes": 32182272,
+          "sha256": "89e31d2a1e01bc94c89b99389cce67b95897970c9f97ddafc87afb623da14161"
+        },
+        {
+          "name": "xy_sub_filter_consumer.dll",
+          "bytes": 958976,
+          "sha256": "9b5788e478e6d733f61bd98ef7489b8c2768c62f9cd6980c7de25cc8cf66b800"
+        },
+        {
+          "name": "xy_sub_filter_consumer.pdb",
+          "bytes": 22982656,
+          "sha256": "2da33ac012cb19a2e575644c9e6a7ccd3829584ef661480e5e47ba258c2bca26"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/subtitles/subtitles.vcxproj",
+          "sha256": "c6b383093101796bdd653f8fa7cc3537f0e6de346cc03b3a41ebe655cc9acad2"
+        },
+        {
+          "path": "src/thirdparty/libass-deps/libass.props",
+          "sha256": "11cfb9d27dfb9c33cdf16478b28b4a50d259cf8515a3aa064721bd2113059aed"
+        },
+        {
+          "path": "tools/build_libass.ps1",
+          "sha256": "e8c6809f1a8c078e0b393b05185524012d6cb176e4fb026f47375ccb1458a1f3"
+        },
+        {
+          "path": "tools/fetch_libass_sources.py",
+          "sha256": "98c66d48b06f7ede0f7899d7106e3991623d62fa8e0774a752d60b146c550c3d"
+        },
+        {
+          "path": "src/subtitles/LibassRenderer.cpp",
+          "sha256": "450675b7a6ffa60e27d55ee60032539fe47747c40feb974050720cb9b3988640"
+        },
+        {
+          "path": "src/subtitles/LibassRenderer.h",
+          "sha256": "f79cb818dc68620ad99d26577fab9b0be985a3e756c76e95f3167a4f20af9847"
+        },
+        {
+          "path": "src/subtitles/STS.cpp",
+          "sha256": "ef16111d109d941280c493c15f9f9c62b5ee67fe147c6e84d959302a85d40033"
+        },
+        {
+          "path": "src/subtitles/STS.h",
+          "sha256": "dcd58f0d435186745d344eed4d142eb90dae0b545732a0e084d6d84c042dd777"
+        },
+        {
+          "path": "src/subtitles/SubtitleInputPin.cpp",
+          "sha256": "745e19b3717671e5d213a9d5a50b1d3b5fb2ae5156673e3f80e198079ea3e1b8"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.cpp",
+          "sha256": "1cde208ee84db1fa71bb6debe26fc4030c7df073ce589164e0a349a7ec20b774"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.h",
+          "sha256": "d51c98e866642ce469fe0be759e8582c1f194c09f3f9d946aa839256d1362748"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/IDirectVobSubXy.h",
+          "sha256": "24b332ddb4cb3fabeadaa5fa16587fde007c78b83649130f67ce2142bdb297b1"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSub.cpp",
+          "sha256": "fc2bfc619e12e6c59518ab08450bed23277044b631f1210150f6b2bd0251ed73"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/VSFilter.rc",
+          "sha256": "cbf6fb711d04a855981167a13bc9f59575eedbddfec1eb0a76c50b4a09d26554"
+        },
+        {
+          "path": "src/thirdparty/libass-deps/sources.lock.json",
+          "sha256": "7fead39c45ac192ebea5604a7a49c01667a97ba94b9e965bd88272ffd7d36fb6"
+        },
+        {
+          "path": "src/thirdparty/libass-deps/CMakeLists.txt",
+          "sha256": "18242332b178c5528f1aacc5bb6a7635e1c277c10b355c9bdf9fb309e69c5504"
+        },
+        {
+          "path": "src/subtitles/draw_item.cpp",
+          "sha256": "9d8f384ff5b21eb4b21b462834e58b5a477884793ceda06798b3109dd5ce7c8f"
+        },
+        {
+          "path": "src/subtitles/draw_item.h",
+          "sha256": "941445191a4678e81e74bd1e3926cf7af25d8c38e3951e2ec893859e110e7d17"
+        },
+        {
+          "path": "src/subtitles/flyweight_base_types.h",
+          "sha256": "329f39498850ae07c296a354396c3ab2a834b6cecaae3f05e5018bd54d087a69"
+        },
+        {
+          "path": "src/subtitles/mru_cache.h",
+          "sha256": "25b3b2db3b01bd9fca550c05df61712f3bf661b0b677c4ac8223cdd1244e2489"
+        },
+        {
+          "path": "src/subtitles/cache_manager.cpp",
+          "sha256": "fa8a4934a5523dcf860c3272b1e8155aade2ab0f287e8ad1c7c068d8ca9c0528"
+        },
+        {
+          "path": "src/subtitles/cache_manager.h",
+          "sha256": "781852ea557304d98ac3f2de9cbe213945b6a7141b48e0e51e01a194cf83d445"
+        },
+        {
+          "path": "src/subtitles/Rasterizer.cpp",
+          "sha256": "c6280537789e230c2c256d8d6a09457a8c92e8afa4357ef19afe5c6884af9c81"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/xy_sub_filter.cpp",
+          "sha256": "c2b6d1eb4505e45095b1754a94a9b1f5c1db27980b52446992518cb6b7815b9f"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSubFilter.cpp",
+          "sha256": "9a5eb19fdbdf9dfd2002c92a3d0e069981480ce87f1af9de65cba0ff2e2755d8"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/plugins.cpp",
+          "sha256": "06dd83222ea28939d6af5acae71762ca214fd4de80002a51d5857c4ad5f6469f"
+        },
+        {
+          "path": "test/benchmark/render_subtitles.cpp",
+          "sha256": "3f2f144d8d46ea2f1454aa6c8865a68d48cf7763444e293243373e725db09a2c"
+        },
+        {
+          "path": "test/benchmark/fixtures/edge-blur-karaoke.ass",
+          "sha256": "12f3f217eb659a5abec0804422273e4c220360dc3d7dc2a9cc72b860b4003e5c"
+        },
+        {
+          "path": "src/subtitles/RTS.cpp",
+          "sha256": "89263fe50a5502d807d071cdac527c23474c8df71a23e39a1331964713b0f7bd"
+        },
+        {
+          "path": "src/subtitles/RTS.h",
+          "sha256": "07ac796173cb46f0778f685374d5dc2be615926fe038cf83a34eac3d6207af73"
+        },
+        {
+          "path": "src/subtitles/xy_malloc.cpp",
+          "sha256": "698857e57c7185e7b97d7b6a9d9fea86dd2f2b5f0abcc4aca100b7624639177d"
+        },
+        {
+          "path": "src/subtitles/xy_malloc.h",
+          "sha256": "34ff8732dbc63217b41e57dd23428ff7b48d9ebe7720efd675adece5693d4afd"
+        },
+        {
+          "path": "test/benchmark/fixtures/grouping-stress.ass",
+          "sha256": "aadba4c3fa22c38cd18b36d6621769243748ba4f7640d3c7c6fb33e5d62ed3fd"
+        },
+        {
+          "path": "test/benchmark/run_playback_baseline.py",
+          "sha256": "3de2153f47a13e9f11f09c17bb8c7f8a80a8dbafc07ed12fb5df280b68399d13"
+        },
+        {
+          "path": "test/benchmark/fixtures/draw-slot-spill.ass",
+          "sha256": "fe0d59b6ccf6671818991eaa127e8f3a137a27b25fa65cc98e8858ec5dafcbf1"
+        },
+        {
+          "path": "test/benchmark/fixtures/ass-command-prefixes.ass",
+          "sha256": "db2d5e9194748ac35138198123f4c4417ae463cb3ebda51bc2b4e3acba8ec8ff"
+        },
+        {
+          "path": "test/benchmark/run_native_benchmark.py",
+          "sha256": "4e1719185dbac18a4205c59465f2d01ce385b6653ea76a0392fd50c48ec5f624"
+        },
+        {
+          "path": "test/benchmark/fixtures/font-style-layout.ass",
+          "sha256": "ab966e1886a032a399c17e0f21735b22f437c9ee5fc5c47c5d771e736da09fee"
+        },
+        {
+          "path": "test/benchmark/fixtures/font-style-layout-ansi.ass",
+          "sha256": "5b8c4b85269c8680b0e8b84457e645a93fb79bf352b744d0e4a38bb338b4d130"
+        }
+      ],
+      "native_group_key_mode": "owned",
+      "composite_only": {
+        "mode": "composite",
+        "batches": [
+          {
+            "raw_directory": "abba-composite-x64",
+            "comparison": {
+              "thread_cpu_ms": {
+                "candidate": 18320.3125,
+                "control": 19453.125,
+                "reduction_percent": 5.823293172690757
+              },
+              "render_ms": {
+                "candidate": 18219.20015,
+                "control": 19364.593249999998,
+                "reduction_percent": 5.9148833399844225
+              },
+              "parse_ms": {
+                "candidate": 0.0,
+                "control": 0.0,
+                "reduction_percent": null
+              },
+              "build_draw_ms": {
+                "candidate": 0.0,
+                "control": 0.0,
+                "reduction_percent": null
+              },
+              "composite_ms": {
+                "candidate": 18218.39105,
+                "control": 19363.87025,
+                "reduction_percent": 5.915548829914319
+              },
+              "bitmap_ms": {
+                "candidate": 13579.7749,
+                "control": 13500.5138,
+                "reduction_percent": -0.5870969147855565
+              },
+              "tree_ms": {
+                "candidate": 1065.8964999999998,
+                "control": 1662.8851,
+                "reduction_percent": 35.90077269920815
+              },
+              "merge_ms": {
+                "candidate": 1734.2523,
+                "control": 1872.426,
+                "reduction_percent": 7.3793944326771665
+              },
+              "group_ms": {
+                "candidate": 1213.5944,
+                "control": 1324.81365,
+                "reduction_percent": 8.395086357994586
+              }
+            },
+            "builds": {
+              "candidate": "0378768e43ba9236ddbd002778a4514307a39fc9fad1755dba4681513b940e9c",
+              "control": "b7aa02b5ff8f43cbb6b51e31e3ff492bf3c02d8fa764b624b7ceb94a327d24be"
+            },
+            "runs": [
+              {
+                "name": "control",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 19453.125,
+                  "render_ms": 19367.4741,
+                  "parse_ms": 0.0,
+                  "build_draw_ms": 0.0,
+                  "composite_ms": 19366.6872,
+                  "bitmap_ms": 13513.8206,
+                  "tree_ms": 1660.4801,
+                  "merge_ms": 1873.711,
+                  "group_ms": 1317.5157
+                },
+                "render_distribution_ms": {
+                  "total": 19367.4741,
+                  "mean": 7.976719151565074,
+                  "median": 6.46825,
+                  "p95": 19.3406,
+                  "p99": 26.1361,
+                  "maximum": 41.0026
+                },
+                "burst_parse_ms": 0.0,
+                "burst_render_ms": 386.5904,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810871,
+                    "hits": 4806446,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 445988864
+              },
+              {
+                "name": "candidate",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 18203.125,
+                  "render_ms": 18413.6407,
+                  "parse_ms": 0.0,
+                  "build_draw_ms": 0.0,
+                  "composite_ms": 18412.8221,
+                  "bitmap_ms": 13724.3051,
+                  "tree_ms": 1086.6118,
+                  "merge_ms": 1750.5868,
+                  "group_ms": 1220.5861
+                },
+                "render_distribution_ms": {
+                  "total": 18413.6407,
+                  "mean": 7.583871787479407,
+                  "median": 6.1105,
+                  "p95": 18.7646,
+                  "p99": 25.3623,
+                  "maximum": 30.3449
+                },
+                "burst_parse_ms": 0.0,
+                "burst_render_ms": 351.8725,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810870,
+                    "hits": 4806445,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 445067264
+              },
+              {
+                "name": "candidate",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 18437.5,
+                  "render_ms": 18024.7596,
+                  "parse_ms": 0.0,
+                  "build_draw_ms": 0.0,
+                  "composite_ms": 18023.96,
+                  "bitmap_ms": 13435.2447,
+                  "tree_ms": 1045.1812,
+                  "merge_ms": 1717.9178,
+                  "group_ms": 1206.6027
+                },
+                "render_distribution_ms": {
+                  "total": 18024.7596,
+                  "mean": 7.423706589785832,
+                  "median": 5.2223500000000005,
+                  "p95": 17.9472,
+                  "p99": 24.1889,
+                  "maximum": 34.7887
+                },
+                "burst_parse_ms": 0.0,
+                "burst_render_ms": 386.2479,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810868,
+                    "hits": 4806443,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 440598528
+              },
+              {
+                "name": "control",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 19453.125,
+                  "render_ms": 19361.7124,
+                  "parse_ms": 0.0,
+                  "build_draw_ms": 0.0,
+                  "composite_ms": 19361.0533,
+                  "bitmap_ms": 13487.207,
+                  "tree_ms": 1665.2901,
+                  "merge_ms": 1871.141,
+                  "group_ms": 1332.1116
+                },
+                "render_distribution_ms": {
+                  "total": 19361.7124,
+                  "mean": 7.974346128500824,
+                  "median": 6.3197,
+                  "p95": 18.7684,
+                  "p99": 25.9943,
+                  "maximum": 36.0942
+                },
+                "burst_parse_ms": 0.0,
+                "burst_render_ms": 383.3127,
+                "syntax_cache": {
+                  "event_hits": 513500,
+                  "event_misses": 174761,
+                  "peak_accounted_bytes": 16777150,
+                  "shared_queries": 174761,
+                  "shared_hits": 90725,
+                  "shared_compilations": 84036
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810868,
+                    "hits": 4806443,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 442421248
+              }
+            ]
+          }
+        ],
+        "median_pass_totals_ms": {
+          "thread_cpu_ms": {
+            "control": 19453.125,
+            "candidate": 18320.3125,
+            "reduction_percent": 5.823293172690757
+          },
+          "render_ms": {
+            "control": 19364.593249999998,
+            "candidate": 18219.20015,
+            "reduction_percent": 5.9148833399844225
+          },
+          "parse_ms": {
+            "control": 0.0,
+            "candidate": 0.0,
+            "reduction_percent": null
+          },
+          "build_draw_ms": {
+            "control": 0.0,
+            "candidate": 0.0,
+            "reduction_percent": null
+          },
+          "composite_ms": {
+            "control": 19363.87025,
+            "candidate": 18218.39105,
+            "reduction_percent": 5.915548829914319
+          },
+          "bitmap_ms": {
+            "control": 13500.5138,
+            "candidate": 13579.7749,
+            "reduction_percent": -0.5870969147855565
+          },
+          "tree_ms": {
+            "control": 1662.8851,
+            "candidate": 1065.8964999999998,
+            "reduction_percent": 35.90077269920815
+          },
+          "merge_ms": {
+            "control": 1872.426,
+            "candidate": 1734.2523,
+            "reduction_percent": 7.3793944326771665
+          },
+          "group_ms": {
+            "control": 1324.81365,
+            "candidate": 1213.5944,
+            "reduction_percent": 8.395086357994586
+          }
+        },
+        "burst_frame_count": 17,
+        "burst_median_pass_totals_ms": {
+          "burst_parse_ms": {
+            "control": 0.0,
+            "candidate": 0.0,
+            "reduction_percent": null
+          },
+          "burst_render_ms": {
+            "control": 384.95155,
+            "candidate": 369.0602,
+            "reduction_percent": 4.128142879279217
+          }
+        },
+        "selected_frames": {
+          "33448": {
+            "parse_ms": {
+              "control": 0.0,
+              "candidate": 0.0
+            },
+            "render_ms": {
+              "control": 32.95665,
+              "candidate": 30.798949999999998
+            }
+          },
+          "33157": {
+            "parse_ms": {
+              "control": 0.0,
+              "candidate": 0.0
+            },
+            "render_ms": {
+              "control": 29.205350000000003,
+              "candidate": 26.57295
+            }
+          },
+          "32780": {
+            "parse_ms": {
+              "control": 0.0,
+              "candidate": 0.0
+            },
+            "render_ms": {
+              "control": 32.391850000000005,
+              "candidate": 27.7989
+            }
+          }
+        },
+        "renderer_caches": {
+          "control": [
+            {
+              "overlay": {
+                "queries": 4810871,
+                "hits": 4806446,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810868,
+                "hits": 4806443,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            }
+          ],
+          "candidate": [
+            {
+              "overlay": {
+                "queries": 4810870,
+                "hits": 4806445,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810868,
+                "hits": 4806443,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            }
+          ]
+        },
+        "cache_work_counts": {
+          "control": [
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            }
+          ],
+          "candidate": [
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            },
+            {
+              "event_hits": 513500,
+              "event_misses": 174761,
+              "peak_accounted_bytes": 16777150,
+              "shared_queries": 174761,
+              "shared_hits": 90725,
+              "shared_compilations": 84036
+            }
+          ]
+        },
+        "median_peak_process_commit_bytes": {
+          "control": 444205056.0,
+          "candidate": 442832896.0
+        }
+      },
+      "control_snapshot": {
+        "path": "benchmark-results/font-layout-20261026/stable-x64",
+        "binaries": [
+          {
+            "name": "render_subtitles.exe",
+            "bytes": 3172864,
+            "sha256": "b7aa02b5ff8f43cbb6b51e31e3ff492bf3c02d8fa764b624b7ceb94a327d24be"
+          },
+          {
+            "name": "render_subtitles.pdb",
+            "bytes": 27750400,
+            "sha256": "c161598bf37fb15b49699e27e8bbc775ebd026b81f5465655e69540c7a94fbe8"
+          },
+          {
+            "name": "VSFilter.dll",
+            "bytes": 4142592,
+            "sha256": "1dd38b11debd13b866fc3c970c446e54a93cd8a1e846e516ce3d5da332e7d05b"
+          },
+          {
+            "name": "VSFilter.pdb",
+            "bytes": 33337344,
+            "sha256": "4f73c81b886ed37b4b057507c14a0fb2402522fdf2ee047a9b4b7793fc20dbb2"
+          },
+          {
+            "name": "XySubFilter.dll",
+            "bytes": 3851776,
+            "sha256": "fd5b64de1c3867b3a331bf5bea2cab552156121a873c1314a99242c32f46fa1d"
+          },
+          {
+            "name": "XySubFilter.pdb",
+            "bytes": 32190464,
+            "sha256": "cfb3005052dbe877c00e77bbb922e41cf422218ee05a20db221335a385b0d6e2"
+          },
+          {
+            "name": "xy_sub_filter_consumer.dll",
+            "bytes": 958976,
+            "sha256": "a5717fb428bb4f0f9ef0c728f2f158e4b2fbca81eaaad5cf49701765cb6e92cd"
+          },
+          {
+            "name": "xy_sub_filter_consumer.pdb",
+            "bytes": 22982656,
+            "sha256": "5d4f87f871c2375283ce0eba38418f6c5cd9a248538fd7c97f7fc4533cab60dc"
+          }
+        ],
+        "sources": [
+          {
+            "path": "src/subtitles/subtitles.vcxproj",
+            "sha256": "c6b383093101796bdd653f8fa7cc3537f0e6de346cc03b3a41ebe655cc9acad2"
+          },
+          {
+            "path": "src/thirdparty/libass-deps/libass.props",
+            "sha256": "11cfb9d27dfb9c33cdf16478b28b4a50d259cf8515a3aa064721bd2113059aed"
+          },
+          {
+            "path": "tools/build_libass.ps1",
+            "sha256": "e8c6809f1a8c078e0b393b05185524012d6cb176e4fb026f47375ccb1458a1f3"
+          },
+          {
+            "path": "tools/fetch_libass_sources.py",
+            "sha256": "98c66d48b06f7ede0f7899d7106e3991623d62fa8e0774a752d60b146c550c3d"
+          },
+          {
+            "path": "src/subtitles/LibassRenderer.cpp",
+            "sha256": "450675b7a6ffa60e27d55ee60032539fe47747c40feb974050720cb9b3988640"
+          },
+          {
+            "path": "src/subtitles/LibassRenderer.h",
+            "sha256": "f79cb818dc68620ad99d26577fab9b0be985a3e756c76e95f3167a4f20af9847"
+          },
+          {
+            "path": "src/subtitles/STS.cpp",
+            "sha256": "ef16111d109d941280c493c15f9f9c62b5ee67fe147c6e84d959302a85d40033"
+          },
+          {
+            "path": "src/subtitles/STS.h",
+            "sha256": "dcd58f0d435186745d344eed4d142eb90dae0b545732a0e084d6d84c042dd777"
+          },
+          {
+            "path": "src/subtitles/SubtitleInputPin.cpp",
+            "sha256": "745e19b3717671e5d213a9d5a50b1d3b5fb2ae5156673e3f80e198079ea3e1b8"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.cpp",
+            "sha256": "1cde208ee84db1fa71bb6debe26fc4030c7df073ce589164e0a349a7ec20b774"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.h",
+            "sha256": "d51c98e866642ce469fe0be759e8582c1f194c09f3f9d946aa839256d1362748"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/IDirectVobSubXy.h",
+            "sha256": "24b332ddb4cb3fabeadaa5fa16587fde007c78b83649130f67ce2142bdb297b1"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSub.cpp",
+            "sha256": "fc2bfc619e12e6c59518ab08450bed23277044b631f1210150f6b2bd0251ed73"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/VSFilter.rc",
+            "sha256": "cbf6fb711d04a855981167a13bc9f59575eedbddfec1eb0a76c50b4a09d26554"
+          },
+          {
+            "path": "src/thirdparty/libass-deps/sources.lock.json",
+            "sha256": "7fead39c45ac192ebea5604a7a49c01667a97ba94b9e965bd88272ffd7d36fb6"
+          },
+          {
+            "path": "src/thirdparty/libass-deps/CMakeLists.txt",
+            "sha256": "18242332b178c5528f1aacc5bb6a7635e1c277c10b355c9bdf9fb309e69c5504"
+          },
+          {
+            "path": "src/subtitles/draw_item.cpp",
+            "sha256": "eb4f516425f939574e07df7a1aa10e38918b1e167eb2763dbe58855c348b487d"
+          },
+          {
+            "path": "src/subtitles/draw_item.h",
+            "sha256": "941445191a4678e81e74bd1e3926cf7af25d8c38e3951e2ec893859e110e7d17"
+          },
+          {
+            "path": "src/subtitles/flyweight_base_types.h",
+            "sha256": "329f39498850ae07c296a354396c3ab2a834b6cecaae3f05e5018bd54d087a69"
+          },
+          {
+            "path": "src/subtitles/mru_cache.h",
+            "sha256": "25b3b2db3b01bd9fca550c05df61712f3bf661b0b677c4ac8223cdd1244e2489"
+          },
+          {
+            "path": "src/subtitles/cache_manager.cpp",
+            "sha256": "fa8a4934a5523dcf860c3272b1e8155aade2ab0f287e8ad1c7c068d8ca9c0528"
+          },
+          {
+            "path": "src/subtitles/cache_manager.h",
+            "sha256": "781852ea557304d98ac3f2de9cbe213945b6a7141b48e0e51e01a194cf83d445"
+          },
+          {
+            "path": "src/subtitles/Rasterizer.cpp",
+            "sha256": "c6280537789e230c2c256d8d6a09457a8c92e8afa4357ef19afe5c6884af9c81"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/xy_sub_filter.cpp",
+            "sha256": "c2b6d1eb4505e45095b1754a94a9b1f5c1db27980b52446992518cb6b7815b9f"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSubFilter.cpp",
+            "sha256": "9a5eb19fdbdf9dfd2002c92a3d0e069981480ce87f1af9de65cba0ff2e2755d8"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/plugins.cpp",
+            "sha256": "06dd83222ea28939d6af5acae71762ca214fd4de80002a51d5857c4ad5f6469f"
+          },
+          {
+            "path": "test/benchmark/render_subtitles.cpp",
+            "sha256": "3f2f144d8d46ea2f1454aa6c8865a68d48cf7763444e293243373e725db09a2c"
+          },
+          {
+            "path": "test/benchmark/fixtures/edge-blur-karaoke.ass",
+            "sha256": "12f3f217eb659a5abec0804422273e4c220360dc3d7dc2a9cc72b860b4003e5c"
+          },
+          {
+            "path": "src/subtitles/RTS.cpp",
+            "sha256": "89263fe50a5502d807d071cdac527c23474c8df71a23e39a1331964713b0f7bd"
+          },
+          {
+            "path": "src/subtitles/RTS.h",
+            "sha256": "07ac796173cb46f0778f685374d5dc2be615926fe038cf83a34eac3d6207af73"
+          },
+          {
+            "path": "src/subtitles/xy_malloc.cpp",
+            "sha256": "698857e57c7185e7b97d7b6a9d9fea86dd2f2b5f0abcc4aca100b7624639177d"
+          },
+          {
+            "path": "src/subtitles/xy_malloc.h",
+            "sha256": "34ff8732dbc63217b41e57dd23428ff7b48d9ebe7720efd675adece5693d4afd"
+          },
+          {
+            "path": "test/benchmark/fixtures/grouping-stress.ass",
+            "sha256": "aadba4c3fa22c38cd18b36d6621769243748ba4f7640d3c7c6fb33e5d62ed3fd"
+          },
+          {
+            "path": "test/benchmark/run_playback_baseline.py",
+            "sha256": "3de2153f47a13e9f11f09c17bb8c7f8a80a8dbafc07ed12fb5df280b68399d13"
+          },
+          {
+            "path": "test/benchmark/fixtures/draw-slot-spill.ass",
+            "sha256": "fe0d59b6ccf6671818991eaa127e8f3a137a27b25fa65cc98e8858ec5dafcbf1"
+          },
+          {
+            "path": "test/benchmark/fixtures/ass-command-prefixes.ass",
+            "sha256": "db2d5e9194748ac35138198123f4c4417ae463cb3ebda51bc2b4e3acba8ec8ff"
+          },
+          {
+            "path": "test/benchmark/run_native_benchmark.py",
+            "sha256": "4e1719185dbac18a4205c59465f2d01ce385b6653ea76a0392fd50c48ec5f624"
+          },
+          {
+            "path": "test/benchmark/fixtures/font-style-layout.ass",
+            "sha256": "ab966e1886a032a399c17e0f21735b22f437c9ee5fc5c47c5d771e736da09fee"
+          },
+          {
+            "path": "test/benchmark/fixtures/font-style-layout-ansi.ass",
+            "sha256": "5b8c4b85269c8680b0e8b84457e645a93fb79bf352b744d0e4a38bb338b4d130"
+          }
+        ]
+      }
+    },
+    "Win32": {
+      "render": {
+        "mode": "render",
+        "batches": [
+          {
+            "raw_directory": "abba-Win32",
+            "comparison": {
+              "thread_cpu_ms": {
+                "candidate": 28867.1875,
+                "control": 29882.8125,
+                "reduction_percent": 3.3986928104575154
+              },
+              "render_ms": {
+                "candidate": 28950.863100000002,
+                "control": 29909.0039,
+                "reduction_percent": 3.2035195929744686
+              },
+              "parse_ms": {
+                "candidate": 4958.7186,
+                "control": 4923.22035,
+                "reduction_percent": -0.7210371967202533
+              },
+              "build_draw_ms": {
+                "candidate": 6967.5221,
+                "control": 6905.7397,
+                "reduction_percent": -0.8946528928682307
+              },
+              "composite_ms": {
+                "candidate": 15083.72115,
+                "control": 16114.82775,
+                "reduction_percent": 6.3984959442089036
+              },
+              "bitmap_ms": {
+                "candidate": 11422.43375,
+                "control": 11395.47325,
+                "reduction_percent": -0.23658955980614405
+              },
+              "tree_ms": {
+                "candidate": 686.1708,
+                "control": 1313.07895,
+                "reduction_percent": 47.74337064804824
+              },
+              "merge_ms": {
+                "candidate": 1476.57145,
+                "control": 1576.47875,
+                "reduction_percent": 6.337370548128229
+              },
+              "group_ms": {
+                "candidate": 974.5913,
+                "control": 996.3603499999999,
+                "reduction_percent": 2.1848571151993235
+              }
+            },
+            "builds": {
+              "candidate": "e263d7152cc1c18ace228114a1ca04e837bfdf12d476481e970ff528bcce5ffc",
+              "control": "37a63cbb276f86ed21f98c72c7c084b3c5bd75493488ccba5605ad4087a4d32d"
+            },
+            "runs": [
+              {
+                "name": "control",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 30015.625,
+                  "render_ms": 29794.3969,
+                  "parse_ms": 4894.4682,
+                  "build_draw_ms": 6890.8104,
+                  "composite_ms": 16074.2882,
+                  "bitmap_ms": 11361.5757,
+                  "tree_ms": 1326.9609,
+                  "merge_ms": 1575.1107,
+                  "group_ms": 987.1156
+                },
+                "render_distribution_ms": {
+                  "total": 29794.3969,
+                  "mean": 12.271168410214168,
+                  "median": 10.9833,
+                  "p95": 28.6677,
+                  "p99": 55.9452,
+                  "maximum": 115.3643
+                },
+                "burst_parse_ms": 764.5598,
+                "burst_render_ms": 1380.0296,
+                "syntax_cache": {
+                  "event_hits": 564466,
+                  "event_misses": 123795,
+                  "peak_accounted_bytes": 16777122,
+                  "shared_queries": 123795,
+                  "shared_hits": 46655,
+                  "shared_compilations": 77140
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810877,
+                    "hits": 4806452,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 428630016
+              },
+              {
+                "name": "candidate",
+                "round": 1,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 28515.625,
+                  "render_ms": 28795.6909,
+                  "parse_ms": 4932.2486,
+                  "build_draw_ms": 6918.1429,
+                  "composite_ms": 15008.0716,
+                  "bitmap_ms": 11368.5714,
+                  "tree_ms": 680.7674,
+                  "merge_ms": 1471.3304,
+                  "group_ms": 966.5849
+                },
+                "render_distribution_ms": {
+                  "total": 28795.6909,
+                  "mean": 11.859839744645798,
+                  "median": 10.4966,
+                  "p95": 28.4628,
+                  "p99": 55.6916,
+                  "maximum": 111.6676
+                },
+                "burst_parse_ms": 774.222,
+                "burst_render_ms": 1382.6502,
+                "syntax_cache": {
+                  "event_hits": 564466,
+                  "event_misses": 123795,
+                  "peak_accounted_bytes": 16777122,
+                  "shared_queries": 123795,
+                  "shared_hits": 46655,
+                  "shared_compilations": 77140
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810873,
+                    "hits": 4806448,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 420204544
+              },
+              {
+                "name": "candidate",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 29218.75,
+                  "render_ms": 29106.0353,
+                  "parse_ms": 4985.1886,
+                  "build_draw_ms": 7016.9012999999995,
+                  "composite_ms": 15159.3707,
+                  "bitmap_ms": 11476.2961,
+                  "tree_ms": 691.5742,
+                  "merge_ms": 1481.8125,
+                  "group_ms": 982.5977
+                },
+                "render_distribution_ms": {
+                  "total": 29106.0353,
+                  "mean": 11.987658690280066,
+                  "median": 10.0833,
+                  "p95": 28.3721,
+                  "p99": 54.4748,
+                  "maximum": 117.2059
+                },
+                "burst_parse_ms": 784.6644,
+                "burst_render_ms": 1385.685,
+                "syntax_cache": {
+                  "event_hits": 564466,
+                  "event_misses": 123795,
+                  "peak_accounted_bytes": 16777122,
+                  "shared_queries": 123795,
+                  "shared_hits": 46655,
+                  "shared_compilations": 77140
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810876,
+                    "hits": 4806451,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 426557440
+              },
+              {
+                "name": "control",
+                "round": 2,
+                "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+                "pixel_identical": true,
+                "totals_ms": {
+                  "thread_cpu_ms": 29750.0,
+                  "render_ms": 30023.6109,
+                  "parse_ms": 4951.9725,
+                  "build_draw_ms": 6920.669,
+                  "composite_ms": 16155.3673,
+                  "bitmap_ms": 11429.3708,
+                  "tree_ms": 1299.197,
+                  "merge_ms": 1577.8468,
+                  "group_ms": 1005.6051
+                },
+                "render_distribution_ms": {
+                  "total": 30023.6109,
+                  "mean": 12.365572858319604,
+                  "median": 10.431049999999999,
+                  "p95": 28.3882,
+                  "p99": 57.8832,
+                  "maximum": 122.2919
+                },
+                "burst_parse_ms": 770.2804,
+                "burst_render_ms": 1416.8983,
+                "syntax_cache": {
+                  "event_hits": 564466,
+                  "event_misses": 123795,
+                  "peak_accounted_bytes": 16777122,
+                  "shared_queries": 123795,
+                  "shared_hits": 46655,
+                  "shared_compilations": 77140
+                },
+                "renderer_caches": {
+                  "overlay": {
+                    "queries": 4810878,
+                    "hits": 4806453,
+                    "misses": 4425,
+                    "items": 2048
+                  },
+                  "subpixel": {
+                    "queries": 0,
+                    "hits": 0,
+                    "misses": 0,
+                    "items": 0
+                  },
+                  "no_blur": {
+                    "queries": 4427,
+                    "hits": 2,
+                    "misses": 4425,
+                    "items": 256
+                  },
+                  "path": {
+                    "queries": 399601,
+                    "hits": 398530,
+                    "misses": 1071,
+                    "items": 628
+                  },
+                  "scanline": {
+                    "queries": 827,
+                    "hits": 196,
+                    "misses": 631,
+                    "items": 512
+                  },
+                  "scanline2": {
+                    "queries": 4425,
+                    "hits": 3596,
+                    "misses": 829,
+                    "items": 512
+                  },
+                  "bitmap": {
+                    "queries": 228488,
+                    "hits": 102469,
+                    "misses": 126019,
+                    "items": 256
+                  },
+                  "bitmap_key": {
+                    "queries": 354507,
+                    "hits": 102469,
+                    "misses": 252038,
+                    "items": 256
+                  }
+                },
+                "peak_process_commit_bytes": 429805568
+              }
+            ]
+          }
+        ],
+        "median_pass_totals_ms": {
+          "thread_cpu_ms": {
+            "control": 29882.8125,
+            "candidate": 28867.1875,
+            "reduction_percent": 3.3986928104575154
+          },
+          "render_ms": {
+            "control": 29909.0039,
+            "candidate": 28950.863100000002,
+            "reduction_percent": 3.2035195929744686
+          },
+          "parse_ms": {
+            "control": 4923.22035,
+            "candidate": 4958.7186,
+            "reduction_percent": -0.7210371967202533
+          },
+          "build_draw_ms": {
+            "control": 6905.7397,
+            "candidate": 6967.5221,
+            "reduction_percent": -0.8946528928682307
+          },
+          "composite_ms": {
+            "control": 16114.82775,
+            "candidate": 15083.72115,
+            "reduction_percent": 6.3984959442089036
+          },
+          "bitmap_ms": {
+            "control": 11395.47325,
+            "candidate": 11422.43375,
+            "reduction_percent": -0.23658955980614405
+          },
+          "tree_ms": {
+            "control": 1313.07895,
+            "candidate": 686.1708,
+            "reduction_percent": 47.74337064804824
+          },
+          "merge_ms": {
+            "control": 1576.47875,
+            "candidate": 1476.57145,
+            "reduction_percent": 6.337370548128229
+          },
+          "group_ms": {
+            "control": 996.3603499999999,
+            "candidate": 974.5913,
+            "reduction_percent": 2.1848571151993235
+          }
+        },
+        "burst_frame_count": 17,
+        "burst_median_pass_totals_ms": {
+          "burst_parse_ms": {
+            "control": 767.4201,
+            "candidate": 779.4431999999999,
+            "reduction_percent": -1.5666907864414714
+          },
+          "burst_render_ms": {
+            "control": 1398.46395,
+            "candidate": 1384.1676,
+            "reduction_percent": 1.0222894912664815
+          }
+        },
+        "selected_frames": {
+          "33448": {
+            "parse_ms": {
+              "control": 64.58435,
+              "candidate": 65.56015
+            },
+            "render_ms": {
+              "control": 118.8281,
+              "candidate": 114.43674999999999
+            }
+          },
+          "33157": {
+            "parse_ms": {
+              "control": 61.14735,
+              "candidate": 60.312349999999995
+            },
+            "render_ms": {
+              "control": 111.2234,
+              "candidate": 106.76085
+            }
+          },
+          "32780": {
+            "parse_ms": {
+              "control": 54.03805,
+              "candidate": 52.96635
+            },
+            "render_ms": {
+              "control": 105.6054,
+              "candidate": 100.7902
+            }
+          }
+        },
+        "renderer_caches": {
+          "control": [
+            {
+              "overlay": {
+                "queries": 4810877,
+                "hits": 4806452,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810878,
+                "hits": 4806453,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            }
+          ],
+          "candidate": [
+            {
+              "overlay": {
+                "queries": 4810873,
+                "hits": 4806448,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            },
+            {
+              "overlay": {
+                "queries": 4810876,
+                "hits": 4806451,
+                "misses": 4425,
+                "items": 2048
+              },
+              "subpixel": {
+                "queries": 0,
+                "hits": 0,
+                "misses": 0,
+                "items": 0
+              },
+              "no_blur": {
+                "queries": 4427,
+                "hits": 2,
+                "misses": 4425,
+                "items": 256
+              },
+              "path": {
+                "queries": 399601,
+                "hits": 398530,
+                "misses": 1071,
+                "items": 628
+              },
+              "scanline": {
+                "queries": 827,
+                "hits": 196,
+                "misses": 631,
+                "items": 512
+              },
+              "scanline2": {
+                "queries": 4425,
+                "hits": 3596,
+                "misses": 829,
+                "items": 512
+              },
+              "bitmap": {
+                "queries": 228488,
+                "hits": 102469,
+                "misses": 126019,
+                "items": 256
+              },
+              "bitmap_key": {
+                "queries": 354507,
+                "hits": 102469,
+                "misses": 252038,
+                "items": 256
+              }
+            }
+          ]
+        },
+        "cache_work_counts": {
+          "control": [
+            {
+              "event_hits": 564466,
+              "event_misses": 123795,
+              "peak_accounted_bytes": 16777122,
+              "shared_queries": 123795,
+              "shared_hits": 46655,
+              "shared_compilations": 77140
+            },
+            {
+              "event_hits": 564466,
+              "event_misses": 123795,
+              "peak_accounted_bytes": 16777122,
+              "shared_queries": 123795,
+              "shared_hits": 46655,
+              "shared_compilations": 77140
+            }
+          ],
+          "candidate": [
+            {
+              "event_hits": 564466,
+              "event_misses": 123795,
+              "peak_accounted_bytes": 16777122,
+              "shared_queries": 123795,
+              "shared_hits": 46655,
+              "shared_compilations": 77140
+            },
+            {
+              "event_hits": 564466,
+              "event_misses": 123795,
+              "peak_accounted_bytes": 16777122,
+              "shared_queries": 123795,
+              "shared_hits": 46655,
+              "shared_compilations": 77140
+            }
+          ]
+        },
+        "median_peak_process_commit_bytes": {
+          "control": 429217792.0,
+          "candidate": 423380992.0
+        },
+        "median_per_pass_wall_tails_ms": {
+          "p95": {
+            "control": 28.52795,
+            "candidate": 28.417450000000002
+          },
+          "p99": {
+            "control": 56.9142,
+            "candidate": 55.083200000000005
+          },
+          "maximum": {
+            "control": 118.8281,
+            "candidate": 114.43674999999999
+          }
+        },
+        "source_budget_ms": 41.708333333333336,
+        "frames_over_budget_using_per_frame_medians": {
+          "control": 39,
+          "candidate": 39
+        }
+      },
+      "validation": {
+        "contracts_passed": [
+          "font-layout",
+          "ass-command",
+          "libass",
+          "group-view",
+          "hash",
+          "cache",
+          "intern",
+          "geometry",
+          "inline-list",
+          "alpha-buffer",
+          "zero-alpha",
+          "effect",
+          "reconstruction-pool",
+          "layer-key",
+          "reconstruction-cache",
+          "word-key-cache",
+          "group-key",
+          "cache-capacity",
+          "karaoke-hash",
+          "grouping",
+          "allocation-probe"
+        ],
+        "fixtures": 54,
+        "sample_frames": 2428,
+        "sample_capacities": [
+          256,
+          0
+        ],
+        "extended_scripts_frames_each": 2428,
+        "extended_scripts": [
+          "reconstruction",
+          "zero-alpha",
+          "polygon-font-fields",
+          "geometry-reuse",
+          "multiline-inverse",
+          "omitted-numbers",
+          "edge-blur-karaoke",
+          "grouping-stress",
+          "draw-slot-spill",
+          "ass-command-prefixes",
+          "font-style-layout",
+          "font-style-layout-ansi"
+        ]
+      },
+      "binaries": [
+        {
+          "name": "render_subtitles.exe",
+          "bytes": 2702336,
+          "sha256": "e263d7152cc1c18ace228114a1ca04e837bfdf12d476481e970ff528bcce5ffc"
+        },
+        {
+          "name": "render_subtitles.pdb",
+          "bytes": 28225536,
+          "sha256": "5c0518d825e0583c69927c58e9d26cc5fbb570b2876962d319da0462a26c056c"
+        },
+        {
+          "name": "VSFilter.dll",
+          "bytes": 3499008,
+          "sha256": "031e2ec2364392755ee1c88a3949843fb9ad202f5a75eea1ad1e6a09fe03237b"
+        },
+        {
+          "name": "VSFilter.pdb",
+          "bytes": 33525760,
+          "sha256": "8af96b8b478d031ca932077d1cb364afd7ddda21c5a9547792c8b6d8e86d426f"
+        },
+        {
+          "name": "XySubFilter.dll",
+          "bytes": 3248640,
+          "sha256": "9ea482f5863cea93016e94fe15531bc3de715366e15f8571b5453ef59fd280f6"
+        },
+        {
+          "name": "XySubFilter.pdb",
+          "bytes": 32124928,
+          "sha256": "665fa999984ff96891f8cc04e0c73c5dd46cd26295d25c304ee510bf20e66c5d"
+        },
+        {
+          "name": "xy_sub_filter_consumer.dll",
+          "bytes": 830976,
+          "sha256": "69bf60084e620c3eebf140aa270b006ae9d48447e1ded593bca669202590dec8"
+        },
+        {
+          "name": "xy_sub_filter_consumer.pdb",
+          "bytes": 23703552,
+          "sha256": "a51ef2b9a6ee85b95d361c24cea7d782a6e85d41c78a039768dc83f8eb42c00e"
+        }
+      ],
+      "sources": [
+        {
+          "path": "src/subtitles/subtitles.vcxproj",
+          "sha256": "c6b383093101796bdd653f8fa7cc3537f0e6de346cc03b3a41ebe655cc9acad2"
+        },
+        {
+          "path": "src/thirdparty/libass-deps/libass.props",
+          "sha256": "11cfb9d27dfb9c33cdf16478b28b4a50d259cf8515a3aa064721bd2113059aed"
+        },
+        {
+          "path": "tools/build_libass.ps1",
+          "sha256": "e8c6809f1a8c078e0b393b05185524012d6cb176e4fb026f47375ccb1458a1f3"
+        },
+        {
+          "path": "tools/fetch_libass_sources.py",
+          "sha256": "98c66d48b06f7ede0f7899d7106e3991623d62fa8e0774a752d60b146c550c3d"
+        },
+        {
+          "path": "src/subtitles/LibassRenderer.cpp",
+          "sha256": "450675b7a6ffa60e27d55ee60032539fe47747c40feb974050720cb9b3988640"
+        },
+        {
+          "path": "src/subtitles/LibassRenderer.h",
+          "sha256": "f79cb818dc68620ad99d26577fab9b0be985a3e756c76e95f3167a4f20af9847"
+        },
+        {
+          "path": "src/subtitles/STS.cpp",
+          "sha256": "ef16111d109d941280c493c15f9f9c62b5ee67fe147c6e84d959302a85d40033"
+        },
+        {
+          "path": "src/subtitles/STS.h",
+          "sha256": "dcd58f0d435186745d344eed4d142eb90dae0b545732a0e084d6d84c042dd777"
+        },
+        {
+          "path": "src/subtitles/SubtitleInputPin.cpp",
+          "sha256": "745e19b3717671e5d213a9d5a50b1d3b5fb2ae5156673e3f80e198079ea3e1b8"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.cpp",
+          "sha256": "1cde208ee84db1fa71bb6debe26fc4030c7df073ce589164e0a349a7ec20b774"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.h",
+          "sha256": "d51c98e866642ce469fe0be759e8582c1f194c09f3f9d946aa839256d1362748"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/IDirectVobSubXy.h",
+          "sha256": "24b332ddb4cb3fabeadaa5fa16587fde007c78b83649130f67ce2142bdb297b1"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSub.cpp",
+          "sha256": "fc2bfc619e12e6c59518ab08450bed23277044b631f1210150f6b2bd0251ed73"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/VSFilter.rc",
+          "sha256": "cbf6fb711d04a855981167a13bc9f59575eedbddfec1eb0a76c50b4a09d26554"
+        },
+        {
+          "path": "src/thirdparty/libass-deps/sources.lock.json",
+          "sha256": "7fead39c45ac192ebea5604a7a49c01667a97ba94b9e965bd88272ffd7d36fb6"
+        },
+        {
+          "path": "src/thirdparty/libass-deps/CMakeLists.txt",
+          "sha256": "18242332b178c5528f1aacc5bb6a7635e1c277c10b355c9bdf9fb309e69c5504"
+        },
+        {
+          "path": "src/subtitles/draw_item.cpp",
+          "sha256": "9d8f384ff5b21eb4b21b462834e58b5a477884793ceda06798b3109dd5ce7c8f"
+        },
+        {
+          "path": "src/subtitles/draw_item.h",
+          "sha256": "941445191a4678e81e74bd1e3926cf7af25d8c38e3951e2ec893859e110e7d17"
+        },
+        {
+          "path": "src/subtitles/flyweight_base_types.h",
+          "sha256": "329f39498850ae07c296a354396c3ab2a834b6cecaae3f05e5018bd54d087a69"
+        },
+        {
+          "path": "src/subtitles/mru_cache.h",
+          "sha256": "25b3b2db3b01bd9fca550c05df61712f3bf661b0b677c4ac8223cdd1244e2489"
+        },
+        {
+          "path": "src/subtitles/cache_manager.cpp",
+          "sha256": "fa8a4934a5523dcf860c3272b1e8155aade2ab0f287e8ad1c7c068d8ca9c0528"
+        },
+        {
+          "path": "src/subtitles/cache_manager.h",
+          "sha256": "781852ea557304d98ac3f2de9cbe213945b6a7141b48e0e51e01a194cf83d445"
+        },
+        {
+          "path": "src/subtitles/Rasterizer.cpp",
+          "sha256": "c6280537789e230c2c256d8d6a09457a8c92e8afa4357ef19afe5c6884af9c81"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/xy_sub_filter.cpp",
+          "sha256": "c2b6d1eb4505e45095b1754a94a9b1f5c1db27980b52446992518cb6b7815b9f"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/DirectVobSubFilter.cpp",
+          "sha256": "9a5eb19fdbdf9dfd2002c92a3d0e069981480ce87f1af9de65cba0ff2e2755d8"
+        },
+        {
+          "path": "src/filters/transform/vsfilter/plugins.cpp",
+          "sha256": "06dd83222ea28939d6af5acae71762ca214fd4de80002a51d5857c4ad5f6469f"
+        },
+        {
+          "path": "test/benchmark/render_subtitles.cpp",
+          "sha256": "3f2f144d8d46ea2f1454aa6c8865a68d48cf7763444e293243373e725db09a2c"
+        },
+        {
+          "path": "test/benchmark/fixtures/edge-blur-karaoke.ass",
+          "sha256": "12f3f217eb659a5abec0804422273e4c220360dc3d7dc2a9cc72b860b4003e5c"
+        },
+        {
+          "path": "src/subtitles/RTS.cpp",
+          "sha256": "89263fe50a5502d807d071cdac527c23474c8df71a23e39a1331964713b0f7bd"
+        },
+        {
+          "path": "src/subtitles/RTS.h",
+          "sha256": "07ac796173cb46f0778f685374d5dc2be615926fe038cf83a34eac3d6207af73"
+        },
+        {
+          "path": "src/subtitles/xy_malloc.cpp",
+          "sha256": "698857e57c7185e7b97d7b6a9d9fea86dd2f2b5f0abcc4aca100b7624639177d"
+        },
+        {
+          "path": "src/subtitles/xy_malloc.h",
+          "sha256": "34ff8732dbc63217b41e57dd23428ff7b48d9ebe7720efd675adece5693d4afd"
+        },
+        {
+          "path": "test/benchmark/fixtures/grouping-stress.ass",
+          "sha256": "aadba4c3fa22c38cd18b36d6621769243748ba4f7640d3c7c6fb33e5d62ed3fd"
+        },
+        {
+          "path": "test/benchmark/run_playback_baseline.py",
+          "sha256": "3de2153f47a13e9f11f09c17bb8c7f8a80a8dbafc07ed12fb5df280b68399d13"
+        },
+        {
+          "path": "test/benchmark/fixtures/draw-slot-spill.ass",
+          "sha256": "fe0d59b6ccf6671818991eaa127e8f3a137a27b25fa65cc98e8858ec5dafcbf1"
+        },
+        {
+          "path": "test/benchmark/fixtures/ass-command-prefixes.ass",
+          "sha256": "db2d5e9194748ac35138198123f4c4417ae463cb3ebda51bc2b4e3acba8ec8ff"
+        },
+        {
+          "path": "test/benchmark/run_native_benchmark.py",
+          "sha256": "4e1719185dbac18a4205c59465f2d01ce385b6653ea76a0392fd50c48ec5f624"
+        },
+        {
+          "path": "test/benchmark/fixtures/font-style-layout.ass",
+          "sha256": "ab966e1886a032a399c17e0f21735b22f437c9ee5fc5c47c5d771e736da09fee"
+        },
+        {
+          "path": "test/benchmark/fixtures/font-style-layout-ansi.ass",
+          "sha256": "5b8c4b85269c8680b0e8b84457e645a93fb79bf352b744d0e4a38bb338b4d130"
+        }
+      ],
+      "native_group_key_mode": "borrowed",
+      "control_snapshot": {
+        "path": "benchmark-results/font-layout-20261026/stable-Win32",
+        "binaries": [
+          {
+            "name": "render_subtitles.exe",
+            "bytes": 2703360,
+            "sha256": "37a63cbb276f86ed21f98c72c7c084b3c5bd75493488ccba5605ad4087a4d32d"
+          },
+          {
+            "name": "render_subtitles.pdb",
+            "bytes": 28225536,
+            "sha256": "a0b9d078162c5c9b9e1c57909ff8b96a655f82a520258be251e595a3e8b320d1"
+          },
+          {
+            "name": "VSFilter.dll",
+            "bytes": 3500544,
+            "sha256": "886319deb1e0beb84e37ea1bffd749ad217ad7a153b293c8c53fb226975a0ef9"
+          },
+          {
+            "name": "VSFilter.pdb",
+            "bytes": 33533952,
+            "sha256": "3a06d7930d7f9777072b7e854b58298bfb81404a5ed6edaa496364b215e1426f"
+          },
+          {
+            "name": "XySubFilter.dll",
+            "bytes": 3250176,
+            "sha256": "618252823f865e80894616f74c3d5a31fa266bb88c29f11ede3802581bc694f1"
+          },
+          {
+            "name": "XySubFilter.pdb",
+            "bytes": 32124928,
+            "sha256": "e6a2ed6fd127c18b632fdc63f9cb513876cf4aa16ece979e8272c4e5d29c23df"
+          },
+          {
+            "name": "xy_sub_filter_consumer.dll",
+            "bytes": 830976,
+            "sha256": "3d51b3a8a3f0314191a2b94634ceea5636e5af968284169ff36ab30ce1f9ae19"
+          },
+          {
+            "name": "xy_sub_filter_consumer.pdb",
+            "bytes": 23703552,
+            "sha256": "50525d673840350f94a24ed12763f2a049d2239210a92e2390404c0ab77c9b17"
+          }
+        ],
+        "sources": [
+          {
+            "path": "src/subtitles/subtitles.vcxproj",
+            "sha256": "c6b383093101796bdd653f8fa7cc3537f0e6de346cc03b3a41ebe655cc9acad2"
+          },
+          {
+            "path": "src/thirdparty/libass-deps/libass.props",
+            "sha256": "11cfb9d27dfb9c33cdf16478b28b4a50d259cf8515a3aa064721bd2113059aed"
+          },
+          {
+            "path": "tools/build_libass.ps1",
+            "sha256": "e8c6809f1a8c078e0b393b05185524012d6cb176e4fb026f47375ccb1458a1f3"
+          },
+          {
+            "path": "tools/fetch_libass_sources.py",
+            "sha256": "98c66d48b06f7ede0f7899d7106e3991623d62fa8e0774a752d60b146c550c3d"
+          },
+          {
+            "path": "src/subtitles/LibassRenderer.cpp",
+            "sha256": "450675b7a6ffa60e27d55ee60032539fe47747c40feb974050720cb9b3988640"
+          },
+          {
+            "path": "src/subtitles/LibassRenderer.h",
+            "sha256": "f79cb818dc68620ad99d26577fab9b0be985a3e756c76e95f3167a4f20af9847"
+          },
+          {
+            "path": "src/subtitles/STS.cpp",
+            "sha256": "ef16111d109d941280c493c15f9f9c62b5ee67fe147c6e84d959302a85d40033"
+          },
+          {
+            "path": "src/subtitles/STS.h",
+            "sha256": "dcd58f0d435186745d344eed4d142eb90dae0b545732a0e084d6d84c042dd777"
+          },
+          {
+            "path": "src/subtitles/SubtitleInputPin.cpp",
+            "sha256": "745e19b3717671e5d213a9d5a50b1d3b5fb2ae5156673e3f80e198079ea3e1b8"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.cpp",
+            "sha256": "1cde208ee84db1fa71bb6debe26fc4030c7df073ce589164e0a349a7ec20b774"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSubPropPage.h",
+            "sha256": "d51c98e866642ce469fe0be759e8582c1f194c09f3f9d946aa839256d1362748"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/IDirectVobSubXy.h",
+            "sha256": "24b332ddb4cb3fabeadaa5fa16587fde007c78b83649130f67ce2142bdb297b1"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSub.cpp",
+            "sha256": "fc2bfc619e12e6c59518ab08450bed23277044b631f1210150f6b2bd0251ed73"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/VSFilter.rc",
+            "sha256": "cbf6fb711d04a855981167a13bc9f59575eedbddfec1eb0a76c50b4a09d26554"
+          },
+          {
+            "path": "src/thirdparty/libass-deps/sources.lock.json",
+            "sha256": "7fead39c45ac192ebea5604a7a49c01667a97ba94b9e965bd88272ffd7d36fb6"
+          },
+          {
+            "path": "src/thirdparty/libass-deps/CMakeLists.txt",
+            "sha256": "18242332b178c5528f1aacc5bb6a7635e1c277c10b355c9bdf9fb309e69c5504"
+          },
+          {
+            "path": "src/subtitles/draw_item.cpp",
+            "sha256": "eb4f516425f939574e07df7a1aa10e38918b1e167eb2763dbe58855c348b487d"
+          },
+          {
+            "path": "src/subtitles/draw_item.h",
+            "sha256": "941445191a4678e81e74bd1e3926cf7af25d8c38e3951e2ec893859e110e7d17"
+          },
+          {
+            "path": "src/subtitles/flyweight_base_types.h",
+            "sha256": "329f39498850ae07c296a354396c3ab2a834b6cecaae3f05e5018bd54d087a69"
+          },
+          {
+            "path": "src/subtitles/mru_cache.h",
+            "sha256": "25b3b2db3b01bd9fca550c05df61712f3bf661b0b677c4ac8223cdd1244e2489"
+          },
+          {
+            "path": "src/subtitles/cache_manager.cpp",
+            "sha256": "fa8a4934a5523dcf860c3272b1e8155aade2ab0f287e8ad1c7c068d8ca9c0528"
+          },
+          {
+            "path": "src/subtitles/cache_manager.h",
+            "sha256": "781852ea557304d98ac3f2de9cbe213945b6a7141b48e0e51e01a194cf83d445"
+          },
+          {
+            "path": "src/subtitles/Rasterizer.cpp",
+            "sha256": "c6280537789e230c2c256d8d6a09457a8c92e8afa4357ef19afe5c6884af9c81"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/xy_sub_filter.cpp",
+            "sha256": "c2b6d1eb4505e45095b1754a94a9b1f5c1db27980b52446992518cb6b7815b9f"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/DirectVobSubFilter.cpp",
+            "sha256": "9a5eb19fdbdf9dfd2002c92a3d0e069981480ce87f1af9de65cba0ff2e2755d8"
+          },
+          {
+            "path": "src/filters/transform/vsfilter/plugins.cpp",
+            "sha256": "06dd83222ea28939d6af5acae71762ca214fd4de80002a51d5857c4ad5f6469f"
+          },
+          {
+            "path": "test/benchmark/render_subtitles.cpp",
+            "sha256": "3f2f144d8d46ea2f1454aa6c8865a68d48cf7763444e293243373e725db09a2c"
+          },
+          {
+            "path": "test/benchmark/fixtures/edge-blur-karaoke.ass",
+            "sha256": "12f3f217eb659a5abec0804422273e4c220360dc3d7dc2a9cc72b860b4003e5c"
+          },
+          {
+            "path": "src/subtitles/RTS.cpp",
+            "sha256": "89263fe50a5502d807d071cdac527c23474c8df71a23e39a1331964713b0f7bd"
+          },
+          {
+            "path": "src/subtitles/RTS.h",
+            "sha256": "07ac796173cb46f0778f685374d5dc2be615926fe038cf83a34eac3d6207af73"
+          },
+          {
+            "path": "src/subtitles/xy_malloc.cpp",
+            "sha256": "698857e57c7185e7b97d7b6a9d9fea86dd2f2b5f0abcc4aca100b7624639177d"
+          },
+          {
+            "path": "src/subtitles/xy_malloc.h",
+            "sha256": "34ff8732dbc63217b41e57dd23428ff7b48d9ebe7720efd675adece5693d4afd"
+          },
+          {
+            "path": "test/benchmark/fixtures/grouping-stress.ass",
+            "sha256": "aadba4c3fa22c38cd18b36d6621769243748ba4f7640d3c7c6fb33e5d62ed3fd"
+          },
+          {
+            "path": "test/benchmark/run_playback_baseline.py",
+            "sha256": "3de2153f47a13e9f11f09c17bb8c7f8a80a8dbafc07ed12fb5df280b68399d13"
+          },
+          {
+            "path": "test/benchmark/fixtures/draw-slot-spill.ass",
+            "sha256": "fe0d59b6ccf6671818991eaa127e8f3a137a27b25fa65cc98e8858ec5dafcbf1"
+          },
+          {
+            "path": "test/benchmark/fixtures/ass-command-prefixes.ass",
+            "sha256": "db2d5e9194748ac35138198123f4c4417ae463cb3ebda51bc2b4e3acba8ec8ff"
+          },
+          {
+            "path": "test/benchmark/run_native_benchmark.py",
+            "sha256": "4e1719185dbac18a4205c59465f2d01ce385b6653ea76a0392fd50c48ec5f624"
+          },
+          {
+            "path": "test/benchmark/fixtures/font-style-layout.ass",
+            "sha256": "ab966e1886a032a399c17e0f21735b22f437c9ee5fc5c47c5d771e736da09fee"
+          },
+          {
+            "path": "test/benchmark/fixtures/font-style-layout-ansi.ass",
+            "sha256": "5b8c4b85269c8680b0e8b84457e645a93fb79bf352b744d0e4a38bb338b4d130"
+          }
+        ]
+      }
+    }
+  },
+  "prototypes": {
+    "flat_metadata_only": {
+      "mode": "render",
+      "batches": [
+        {
+          "raw_directory": "abba-flat-x64",
+          "comparison": {
+            "thread_cpu_ms": {
+              "candidate": 32023.4375,
+              "control": 31750.0,
+              "reduction_percent": -0.8612204724409489
+            },
+            "render_ms": {
+              "candidate": 32105.848250000003,
+              "control": 32076.6641,
+              "reduction_percent": -0.09098249714813988
+            },
+            "parse_ms": {
+              "candidate": 4991.7405,
+              "control": 4926.3273,
+              "reduction_percent": -1.327828948758647
+            },
+            "build_draw_ms": {
+              "candidate": 7025.7173,
+              "control": 6843.6899,
+              "reduction_percent": -2.659784453413061
+            },
+            "composite_ms": {
+              "candidate": 17808.396,
+              "control": 18095.8297,
+              "reduction_percent": 1.5883974637537546
+            },
+            "bitmap_ms": {
+              "candidate": 12820.5584,
+              "control": 12729.403900000001,
+              "reduction_percent": -0.7160940191394127
+            },
+            "tree_ms": {
+              "candidate": 1290.4348,
+              "control": 1502.26565,
+              "reduction_percent": 14.100758411137203
+            },
+            "merge_ms": {
+              "candidate": 1761.23145,
+              "control": 1746.47015,
+              "reduction_percent": -0.8452076893498583
+            },
+            "group_ms": {
+              "candidate": 1154.90825,
+              "control": 1197.0571,
+              "reduction_percent": 3.521039221938538
+            }
+          },
+          "builds": {
+            "candidate": "97f690cbaedce421ab3fe9fc44d0dbb60507a675c8cf5a82313e4c42ae204156",
+            "control": "b7aa02b5ff8f43cbb6b51e31e3ff492bf3c02d8fa764b624b7ceb94a327d24be"
+          },
+          "runs": [
+            {
+              "name": "control",
+              "round": 1,
+              "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+              "pixel_identical": true,
+              "totals_ms": {
+                "thread_cpu_ms": 31843.75,
+                "render_ms": 31873.5363,
+                "parse_ms": 4926.1948,
+                "build_draw_ms": 6805.7038,
+                "composite_ms": 17952.1327,
+                "bitmap_ms": 12638.4557,
+                "tree_ms": 1483.8059,
+                "merge_ms": 1741.5538999999999,
+                "group_ms": 1172.1259
+              },
+              "render_distribution_ms": {
+                "total": 31873.5363,
+                "mean": 13.127486120263592,
+                "median": 10.3679,
+                "p95": 30.5088,
+                "p99": 58.5163,
+                "maximum": 115.8041
+              },
+              "burst_parse_ms": 758.8423,
+              "burst_render_ms": 1435.3726,
+              "syntax_cache": {
+                "event_hits": 513500,
+                "event_misses": 174761,
+                "peak_accounted_bytes": 16777150,
+                "shared_queries": 174761,
+                "shared_hits": 90725,
+                "shared_compilations": 84036
+              },
+              "renderer_caches": {
+                "overlay": {
+                  "queries": 4810867,
+                  "hits": 4806442,
+                  "misses": 4425,
+                  "items": 2048
+                },
+                "subpixel": {
+                  "queries": 0,
+                  "hits": 0,
+                  "misses": 0,
+                  "items": 0
+                },
+                "no_blur": {
+                  "queries": 4427,
+                  "hits": 2,
+                  "misses": 4425,
+                  "items": 256
+                },
+                "path": {
+                  "queries": 399601,
+                  "hits": 398530,
+                  "misses": 1071,
+                  "items": 628
+                },
+                "scanline": {
+                  "queries": 827,
+                  "hits": 196,
+                  "misses": 631,
+                  "items": 512
+                },
+                "scanline2": {
+                  "queries": 4425,
+                  "hits": 3596,
+                  "misses": 829,
+                  "items": 512
+                },
+                "bitmap": {
+                  "queries": 228488,
+                  "hits": 102469,
+                  "misses": 126019,
+                  "items": 256
+                },
+                "bitmap_key": {
+                  "queries": 354507,
+                  "hits": 102469,
+                  "misses": 252038,
+                  "items": 256
+                }
+              },
+              "peak_process_commit_bytes": 442073088
+            },
+            {
+              "name": "candidate",
+              "round": 1,
+              "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+              "pixel_identical": true,
+              "totals_ms": {
+                "thread_cpu_ms": 32625.0,
+                "render_ms": 32623.2766,
+                "parse_ms": 5116.84,
+                "build_draw_ms": 7125.1625,
+                "composite_ms": 18040.0553,
+                "bitmap_ms": 12967.2708,
+                "tree_ms": 1315.4845,
+                "merge_ms": 1781.8675,
+                "group_ms": 1178.7034
+              },
+              "render_distribution_ms": {
+                "total": 32623.2766,
+                "mean": 13.436275370675453,
+                "median": 11.62085,
+                "p95": 31.0078,
+                "p99": 63.3486,
+                "maximum": 128.1187
+              },
+              "burst_parse_ms": 860.384,
+              "burst_render_ms": 1563.932,
+              "syntax_cache": {
+                "event_hits": 513500,
+                "event_misses": 174761,
+                "peak_accounted_bytes": 16777150,
+                "shared_queries": 174761,
+                "shared_hits": 90725,
+                "shared_compilations": 84036
+              },
+              "renderer_caches": {
+                "overlay": {
+                  "queries": 4810866,
+                  "hits": 4806441,
+                  "misses": 4425,
+                  "items": 2048
+                },
+                "subpixel": {
+                  "queries": 0,
+                  "hits": 0,
+                  "misses": 0,
+                  "items": 0
+                },
+                "no_blur": {
+                  "queries": 4427,
+                  "hits": 2,
+                  "misses": 4425,
+                  "items": 256
+                },
+                "path": {
+                  "queries": 399601,
+                  "hits": 398530,
+                  "misses": 1071,
+                  "items": 628
+                },
+                "scanline": {
+                  "queries": 827,
+                  "hits": 196,
+                  "misses": 631,
+                  "items": 512
+                },
+                "scanline2": {
+                  "queries": 4425,
+                  "hits": 3596,
+                  "misses": 829,
+                  "items": 512
+                },
+                "bitmap": {
+                  "queries": 228488,
+                  "hits": 102469,
+                  "misses": 126019,
+                  "items": 256
+                },
+                "bitmap_key": {
+                  "queries": 354507,
+                  "hits": 102469,
+                  "misses": 252038,
+                  "items": 256
+                }
+              },
+              "peak_process_commit_bytes": 437280768
+            },
+            {
+              "name": "candidate",
+              "round": 2,
+              "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+              "pixel_identical": true,
+              "totals_ms": {
+                "thread_cpu_ms": 31421.875,
+                "render_ms": 31588.4199,
+                "parse_ms": 4866.641,
+                "build_draw_ms": 6926.2721,
+                "composite_ms": 17576.7367,
+                "bitmap_ms": 12673.846,
+                "tree_ms": 1265.3851,
+                "merge_ms": 1740.5954,
+                "group_ms": 1131.1131
+              },
+              "render_distribution_ms": {
+                "total": 31588.4199,
+                "mean": 13.010057619439868,
+                "median": 10.7621,
+                "p95": 30.6284,
+                "p99": 62.9928,
+                "maximum": 114.2852
+              },
+              "burst_parse_ms": 748.6412,
+              "burst_render_ms": 1439.4934,
+              "syntax_cache": {
+                "event_hits": 513500,
+                "event_misses": 174761,
+                "peak_accounted_bytes": 16777150,
+                "shared_queries": 174761,
+                "shared_hits": 90725,
+                "shared_compilations": 84036
+              },
+              "renderer_caches": {
+                "overlay": {
+                  "queries": 4810869,
+                  "hits": 4806444,
+                  "misses": 4425,
+                  "items": 2048
+                },
+                "subpixel": {
+                  "queries": 0,
+                  "hits": 0,
+                  "misses": 0,
+                  "items": 0
+                },
+                "no_blur": {
+                  "queries": 4427,
+                  "hits": 2,
+                  "misses": 4425,
+                  "items": 256
+                },
+                "path": {
+                  "queries": 399601,
+                  "hits": 398530,
+                  "misses": 1071,
+                  "items": 628
+                },
+                "scanline": {
+                  "queries": 827,
+                  "hits": 196,
+                  "misses": 631,
+                  "items": 512
+                },
+                "scanline2": {
+                  "queries": 4425,
+                  "hits": 3596,
+                  "misses": 829,
+                  "items": 512
+                },
+                "bitmap": {
+                  "queries": 228488,
+                  "hits": 102469,
+                  "misses": 126019,
+                  "items": 256
+                },
+                "bitmap_key": {
+                  "queries": 354507,
+                  "hits": 102469,
+                  "misses": 252038,
+                  "items": 256
+                }
+              },
+              "peak_process_commit_bytes": 443453440
+            },
+            {
+              "name": "control",
+              "round": 2,
+              "scheduling": "benchmark_cpu=7 affinity=0x80 priority=AboveNormal render_threads=1",
+              "pixel_identical": true,
+              "totals_ms": {
+                "thread_cpu_ms": 31656.25,
+                "render_ms": 32279.7919,
+                "parse_ms": 4926.4598,
+                "build_draw_ms": 6881.676,
+                "composite_ms": 18239.5267,
+                "bitmap_ms": 12820.3521,
+                "tree_ms": 1520.7254,
+                "merge_ms": 1751.3864,
+                "group_ms": 1221.9883
+              },
+              "render_distribution_ms": {
+                "total": 32279.7919,
+                "mean": 13.294807207578254,
+                "median": 10.67155,
+                "p95": 33.2726,
+                "p99": 58.7613,
+                "maximum": 131.016
+              },
+              "burst_parse_ms": 752.4688,
+              "burst_render_ms": 1438.6747,
+              "syntax_cache": {
+                "event_hits": 513500,
+                "event_misses": 174761,
+                "peak_accounted_bytes": 16777150,
+                "shared_queries": 174761,
+                "shared_hits": 90725,
+                "shared_compilations": 84036
+              },
+              "renderer_caches": {
+                "overlay": {
+                  "queries": 4810865,
+                  "hits": 4806440,
+                  "misses": 4425,
+                  "items": 2048
+                },
+                "subpixel": {
+                  "queries": 0,
+                  "hits": 0,
+                  "misses": 0,
+                  "items": 0
+                },
+                "no_blur": {
+                  "queries": 4427,
+                  "hits": 2,
+                  "misses": 4425,
+                  "items": 256
+                },
+                "path": {
+                  "queries": 399601,
+                  "hits": 398530,
+                  "misses": 1071,
+                  "items": 628
+                },
+                "scanline": {
+                  "queries": 827,
+                  "hits": 196,
+                  "misses": 631,
+                  "items": 512
+                },
+                "scanline2": {
+                  "queries": 4425,
+                  "hits": 3596,
+                  "misses": 829,
+                  "items": 512
+                },
+                "bitmap": {
+                  "queries": 228488,
+                  "hits": 102469,
+                  "misses": 126019,
+                  "items": 256
+                },
+                "bitmap_key": {
+                  "queries": 354507,
+                  "hits": 102469,
+                  "misses": 252038,
+                  "items": 256
+                }
+              },
+              "peak_process_commit_bytes": 435093504
+            }
+          ]
+        }
+      ],
+      "median_pass_totals_ms": {
+        "thread_cpu_ms": {
+          "control": 31750.0,
+          "candidate": 32023.4375,
+          "reduction_percent": -0.8612204724409489
+        },
+        "render_ms": {
+          "control": 32076.6641,
+          "candidate": 32105.848250000003,
+          "reduction_percent": -0.09098249714813988
+        },
+        "parse_ms": {
+          "control": 4926.3273,
+          "candidate": 4991.7405,
+          "reduction_percent": -1.327828948758647
+        },
+        "build_draw_ms": {
+          "control": 6843.6899,
+          "candidate": 7025.7173,
+          "reduction_percent": -2.659784453413061
+        },
+        "composite_ms": {
+          "control": 18095.8297,
+          "candidate": 17808.396,
+          "reduction_percent": 1.5883974637537546
+        },
+        "bitmap_ms": {
+          "control": 12729.403900000001,
+          "candidate": 12820.5584,
+          "reduction_percent": -0.7160940191394127
+        },
+        "tree_ms": {
+          "control": 1502.26565,
+          "candidate": 1290.4348,
+          "reduction_percent": 14.100758411137203
+        },
+        "merge_ms": {
+          "control": 1746.47015,
+          "candidate": 1761.23145,
+          "reduction_percent": -0.8452076893498583
+        },
+        "group_ms": {
+          "control": 1197.0571,
+          "candidate": 1154.90825,
+          "reduction_percent": 3.521039221938538
+        }
+      },
+      "burst_frame_count": 17,
+      "burst_median_pass_totals_ms": {
+        "burst_parse_ms": {
+          "control": 755.65555,
+          "candidate": 804.5126,
+          "reduction_percent": -6.4655185818459415
+        },
+        "burst_render_ms": {
+          "control": 1437.02365,
+          "candidate": 1501.7127,
+          "reduction_percent": -4.501599538741052
+        }
+      },
+      "selected_frames": {
+        "33448": {
+          "parse_ms": {
+            "control": 62.63080000000001,
+            "candidate": 62.24405
+          },
+          "render_ms": {
+            "control": 123.41005,
+            "candidate": 121.20195
+          }
+        },
+        "33157": {
+          "parse_ms": {
+            "control": 54.97185,
+            "candidate": 59.34325
+          },
+          "render_ms": {
+            "control": 104.939,
+            "candidate": 109.74170000000001
+          }
+        },
+        "32780": {
+          "parse_ms": {
+            "control": 58.057100000000005,
+            "candidate": 54.88365
+          },
+          "render_ms": {
+            "control": 115.50885,
+            "candidate": 113.03720000000001
+          }
+        }
+      },
+      "renderer_caches": {
+        "control": [
+          {
+            "overlay": {
+              "queries": 4810867,
+              "hits": 4806442,
+              "misses": 4425,
+              "items": 2048
+            },
+            "subpixel": {
+              "queries": 0,
+              "hits": 0,
+              "misses": 0,
+              "items": 0
+            },
+            "no_blur": {
+              "queries": 4427,
+              "hits": 2,
+              "misses": 4425,
+              "items": 256
+            },
+            "path": {
+              "queries": 399601,
+              "hits": 398530,
+              "misses": 1071,
+              "items": 628
+            },
+            "scanline": {
+              "queries": 827,
+              "hits": 196,
+              "misses": 631,
+              "items": 512
+            },
+            "scanline2": {
+              "queries": 4425,
+              "hits": 3596,
+              "misses": 829,
+              "items": 512
+            },
+            "bitmap": {
+              "queries": 228488,
+              "hits": 102469,
+              "misses": 126019,
+              "items": 256
+            },
+            "bitmap_key": {
+              "queries": 354507,
+              "hits": 102469,
+              "misses": 252038,
+              "items": 256
+            }
+          },
+          {
+            "overlay": {
+              "queries": 4810865,
+              "hits": 4806440,
+              "misses": 4425,
+              "items": 2048
+            },
+            "subpixel": {
+              "queries": 0,
+              "hits": 0,
+              "misses": 0,
+              "items": 0
+            },
+            "no_blur": {
+              "queries": 4427,
+              "hits": 2,
+              "misses": 4425,
+              "items": 256
+            },
+            "path": {
+              "queries": 399601,
+              "hits": 398530,
+              "misses": 1071,
+              "items": 628
+            },
+            "scanline": {
+              "queries": 827,
+              "hits": 196,
+              "misses": 631,
+              "items": 512
+            },
+            "scanline2": {
+              "queries": 4425,
+              "hits": 3596,
+              "misses": 829,
+              "items": 512
+            },
+            "bitmap": {
+              "queries": 228488,
+              "hits": 102469,
+              "misses": 126019,
+              "items": 256
+            },
+            "bitmap_key": {
+              "queries": 354507,
+              "hits": 102469,
+              "misses": 252038,
+              "items": 256
+            }
+          }
+        ],
+        "candidate": [
+          {
+            "overlay": {
+              "queries": 4810866,
+              "hits": 4806441,
+              "misses": 4425,
+              "items": 2048
+            },
+            "subpixel": {
+              "queries": 0,
+              "hits": 0,
+              "misses": 0,
+              "items": 0
+            },
+            "no_blur": {
+              "queries": 4427,
+              "hits": 2,
+              "misses": 4425,
+              "items": 256
+            },
+            "path": {
+              "queries": 399601,
+              "hits": 398530,
+              "misses": 1071,
+              "items": 628
+            },
+            "scanline": {
+              "queries": 827,
+              "hits": 196,
+              "misses": 631,
+              "items": 512
+            },
+            "scanline2": {
+              "queries": 4425,
+              "hits": 3596,
+              "misses": 829,
+              "items": 512
+            },
+            "bitmap": {
+              "queries": 228488,
+              "hits": 102469,
+              "misses": 126019,
+              "items": 256
+            },
+            "bitmap_key": {
+              "queries": 354507,
+              "hits": 102469,
+              "misses": 252038,
+              "items": 256
+            }
+          },
+          {
+            "overlay": {
+              "queries": 4810869,
+              "hits": 4806444,
+              "misses": 4425,
+              "items": 2048
+            },
+            "subpixel": {
+              "queries": 0,
+              "hits": 0,
+              "misses": 0,
+              "items": 0
+            },
+            "no_blur": {
+              "queries": 4427,
+              "hits": 2,
+              "misses": 4425,
+              "items": 256
+            },
+            "path": {
+              "queries": 399601,
+              "hits": 398530,
+              "misses": 1071,
+              "items": 628
+            },
+            "scanline": {
+              "queries": 827,
+              "hits": 196,
+              "misses": 631,
+              "items": 512
+            },
+            "scanline2": {
+              "queries": 4425,
+              "hits": 3596,
+              "misses": 829,
+              "items": 512
+            },
+            "bitmap": {
+              "queries": 228488,
+              "hits": 102469,
+              "misses": 126019,
+              "items": 256
+            },
+            "bitmap_key": {
+              "queries": 354507,
+              "hits": 102469,
+              "misses": 252038,
+              "items": 256
+            }
+          }
+        ]
+      },
+      "cache_work_counts": {
+        "control": [
+          {
+            "event_hits": 513500,
+            "event_misses": 174761,
+            "peak_accounted_bytes": 16777150,
+            "shared_queries": 174761,
+            "shared_hits": 90725,
+            "shared_compilations": 84036
+          },
+          {
+            "event_hits": 513500,
+            "event_misses": 174761,
+            "peak_accounted_bytes": 16777150,
+            "shared_queries": 174761,
+            "shared_hits": 90725,
+            "shared_compilations": 84036
+          }
+        ],
+        "candidate": [
+          {
+            "event_hits": 513500,
+            "event_misses": 174761,
+            "peak_accounted_bytes": 16777150,
+            "shared_queries": 174761,
+            "shared_hits": 90725,
+            "shared_compilations": 84036
+          },
+          {
+            "event_hits": 513500,
+            "event_misses": 174761,
+            "peak_accounted_bytes": 16777150,
+            "shared_queries": 174761,
+            "shared_hits": 90725,
+            "shared_compilations": 84036
+          }
+        ]
+      },
+      "median_peak_process_commit_bytes": {
+        "control": 438583296.0,
+        "candidate": 440367104.0
+      },
+      "median_per_pass_wall_tails_ms": {
+        "p95": {
+          "control": 31.8907,
+          "candidate": 30.8181
+        },
+        "p99": {
+          "control": 58.6388,
+          "candidate": 63.1707
+        },
+        "maximum": {
+          "control": 123.41005,
+          "candidate": 121.20195
+        }
+      },
+      "source_budget_ms": 41.708333333333336,
+      "frames_over_budget_using_per_frame_medians": {
+        "control": 44,
+        "candidate": 44
+      }
+    }
+  },
+  "cross_architecture_pixels": 0,
+  "verification": {
+    "architectures": [
+      "x64",
+      "Win32"
+    ],
+    "current_binaries_symbols_sources_match_snapshots": true,
+    "x64_timing_executable_matches_final": true,
+    "build_logs_checked": 12,
+    "compiler_link_failures": 0,
+    "contracts_per_architecture": 21,
+    "fixture_cases": 54,
+    "extended_scripts_per_architecture": 12,
+    "sample_cache_capacities": [
+      256,
+      0
+    ],
+    "sample_frames": 2428,
+    "composite_replay_frames_per_architecture": 2428,
+    "pixel_mismatches": 0,
+    "playback_run": false,
+    "dll_versions": {
+      "x64": {
+        "VSFilter": "3.2.1.900",
+        "XySubFilter": "3.2.1.900",
+        "xy_sub_filter_consumer": "3.2.1.900"
+      },
+      "Win32": {
+        "VSFilter": "3.2.1.900",
+        "XySubFilter": "3.2.1.900",
+        "xy_sub_filter_consumer": "3.2.1.900"
+      }
+    }
+  }
+}

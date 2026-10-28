@@ -1,0 +1,172 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 640
+PlayResY: 360
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,18,&H00FFFFFF,&H000000FF,&H00302010,&H80000000,0,0,0,0,100,100,0,0,1,1.5,1,7,10,10,10,1
+Style: Other,Tahoma,20,&H00C0D0FF,&H0000FF00,&H00112233,&H60000000,0,0,0,0,100,100,1,0,3,2,2,5,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\p1\pbo-3\pos(15,15)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\p2\pos(46,34)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\pos(77,53)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(108,72)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\pos(139,91)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\pos(170,110)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\move(201,129,400,240,0,2500)}moving
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(232,148)\k40}karaoke
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\p1\pbo-3\pos(263,167)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\p2\pos(294,186)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\pos(325,205)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(356,224)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\pos(387,243)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\pos(418,262)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\move(449,281,400,240,0,2500)}moving
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(480,300)\k40}karaoke
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\p1\pbo-3\pos(511,19)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\p2\pos(542,38)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\pos(573,57)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(604,76)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\pos(45,95)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\pos(76,114)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\move(107,133,400,240,0,2500)}moving
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(138,152)\k40}karaoke
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\p1\pbo-3\pos(169,171)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\p2\pos(200,190)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\pos(231,209)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(262,228)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\pos(293,247)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\pos(324,266)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\move(355,285,400,240,0,2500)}moving
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(386,304)\k40}karaoke
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\p1\pbo-3\pos(417,23)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\p2\pos(448,42)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\pos(479,61)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(510,80)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\pos(541,99)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\pos(572,118)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\move(603,137,400,240,0,2500)}moving
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(44,156)\k40}karaoke
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\p1\pbo-3\pos(75,175)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\p2\pos(106,194)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\pos(137,213)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(168,232)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\pos(199,251)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\pos(230,270)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\move(261,289,400,240,0,2500)}moving
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(292,308)\k40}karaoke
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\p1\pbo-3\pos(323,27)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\p2\pos(354,46)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\pos(385,65)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(416,84)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\pos(447,103)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\pos(478,122)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\move(509,141,400,240,0,2500)}moving
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(540,160)\k40}karaoke
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\p1\pbo-3\pos(571,179)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\p2\pos(602,198)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\pos(43,217)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(74,236)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\pos(105,255)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\pos(136,274)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\move(167,293,400,240,0,2500)}moving
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(198,312)\k40}karaoke
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\p1\pbo-3\pos(229,31)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\p2\pos(260,50)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\pos(291,69)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(322,88)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\pos(353,107)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\pos(384,126)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\move(415,145,400,240,0,2500)}moving
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(446,164)\k40}karaoke
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\p1\pbo-3\pos(477,183)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\p2\pos(508,202)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\pos(539,221)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(570,240)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\pos(601,259)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\pos(42,278)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\move(73,297,400,240,0,2500)}moving
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(104,16)\k40}karaoke
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\p1\pbo-3\pos(135,35)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\p2\pos(166,54)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\pos(197,73)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(228,92)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\pos(259,111)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\pos(290,130)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\move(321,149,400,240,0,2500)}moving
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(352,168)\k40}karaoke
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\p1\pbo-3\pos(383,187)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\p2\pos(414,206)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\pos(445,225)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(476,244)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\pos(507,263)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\pos(538,282)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\move(569,301,400,240,0,2500)}moving
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(600,20)\k40}karaoke
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\p1\pbo-3\pos(41,39)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\p2\pos(72,58)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\pos(103,77)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(134,96)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\pos(165,115)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\pos(196,134)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\move(227,153,400,240,0,2500)}moving
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(258,172)\k40}karaoke
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\p1\pbo-3\pos(289,191)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\p2\pos(320,210)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\pos(351,229)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(382,248)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\pos(413,267)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\pos(444,286)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\move(475,305,400,240,0,2500)}moving
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(506,24)\k40}karaoke
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\p1\pbo-3\pos(537,43)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\p2\pos(568,62)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\pos(599,81)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(40,100)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\pos(71,119)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\pos(102,138)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\move(133,157,400,240,0,2500)}moving
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(164,176)\k40}karaoke
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\p1\pbo-3\pos(195,195)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\p2\pos(226,214)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\pos(257,233)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(288,252)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\pos(319,271)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\pos(350,290)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\move(381,309,400,240,0,2500)}moving
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(412,28)\k40}karaoke
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\p1\pbo-3\pos(443,47)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\p2\pos(474,66)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\pos(505,85)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(536,104)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\pos(567,123)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\pos(598,142)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\move(39,161,400,240,0,2500)}moving
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(70,180)\k40}karaoke
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\p1\pbo-3\pos(101,199)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\p2\pos(132,218)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\pos(163,237)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(194,256)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:21.00,0:22:26.00,Default,,0,0,0,,{\pos(225,275)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:22.00,0:22:28.00,Default,,0,0,0,,{\pos(256,294)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:23.00,0:22:30.00,Default,,0,0,0,,{\move(287,313,400,240,0,2500)}moving
+Dialogue: 3,0:22:24.00,0:22:32.00,Default,,0,0,0,,{\pos(318,32)\k40}karaoke
+Dialogue: 0,0:22:25.00,0:22:30.00,Default,,0,0,0,,{\p1\pbo-3\pos(349,51)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:21.00,0:22:27.00,Default,,0,0,0,,{\p2\pos(380,70)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:22.00,0:22:29.00,Default,,0,0,0,,{\pos(411,89)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:23.00,0:22:31.00,Default,,0,0,0,,{\pos(442,108)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:24.00,0:22:29.00,Default,,0,0,0,,{\pos(473,127)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:25.00,0:22:31.00,Default,,0,0,0,,{\pos(504,146)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:21.00,0:22:28.00,Default,,0,0,0,,{\move(535,165,400,240,0,2500)}moving
+Dialogue: 3,0:22:22.00,0:22:30.00,Default,,0,0,0,,{\pos(566,184)\k40}karaoke
+Dialogue: 0,0:22:23.00,0:22:28.00,Default,,0,0,0,,{\p1\pbo-3\pos(597,203)\t(120,120,\4a&HFF&\p1\t(1900,1900,\4a&H00&))}m 0 0 l 29 0 17 21 -4 13
+Dialogue: 1,0:22:24.00,0:22:30.00,Default,,0,0,0,,{\p2\pos(38,222)\t(0,0,\p2\pbo2\alpha&H20&)}m -3 1 b 15 -5 33 40 51 19 l 0 0
+Dialogue: 2,0:22:25.00,0:22:32.00,Default,,0,0,0,,{\pos(69,241)\clip(8,10,620,310)\1a&HFE&\bord0\shad3}retained
+Dialogue: 3,0:22:21.00,0:22:29.00,Default,,0,0,0,,{\pos(100,260)\blur1.25\frz13\p1}m 0 0 s 10 0 30 10 22 35 0 20 c
+Dialogue: 0,0:22:22.00,0:22:27.00,Default,,0,0,0,,{\pos(131,279)\iclip(50,40,180,120)}inverse
+Dialogue: 1,0:22:23.00,0:22:29.00,Default,,0,0,0,,{\pos(162,298)\t(0,2500,\1c&HFFA020&)}appearance
+Dialogue: 2,0:22:24.00,0:22:31.00,Default,,0,0,0,,{\move(193,17,400,240,0,2500)}moving
+Dialogue: 3,0:22:25.00,0:22:33.00,Default,,0,0,0,,{\pos(224,36)\k40}karaoke

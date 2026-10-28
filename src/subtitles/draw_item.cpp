@@ -23,6 +23,7 @@ using namespace std;
 // 
 CRectCoor2 DrawItem::GetDirtyRect()
 {
+    if (boundsSealed) return sealedBounds;
     CRectCoor2 r;
     if(!switchpts || !fBody && !fBorder) return(r);
 
@@ -47,15 +48,30 @@ CRectCoor2 DrawItem::GetDirtyRect()
     return r;
 }
 
+bool DrawItem::SealBounds()
+{
+    SharedPtrOverlay overlay;
+    overlay_paint_machine->Paint(&overlay);
+    if (!overlay || overlay->mOverlayWidth<=0 || overlay->mOverlayHeight<=0) return false;
+    sealedBounds=GetDirtyRect(); boundsSealed=true;
+    return true;
+}
+
 CRectCoor2 DrawItem::Draw( XyBitmap* bitmap, DrawItem& draw_item, const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer )
 {
 
+    return Draw(bitmap,draw_item,clip_rect,buffer,draw_item.use_addition_draw);
+}
+
+CRectCoor2 DrawItem::Draw(XyBitmap* bitmap, DrawItem& draw_item,
+    const CRectCoor2& clip_rect, AlphaMaskBuffer& buffer, bool addition)
+{
     // PF 20180411 disable use_addition=true for planar
     // because bitmap->type == XyBitmap::PLANNA is not supported and
     // asserts FATAL in AdditionDraw (use case: Avisynth TextSub plugin for YV12)
     bool PLANAR = (bitmap->type == XyBitmap::PLANNA);
 
-    return !PLANAR && draw_item.use_addition_draw ? AdditionDraw(bitmap, draw_item, clip_rect, buffer)
+    return !PLANAR && addition ? AdditionDraw(bitmap, draw_item, clip_rect, buffer)
                                        : AlphaBltDraw(bitmap, draw_item, clip_rect, buffer);
 }
 
@@ -68,6 +84,9 @@ CRectCoor2 DrawItem::AlphaBltDraw( XyBitmap* bitmap, DrawItem& draw_item, const 
     SharedPtrOverlay overlay;
     ASSERT(draw_item.overlay_paint_machine);
     draw_item.overlay_paint_machine->Paint(&overlay);
+
+    if (Rasterizer::DrawSingleColorFused(bitmap,overlay,draw_item.clip_rect & clip_rect,alpha_mask.get(),
+        draw_item.xsub,draw_item.ysub,draw_item.switchpts,draw_item.fBody,draw_item.fBorder,&result)) return result;
 
     BYTE* alpha = Rasterizer::CompositeAlphaMask(overlay, draw_item.clip_rect & clip_rect, alpha_mask.get(),
         draw_item.xsub, draw_item.ysub, draw_item.switchpts, draw_item.fBody, draw_item.fBorder,
@@ -131,6 +150,23 @@ const SharedPtrDrawItemHashKey& DrawItem::GetHashKey()
 // CompositeDrawItem
 // 
 
+FrameOverlayPin::FrameOverlayPin(const FrameOverlayPin& other) { Set(other.machine); }
+FrameOverlayPin& FrameOverlayPin::operator=(const FrameOverlayPin& other) { Set(other.machine); return *this; }
+FrameOverlayPin::~FrameOverlayPin() { if (machine) machine->EndFrame(); }
+void FrameOverlayPin::Set(const SharedPtrOverlayPaintMachine& value)
+{
+    if (machine==value) return;
+    if (machine) machine->EndFrame();
+    machine=value;
+    if (machine) machine->BeginFrame();
+}
+void CompositeDrawItem::PinOverlays()
+{
+    if (shadow) shadowPin.Set(shadow->overlay_paint_machine);
+    if (outline) outlinePin.Set(outline->overlay_paint_machine);
+    if (body) bodyPin.Set(body->overlay_paint_machine);
+}
+
 CRectCoor2 CompositeDrawItem::GetDirtyRect( CompositeDrawItem& item )
 {
     CRectCoor2 result;
@@ -149,25 +185,65 @@ CRectCoor2 CompositeDrawItem::GetDirtyRect( CompositeDrawItem& item )
     return result;
 }
 
-//temporary data struct for the complex dirty rect splitting and draw item grouping algorithm 
+// Frame-owned rectangle fragments: common short lists need no heap storage.
+// Draw-item arrays are sized once before pointers to their elements are stored.
+class FrameGroupIds
+{
+    enum { INLINE_IDS = 8 };
+    int m_inline[INLINE_IDS];
+    std::vector<int> m_spill;
+    size_t m_count;
+public:
+    FrameGroupIds() : m_count(0) {}
+    size_t GetCount() const { return m_count; }
+    int operator[](size_t i) const
+    { ASSERT(i < m_count); return i < INLINE_IDS ? m_inline[i] : m_spill[i-INLINE_IDS]; }
+    void AddTail(int value)
+    {
+        if (m_count < INLINE_IDS) m_inline[m_count] = value;
+        else m_spill.push_back(value);
+        ++m_count;
+    }
+};
+
+struct CompositeDrawItemEx;
+typedef CInlineList<CompositeDrawItemEx*> PCompositeDrawItemExList;
+
+// All of this metadata is owned by the current Draw call. The initial rectangle
+// uses its item's inline membership; merged rectangles share lists from a
+// frame-owned, address-stable pool rather than shared_ptr control blocks.
 struct CompositeDrawItemEx
 {
     CompositeDrawItem *item;
-    CAtlList<int> rect_id_list;
+    FrameGroupIds rect_id_list;
+    PCompositeDrawItemExList initial_members;
 };
+typedef CAtlList<PCompositeDrawItemExList> FrameMemberLists;
 
-
-typedef CAtlList<CompositeDrawItemEx*> PCompositeDrawItemExList;
-typedef CAtlArray<CompositeDrawItemEx> CompositeDrawItemExVec;
+static void AppendMembers(PCompositeDrawItemExList& destination, const PCompositeDrawItemExList& source)
+{
+    const size_t count = source.GetCount();
+    for (size_t i = 0; i < count; ++i) destination.AddTail(source[i]);
+}
+// Views preserve event-local shadow/outline/body ordering. All metadata lives
+// in one frame-owned array, sized before any element addresses are published.
+// The views are trivially relocatable by the outer ATL array and own no storage.
+struct CompositeDrawItemExVec
+{
+    CompositeDrawItemEx* items;
+    size_t count;
+    size_t GetCount() const { return count; }
+    CompositeDrawItemEx& operator[](size_t i) { ASSERT(i < count); return items[i]; }
+    CompositeDrawItemEx& GetAt(size_t i) { return (*this)[i]; }
+};
 typedef CAtlArray<CompositeDrawItemExVec> CompositeDrawItemExTree;
-
-typedef ::boost::shared_ptr<PCompositeDrawItemExList> SharedPCompositeDrawItemExList;
 
 class XyRectEx: public CRect
 {
 public:
-    SharedPCompositeDrawItemExList item_ex_list;
+    PCompositeDrawItemExList* item_ex_list;
 
+    XyRectEx() : item_ex_list(NULL) {}
     void SetRect(const RECT& rect)
     {
         __super::operator=(rect);
@@ -184,100 +260,135 @@ public:
 
 typedef CAtlList<XyRectEx> XyRectExList;
 
-void MergeRects(const XyRectExList& input, XyRectExList* output);
-void CreateDrawItemExTree( CompositeDrawItemListList& input, 
+void MergeRects(const XyRectExList& input, XyRectExList* output, FrameMemberLists& members);
+void CreateDrawItemExTree( CompositeDrawItemListList& input,
+    CAtlArray<CompositeDrawItemEx>* storage,
     CompositeDrawItemExTree *out_draw_item_ex_tree, 
     XyRectExList *out_rect_ex_list );
 void DecideDrawMethod( CompositeDrawItemListList& compDrawItemListList, XyRectExList& rect_ex_list );
 
-void CompositeDrawItem::Draw( XySubRenderFrame**output, CompositeDrawItemListList& compDrawItemListList )
+static void AppendGroupedDraw(GroupedDrawItems& group, const SharedPtrDrawItem& item, bool addition, RenderDiagnostics* stats)
+{
+    const size_t before = stats ? group.draw_item_list.GetCapacity() : 0;
+    group.draw_item_list.AddTail(item);
+    group.addition_flags.AddTail(addition);
+    if (stats) {
+        ++stats->drawItems;
+        stats->drawVectorGrowths += group.draw_item_list.GetCapacity() != before;
+    }
+}
+
+void CompositeDrawItem::Draw( XySubRenderFrame**output, CompositeDrawItemListList& compDrawItemListList,
+    RenderDiagnostics* diagnostics )
 {
     if (!output)
     {
         return;
     }
     *output = NULL;
+    RenderPhaseTimer compositeTimer(diagnostics, RenderDiagnostics::COMPOSITE);
 
+    CAtlArray<CompositeDrawItemEx> draw_item_storage;
     CompositeDrawItemExTree draw_item_ex_tree;
+    // Nodes never move, including when more bands are discovered. Only used
+    // nodes construct lists; block allocation amortizes the remaining scratch
+    // list headers. No frame or cache retains pointers to these memberships.
+    FrameMemberLists member_lists(64);
     XyRectExList rect_ex_list;
-    CreateDrawItemExTree(compDrawItemListList, &draw_item_ex_tree, &rect_ex_list);
-
-    //fix subpixel gap whenever possible
-    DecideDrawMethod(compDrawItemListList, rect_ex_list);
+    {
+        RenderPhaseTimer timer(diagnostics, RenderDiagnostics::TREE);
+        CreateDrawItemExTree(compDrawItemListList, &draw_item_storage, &draw_item_ex_tree, &rect_ex_list);
+        //fix subpixel gap whenever possible
+        DecideDrawMethod(compDrawItemListList, rect_ex_list);
+    }
+    if (diagnostics) diagnostics->inputItems += rect_ex_list.GetCount();
 
     XyRectExList grouped_rect_exs;
-    MergeRects(rect_ex_list, &grouped_rect_exs);
+    {
+        RenderPhaseTimer timer(diagnostics, RenderDiagnostics::MERGE);
+        MergeRects(rect_ex_list, &grouped_rect_exs, member_lists);
+    }
 
     CAtlArray<GroupedDrawItems> grouped_draw_items;
 
     grouped_draw_items.SetCount(grouped_rect_exs.GetCount());
+    if (diagnostics) diagnostics->groups += grouped_rect_exs.GetCount();
 
-    POSITION pos = grouped_rect_exs.GetHeadPosition();
-    for(int rect_id=0;pos;rect_id++)
     {
-        XyRectEx& item = grouped_rect_exs.GetNext(pos);
-        grouped_draw_items.GetAt(rect_id).clip_rect = item;
-        POSITION pos_item = item.item_ex_list->GetHeadPosition();
-        while(pos_item)
+        RenderPhaseTimer groupTimer(diagnostics, RenderDiagnostics::GROUP);
+        POSITION pos = grouped_rect_exs.GetHeadPosition();
+        for(int rect_id=0;pos;rect_id++)
         {
-            CompositeDrawItemEx* draw_item_ex = item.item_ex_list->GetNext(pos_item);
-            if( draw_item_ex->rect_id_list.GetTail() != rect_id )//wipe out repeated item. this safe since the list has a dummy item -1
-                draw_item_ex->rect_id_list.AddTail(rect_id);
+            XyRectEx& item = grouped_rect_exs.GetNext(pos);
+            if (diagnostics) diagnostics->memberReferences += item.item_ex_list->GetCount();
+            grouped_draw_items.GetAt(rect_id).clip_rect = item;
+            size_t drawCount = 0;
+            for (size_t member = 0; member < item.item_ex_list->GetCount(); ++member)
+            {
+                CompositeDrawItemEx* draw_item_ex = (*item.item_ex_list)[member];
+                FrameGroupIds& ids = draw_item_ex->rect_id_list;
+                // Group IDs are visited in order; only the last ID can repeat.
+                if (!ids.GetCount() || ids[ids.GetCount()-1] != rect_id)
+                {
+                    ids.AddTail(rect_id);
+                    if (draw_item_ex->item->shadow) ++drawCount;
+                    if (draw_item_ex->item->outline) ++drawCount;
+                    if (draw_item_ex->item->body) ++drawCount;
+                    if (diagnostics) ++diagnostics->uniqueMembers;
+                }
+            }
+            // One allocation at most for the final spill; appending retains order.
+            grouped_draw_items[rect_id].draw_item_list.Reserve(drawCount);
+            grouped_draw_items[rect_id].addition_flags.Reserve(drawCount);
+        }
+        for (unsigned i=0;i<draw_item_ex_tree.GetCount();i++)
+        {
+            CompositeDrawItemExVec &draw_item_ex_vec = draw_item_ex_tree[i];
+            for (unsigned j=0;j<draw_item_ex_vec.GetCount();j++)
+            {
+                CompositeDrawItemEx &draw_item_ex = draw_item_ex_vec[j];
+                if (draw_item_ex.item->shadow)
+                {
+                    for (size_t group = 0; group < draw_item_ex.rect_id_list.GetCount(); ++group)
+                    {
+                        const int id = draw_item_ex.rect_id_list[group];
+                        AppendGroupedDraw(grouped_draw_items[id], draw_item_ex.item->shadow, draw_item_ex.item->shadowAddition, diagnostics);
+                    }
+                }
+            }
+            for (unsigned j=0;j<draw_item_ex_vec.GetCount();j++)
+            {
+                CompositeDrawItemEx &draw_item_ex = draw_item_ex_vec[j];
+                if (draw_item_ex.item->outline)
+                {
+                    for (size_t group = 0; group < draw_item_ex.rect_id_list.GetCount(); ++group)
+                    {
+                        const int id = draw_item_ex.rect_id_list[group];
+                        AppendGroupedDraw(grouped_draw_items[id], draw_item_ex.item->outline, draw_item_ex.item->outlineAddition, diagnostics);
+                    }
+                }
+            }
+            for (unsigned j=0;j<draw_item_ex_vec.GetCount();j++)
+            {
+                CompositeDrawItemEx &draw_item_ex = draw_item_ex_vec[j];
+                if (draw_item_ex.item->body)
+                {
+                    for (size_t group = 0; group < draw_item_ex.rect_id_list.GetCount(); ++group)
+                    {
+                        const int id = draw_item_ex.rect_id_list[group];
+                        AppendGroupedDraw(grouped_draw_items[id], draw_item_ex.item->body, draw_item_ex.item->bodyAddition, diagnostics);
+                    }
+                }
+            }
         }
     }
-    for (unsigned i=0;i<draw_item_ex_tree.GetCount();i++)
-    {
-        CompositeDrawItemExVec &draw_item_ex_vec = draw_item_ex_tree[i];
-        for (unsigned j=0;j<draw_item_ex_vec.GetCount();j++)
-        {
-            CompositeDrawItemEx &draw_item_ex = draw_item_ex_vec[j];
-            if (draw_item_ex.item->shadow)
-            {
-                pos = draw_item_ex.rect_id_list.GetHeadPosition();;
-                draw_item_ex.rect_id_list.GetNext(pos);
-                while(pos)
-                {
-                    int id = draw_item_ex.rect_id_list.GetNext(pos);
-                    grouped_draw_items[id].draw_item_list.AddTail( draw_item_ex.item->shadow );
-                }
-            }
-        }
-        for (unsigned j=0;j<draw_item_ex_vec.GetCount();j++)
-        {
-            CompositeDrawItemEx &draw_item_ex = draw_item_ex_vec[j];
-            if (draw_item_ex.item->outline)
-            {
-                pos = draw_item_ex.rect_id_list.GetHeadPosition();;
-                draw_item_ex.rect_id_list.GetNext(pos);
-                while(pos)
-                {
-                    int id = draw_item_ex.rect_id_list.GetNext(pos);
-                    grouped_draw_items[id].draw_item_list.AddTail( draw_item_ex.item->outline );
-                }
-            }
-        }
-        for (unsigned j=0;j<draw_item_ex_vec.GetCount();j++)
-        {
-            CompositeDrawItemEx &draw_item_ex = draw_item_ex_vec[j];
-            if (draw_item_ex.item->body)
-            {
-                pos = draw_item_ex.rect_id_list.GetHeadPosition();;
-                draw_item_ex.rect_id_list.GetNext(pos);
-                while(pos)
-                {
-                    int id = draw_item_ex.rect_id_list.GetNext(pos);
-                    grouped_draw_items[id].draw_item_list.AddTail( draw_item_ex.item->body );
-                }
-            }
-        }
-    }
-
     XySubRenderFrameCreater *render_frame_creater = XySubRenderFrameCreater::GetDefaultCreater();
 
     *output = render_frame_creater->NewXySubRenderFrame(grouped_draw_items.GetCount());
     XySubRenderFrame& sub_render_frame = **output;
 
     AlphaMaskBuffer alphaBuffer;
+    RenderPhaseTimer bitmapTimer(diagnostics, RenderDiagnostics::BITMAP);
     for (unsigned i=0;i<grouped_draw_items.GetCount();i++)
     {
         grouped_draw_items[i].Draw(&(sub_render_frame.m_bitmaps.GetAt(i)), &(sub_render_frame.m_bitmap_ids.GetAt(i)), alphaBuffer);
@@ -285,37 +396,49 @@ void CompositeDrawItem::Draw( XySubRenderFrame**output, CompositeDrawItemListLis
 }
 
 void CreateDrawItemExTree( CompositeDrawItemListList& input,
+    CAtlArray<CompositeDrawItemEx>* storage,
     CompositeDrawItemExTree *out_draw_item_ex_tree, 
     XyRectExList *out_rect_ex_list )
 {
-    ASSERT(out_draw_item_ex_tree!=NULL && out_rect_ex_list!=NULL);
+    ASSERT(storage!=NULL && out_draw_item_ex_tree!=NULL && out_rect_ex_list!=NULL);
 
+    size_t item_count = 0;
+    POSITION list_pos = input.GetHeadPosition();
+    while (list_pos)
+    {
+        const size_t count = input.GetNext(list_pos).GetCount();
+        if (count > static_cast<size_t>(-1) - item_count) AtlThrow(E_OUTOFMEMORY);
+        item_count += count;
+    }
+    storage->SetCount(item_count);
     int list_count = input.GetCount();
     out_draw_item_ex_tree->SetCount(list_count);
-    POSITION list_pos = input.GetHeadPosition();
+    size_t offset = 0;
+    list_pos = input.GetHeadPosition();
     for (int list_id=0;list_id<list_count;list_id++)
     {
         CompositeDrawItemList& compDrawItemList = input.GetNext(list_pos);
         int count = compDrawItemList.GetCount();
         CompositeDrawItemExVec& out_draw_item_exs = out_draw_item_ex_tree->GetAt(list_id);
-        out_draw_item_exs.SetCount(count);
+        out_draw_item_exs.items = count ? storage->GetData() + offset : NULL;
+        out_draw_item_exs.count = count;
+        offset += count;
         POSITION item_pos = compDrawItemList.GetHeadPosition();
         for (int item_id=0; item_id<count; item_id++ )
         {
             CompositeDrawItem& comp_draw_item = compDrawItemList.GetNext(item_pos);
             CompositeDrawItemEx& comp_draw_item_ex = out_draw_item_exs.GetAt(item_id);
             comp_draw_item_ex.item = &comp_draw_item;
-            comp_draw_item_ex.rect_id_list.AddHead(-1);//dummy head
 
             XyRectEx &rect_ex = out_rect_ex_list->GetAt(out_rect_ex_list->AddTail());
-            rect_ex.item_ex_list.reset(DEBUG_NEW PCompositeDrawItemExList());
-            rect_ex.item_ex_list->AddTail( &comp_draw_item_ex);
+            comp_draw_item_ex.initial_members.AddTail(&comp_draw_item_ex);
+            rect_ex.item_ex_list = &comp_draw_item_ex.initial_members;
             rect_ex.SetRect( CompositeDrawItem::GetDirtyRect(comp_draw_item) );
         }
     }
 }
 
-void MergeRects(const XyRectExList& input, XyRectExList* output)
+void MergeRects(const XyRectExList& input, XyRectExList* output, FrameMemberLists& members)
 {
     int input_count = input.GetCount();
     if(output==NULL || input_count==0)
@@ -349,6 +472,9 @@ void MergeRects(const XyRectExList& input, XyRectExList* output)
     }
 
     std::sort(vertical_breakpoints.begin(), vertical_breakpoints.end());
+    // Duplicate boundaries never create a band. Remove them before constructing
+    // ATL list headers, while retaining exactly the same nonempty bands/order.
+    vertical_breakpoints.erase(std::unique(vertical_breakpoints.begin(),vertical_breakpoints.end()),vertical_breakpoints.end());
     std::sort(horizon_breakpoints.begin(), horizon_breakpoints.end());
 
     CAtlArray<Segment> tempSegments;
@@ -361,7 +487,7 @@ void MergeRects(const XyRectExList& input, XyRectExList* output)
             Segment& seg = tempSegments[count];
             seg.AddTail();
             seg.GetTail().SetRect(INT_MIN, prev, INT_MIN, vertical_breakpoints[ptr]);
-            seg.GetTail().item_ex_list.reset(DEBUG_NEW PCompositeDrawItemExList());
+            seg.GetTail().item_ex_list = &members.GetAt(members.AddTail());
 
             prev = vertical_breakpoints[ptr];
             count++;
@@ -399,8 +525,8 @@ void MergeRects(const XyRectExList& input, XyRectExList* output)
                 cur_line.AddTail();
                 XyRectEx & new_item = cur_line.GetTail();
                 new_item.SetRect( rect.left, item.top, rect.right, item.bottom );
-                new_item.item_ex_list.reset(DEBUG_NEW PCompositeDrawItemExList());
-                new_item.item_ex_list->AddTailList( rect.item_ex_list.get() );
+                new_item.item_ex_list = &members.GetAt(members.AddTail());
+                AppendMembers(*new_item.item_ex_list, *rect.item_ex_list);
             }
             else
             {
@@ -408,7 +534,7 @@ void MergeRects(const XyRectExList& input, XyRectExList* output)
                 {
                     item.right = rect.right;
                 }
-                item.item_ex_list->AddTailList( rect.item_ex_list.get() );
+                AppendMembers(*item.item_ex_list, *rect.item_ex_list);
             }
         }
     }
@@ -438,7 +564,7 @@ void MergeRects(const XyRectExList& input, XyRectExList* output)
                 if(upper_rect.right==cur_rect->right && upper_rect.left==cur_rect->left)
                 {
                     upper_rect.bottom = cur_rect->bottom;
-                    upper_rect.item_ex_list->AddTailList( cur_rect->item_ex_list.get() );
+                    AppendMembers(*upper_rect.item_ex_list, *cur_rect->item_ex_list);
                     //if(!cur_line.IsEmpty())
                     cur_rect = &cur_line.GetPrev(pos_cur_line);
                 }
@@ -466,6 +592,16 @@ void MergeRects(const XyRectExList& input, XyRectExList* output)
 
 void DecideDrawMethod( CompositeDrawItemListList& compDrawItemListList, XyRectExList& rect_ex_list )
 {
+    // These decisions belong to this composition, never to retained DrawItems.
+    for (POSITION p=compDrawItemListList.GetHeadPosition();p;)
+    {
+        CompositeDrawItemList& list=compDrawItemListList.GetNext(p);
+        for (POSITION q=list.GetHeadPosition();q;)
+        {
+            CompositeDrawItem& item=list.GetNext(q);
+            item.shadowAddition=item.outlineAddition=item.bodyAddition=false;
+        }
+    }
     int count = rect_ex_list.GetCount();
     if (count>128)//this implementation is too slow for input of large scale
     {
@@ -506,13 +642,13 @@ void DecideDrawMethod( CompositeDrawItemListList& compDrawItemListList, XyRectEx
             }
             if (!*not_lowest1)
             {
-                if (comp_draw_item.shadow ) comp_draw_item.shadow->use_addition_draw  = true;
+                if (comp_draw_item.shadow ) comp_draw_item.shadowAddition  = true;
                 int n = !!comp_draw_item.body + !!comp_draw_item.outline + !!comp_draw_item.shadow;
                 if (n==1 || 
                     (!comp_draw_item.shadow && comp_draw_item.outline && !comp_draw_item.outline->fBody))
                 {
-                    if (comp_draw_item.body   ) comp_draw_item.body->use_addition_draw    = true;
-                    if (comp_draw_item.outline) comp_draw_item.outline->use_addition_draw = true;
+                    if (comp_draw_item.body   ) comp_draw_item.bodyAddition    = true;
+                    if (comp_draw_item.outline) comp_draw_item.outlineAddition = true;
                 }
             }
             not_lowest1++;
@@ -529,9 +665,15 @@ void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num
 {
     ASSERT(bitmap && bitmap_identity_num);
     BitmapMruCache *bitmap_cache = CacheManager::GetBitmapMruCache();
-    // Probe with frame-local storage; interning owns a copy only on a miss.
+    // Borrow the already assembled children for this lookup. The interner's
+    // value copy materializes owned keys on a miss; no view escapes this call.
+#ifdef XY_BENCHMARK_OWNED_GROUP_KEYS
+    // Build-only control for measuring borrowed probes against owned snapshots.
     GroupedDrawItemsHashKey key;
     CreateHashKey(&key);
+#else
+    GroupedDrawItemsHashKey key(*this);
+#endif
     XyFwGroupedDrawItemsHashKey::IdType key_id = XyFwGroupedDrawItemsHashKey(key).GetId();
     POSITION pos = bitmap_cache->Lookup( key_id );
     if (pos==NULL)
@@ -541,7 +683,8 @@ void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num
 
         for (size_t i = 0; i < draw_item_list.GetCount(); ++i)
         {
-            DrawItem::Draw(tmp, *draw_item_list[i], clip_rect, buffer);
+            DrawItem::Draw(tmp, *draw_item_list[i], clip_rect, buffer,
+                addition_flags.GetCount()==draw_item_list.GetCount() ? addition_flags[i]!=0 : draw_item_list[i]->use_addition_draw);
         }
         XyColorSpace color_space;
         HRESULT hr = XySubRenderFrameCreater::GetDefaultCreater()->GetColorSpace(&color_space);
@@ -586,9 +729,8 @@ void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num
 void GroupedDrawItems::CreateHashKey(GroupedDrawItemsHashKey *key)
 {
     ASSERT(key);
-    key->m_clip_rect = clip_rect;
-    key->m_key.Truncate(0);
-    key->m_key.Reserve(draw_item_list.GetCount());
-    for (size_t i = 0; i < draw_item_list.GetCount(); ++i) key->m_key.AddTail(draw_item_list[i]->GetHashKey());
-    key->UpdateHashValue();
+    // This existing API continues to return an owning snapshot, including when
+    // its destination previously held a borrowed lookup view.
+    const GroupedDrawItemsHashKey probe(*this);
+    *key = probe;
 }

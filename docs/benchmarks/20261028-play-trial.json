@@ -1,0 +1,472 @@
+{
+  "date": "2026-10-28",
+  "scope": "One completed native-renderer playback trial per architecture; no playback repetitions or source changes.",
+  "version": "3.2.1.900",
+  "debug_build": {
+    "Edition": "MAX",
+    "Configuration": "Debug",
+    "Started": "2026-10-28T16:33:11.4243567+02:00",
+    "Success": true,
+    "MadExceptWin32": true,
+    "Outputs": [
+      {
+        "Path": "Z:\\zpAI\\zplayer.exe",
+        "Machine": "014C",
+        "Bytes": 27072635,
+        "Modified": "2026-10-28T16:33:20.5855401+02:00",
+        "SHA256": "636E330D3617275886BA281DE17DF3990B0E4EA26BF10DF9AC9DFE593D2C3B32"
+      },
+      {
+        "Path": "Z:\\zpAI\\ExternalEngine\\zpmediaengine.exe",
+        "Machine": "014C",
+        "Bytes": 7219781,
+        "Modified": "2026-10-28T16:33:24.0037786+02:00",
+        "SHA256": "AA64C11A5CDAAEA8B8B91930A63117C0700124561403924B4C9D7396D1604D26"
+      },
+      {
+        "Path": "Z:\\zpAI\\ExternalEngine64\\zpmediaengine64.exe",
+        "Machine": "8664",
+        "Bytes": 17206835,
+        "Modified": "2026-10-28T16:33:26.8516640+02:00",
+        "SHA256": "40C59340757F03B0F6FD19BB49BC4333BDC6C99A48382E4341C9DE0B0B78DF0F"
+      }
+    ],
+    "Completed": "2026-10-28T16:33:27.5828855+02:00"
+  },
+  "method": {
+    "range": "22:20 through EOF (~24:01.272)",
+    "default_subtitle_enabled": true,
+    "render_backend": "native",
+    "renderer_request": 1150,
+    "cpu_scope": "Player plus descendant media helpers, whole playback workload",
+    "cpu_percent_denominator_logical_cpus": 8,
+    "cpu_affinity": "unrestricted",
+    "bitmap_cache_items": 256,
+    "original_bitmap_cache_items": 64,
+    "visible_client_pixels": [
+      2084,
+      1176
+    ],
+    "failed_setup_excluded": "x64-setup-failed-01: saved audio visualization enabled prevented external64 routing; failed before measurement",
+    "x64_workaround": "Temporarily set OPEnableVis=0; restored original 1 after trial. Video visualization already disabled.",
+    "comparability_limit": "One run per architecture; different helper architecture/dependencies; no controlled historical speedup claim.",
+    "provenance_limit": "Expected latest workspace DLL hashes verified loaded in actual graph processes using temporary per-user COM overrides."
+  },
+  "restoration": {
+    "native_preference": "originally absent, restored absent in both registry views",
+    "bitmap_cache": 64,
+    "user_com_registration": "originally absent, restored absent in both registry views",
+    "player_completion_action": 2,
+    "external_engine_enable": 1,
+    "external_engine_mode": 1,
+    "external_engine_extension_list": "MP4",
+    "audio_visualization": 1,
+    "owned_players_and_helpers_closed": true
+  },
+  "runs": [
+    {
+      "drawn_counter_resets": [
+        {
+          "elapsed_s": 1.003026,
+          "before": 48,
+          "after": 24,
+          "dropped_before": 0,
+          "dropped_after": 0
+        }
+      ],
+      "active_filter_dependencies": [
+        {
+          "name": "LAVVideo.ax",
+          "path": "C:\\Program Files (x86)\\LAV Filters\\x86\\LAVVideo.ax",
+          "sha256": "ee84e7f3f5fd5898937ea8e12c3326d31b5c0039d099a68af9948e4e0ab4f693"
+        },
+        {
+          "name": "MpcVideoRenderer.ax",
+          "path": "C:\\Program Files (x86)\\MPC Video Renderer\\MpcVideoRenderer.ax",
+          "sha256": "2aeef4750282dfec1c59629f52221c4dbed83d3c238b6f40b6401adb5b3de16a"
+        },
+        {
+          "name": "MpcSubtitleHelper.ax",
+          "path": "C:\\Program Files (x86)\\MPC-VR\\MpcSubtitleHelper.ax",
+          "sha256": "5c67e7113d5b16d9f36cd1cdf6a8ff252a1d3e15803af33b9b49c781ec3c2fc1"
+        }
+      ],
+      "engine": "internal32",
+      "filter_bitness": 32,
+      "startup_poll_interval_s": 1.0,
+      "filter_performance_registry": {
+        "bitmap_mru_cache_item_num": 256,
+        "max_cache_size_mb": 8192
+      },
+      "main_window": {
+        "class": "TMainForm.UnicodeClass",
+        "minimized": false,
+        "rect": [
+          238,
+          132,
+          2322,
+          1308
+        ],
+        "client_size": [
+          2084,
+          1176
+        ]
+      },
+      "renderer": "MPC Video Renderer",
+      "subtitle": "Signs & Songs [eng] (ass) [default]",
+      "drops": 2,
+      "cpu_seconds": 39.125,
+      "wall_seconds": 102.00266720005311,
+      "mean_cpu_cores": 0.3835684014346992,
+      "mean_cpu_percent_machine": 4.7946050179337405,
+      "peak_single_process_cpu_cores": 0.750059,
+      "peak_combined_private_bytes": 536223744,
+      "peak_private_bytes": 536223744,
+      "renderer_samples": 104,
+      "max_reply_ms": 58.325,
+      "xy_filter": {
+        "name": "XySubFilter",
+        "clsid": "{2DFCB782-EC20-4A7C-B530-4577ADB33F21}",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\Win32\\Release\\XySubFilter.dll",
+        "sha256": "0cc32fccbb435a6f54c82338fe9cba6e1e837161381502d38eb8f0f8541a1170"
+      },
+      "other_filters": [
+        {
+          "name": "madVR",
+          "clsid": "{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}",
+          "path": "C:\\Program Files (x86)\\MadVR\\MadVR.ax",
+          "sha256": "edeed42dcfaae84b9d827700862288b9b42066bcb5facadb12175de4ba6c3297"
+        },
+        {
+          "name": "LAV Video",
+          "clsid": "{EE30215D-164F-4A92-A4EB-9D4C13390F9F}",
+          "path": "C:\\Program Files (x86)\\LAV Filters\\x86\\LAVVideo.ax",
+          "sha256": "ee84e7f3f5fd5898937ea8e12c3326d31b5c0039d099a68af9948e4e0ab4f693"
+        }
+      ],
+      "player_sha256": "636e330d3617275886ba281de17df3990b0e4ea26bf10df9ac9dfe593d2c3b32",
+      "media": "F:\\Git\\xySubFilter\\Subtitles_CPU_killer_on_end_credits.mkv",
+      "drop_intervals": [
+        {
+          "count": 1,
+          "previous_position_ms": 1366958,
+          "position_ms": 1367958,
+          "elapsed_s": 28.002874
+        },
+        {
+          "count": 1,
+          "previous_position_ms": 1397959,
+          "position_ms": 1398957,
+          "elapsed_s": 59.000558
+        }
+      ],
+      "first_two_seconds_drops": 0,
+      "native_cleanup": {
+        "architecture": "Win32",
+        "engine": "internal32",
+        "original_prefer_libass": null,
+        "general_key_existed": true,
+        "native_rendering_requested": true,
+        "returncode": 0,
+        "native_preference_restored": true
+      },
+      "filter_cleanup": {
+        "dll": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\Win32\\Release\\XySubFilter.dll",
+        "sha256": "0cc32fccbb435a6f54c82338fe9cba6e1e837161381502d38eb8f0f8541a1170",
+        "original_completion_action": "2",
+        "original_user_registration": null,
+        "engine": "internal32",
+        "filter_bitness": 32,
+        "original_engine_options": {
+          "D:OPExternalMediaEngineEnable": "1"
+        },
+        "bitmap_cache_override": 256,
+        "original_bitmap_cache_value": {
+          "value": 64,
+          "type": 4
+        },
+        "player_pid": 53988,
+        "player_running_before_cleanup": true,
+        "player_exit_code_before_cleanup": null,
+        "engine_options_restored": true,
+        "registration_restored": true,
+        "bitmap_cache_restored": true
+      },
+      "latest_validation": [
+        {
+          "name": "render_subtitles.exe",
+          "bytes": 2804736,
+          "sha256": "ad30bce417f0a46b2fd3872a62fb0ef3911306228bdfe3a5acd7912984caf5b3"
+        },
+        {
+          "name": "render_subtitles.pdb",
+          "bytes": 28823552,
+          "sha256": "70f5dd31e36f87965857cabd4615fbea9fad9292d0f884e9f8a41a16c8582b73"
+        },
+        {
+          "name": "streaming_subtitles.exe",
+          "bytes": 2644480,
+          "sha256": "a3196c824f71309f075d187e7c979a37018324872b87423c9d921794c1c51015"
+        },
+        {
+          "name": "streaming_subtitles.pdb",
+          "bytes": 28119040,
+          "sha256": "7001ef85ac5f1a8810e0c530d06eada85e3534ddf8a9bec9498f961be37a2369"
+        },
+        {
+          "name": "VSFilter.dll",
+          "bytes": 3538944,
+          "sha256": "8052987e6329417db60b1bd7e7fdd6dd37509c36e036705d82ffaa2dd5bb086d"
+        },
+        {
+          "name": "VSFilter.pdb",
+          "bytes": 33837056,
+          "sha256": "07ac82fff26d36264e8d46bf8b7f988cbab996597a4b61268a483fd149525957"
+        },
+        {
+          "name": "XySubFilter.dll",
+          "bytes": 3288576,
+          "sha256": "0cc32fccbb435a6f54c82338fe9cba6e1e837161381502d38eb8f0f8541a1170"
+        },
+        {
+          "name": "XySubFilter.pdb",
+          "bytes": 32436224,
+          "sha256": "570a9fc564da9dbe0c4c1321336510a9354801272954ba12a8cf82bdea36f6e0"
+        },
+        {
+          "name": "xy_sub_filter_consumer.dll",
+          "bytes": 830976,
+          "sha256": "3c2758ccc89c6efe823811bc8a3069035b8a07c203935b43e48409c30f7c5ab1"
+        },
+        {
+          "name": "xy_sub_filter_consumer.pdb",
+          "bytes": 23719936,
+          "sha256": "353a022978f8d1a743db7a91eb5507ab47634fa5b1e5d2cf7d8aa052b107d24e"
+        }
+      ],
+      "raw_artifacts": "benchmark-results/play-trial-20261028/Win32",
+      "completion": "end_of_file",
+      "initial_stats": {
+        "position_ms": 1339999,
+        "renderer": "MPC Video Renderer",
+        "frames_drawn": 48,
+        "frames_dropped": 0,
+        "average_fps": 14.93
+      },
+      "final_stats": {
+        "position_ms": 1441272,
+        "renderer": "MPC Video Renderer",
+        "frames_drawn": 2426,
+        "frames_dropped": 2,
+        "average_fps": 23.98
+      },
+      "logical_cpus": 8,
+      "subtitle_index": "0"
+    },
+    {
+      "drawn_counter_resets": [
+        {
+          "elapsed_s": 1.001095,
+          "before": 28,
+          "after": 20,
+          "dropped_before": 0,
+          "dropped_after": 0
+        }
+      ],
+      "active_filter_dependencies": [
+        {
+          "name": "LAVVideo.ax",
+          "path": "C:\\Program Files (x86)\\LAV Filters\\x64\\LAVVideo.ax",
+          "sha256": "e2a91e0e2d3f8ac73aad31ea5c21eef88c67bc98eecaf420df07e5cea0a2cf42"
+        },
+        {
+          "name": "MpcVideoRenderer64.ax",
+          "path": "C:\\Program Files (x86)\\MPC Video Renderer\\MpcVideoRenderer64.ax",
+          "sha256": "2926f25552b2891e63264e6168e5e3a6e5eb91f858b1bdf1f122fdc2120ec295"
+        },
+        {
+          "name": "MpcSubtitleHelper.ax",
+          "path": "c:\\Program Files\\mpc-vr\\MpcSubtitleHelper.ax",
+          "sha256": "61afe7ce7aab538338df14b93a4787e011beb96e14b83d697bd94e5f49359b1c"
+        }
+      ],
+      "engine": "external64",
+      "filter_bitness": 64,
+      "startup_poll_interval_s": 1.0,
+      "filter_performance_registry": {
+        "bitmap_mru_cache_item_num": 256,
+        "max_cache_size_mb": 8192
+      },
+      "main_window": {
+        "class": "TMainForm.UnicodeClass",
+        "minimized": false,
+        "rect": [
+          238,
+          132,
+          2322,
+          1308
+        ],
+        "client_size": [
+          2084,
+          1176
+        ]
+      },
+      "renderer": "MPC Video Renderer",
+      "subtitle": "S: Signs & Songs [eng] (ass) [default]",
+      "drops": 2,
+      "cpu_seconds": 42.140625,
+      "wall_seconds": 102.00191419990733,
+      "mean_cpu_cores": 0.41313562917467567,
+      "mean_cpu_percent_machine": 5.1641953646834455,
+      "peak_single_process_cpu_cores": 0.758835,
+      "peak_combined_private_bytes": 594829312,
+      "peak_private_bytes": 476012544,
+      "renderer_samples": 104,
+      "max_reply_ms": 0.652,
+      "xy_filter": {
+        "name": "XySubFilter",
+        "clsid": "{2DFCB782-EC20-4A7C-B530-4577ADB33F21}",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\x64\\Release\\XySubFilter.dll",
+        "sha256": "3085522ec72b895e5f7b208354a35fc64da26d4492cc53c7592be2e098e8b721"
+      },
+      "other_filters": [
+        {
+          "name": "madVR",
+          "clsid": "{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}",
+          "path": "c:\\Program Files (x86)\\MadVR\\madVR64.ax",
+          "sha256": "2c53a581e66e9dc8a10c79e88771e8aa049be789021930e7d94f08a86731daf4"
+        },
+        {
+          "name": "LAV Video",
+          "clsid": "{EE30215D-164F-4A92-A4EB-9D4C13390F9F}",
+          "path": "C:\\Program Files (x86)\\LAV Filters\\x64\\LAVVideo.ax",
+          "sha256": "e2a91e0e2d3f8ac73aad31ea5c21eef88c67bc98eecaf420df07e5cea0a2cf42"
+        }
+      ],
+      "player_sha256": "636e330d3617275886ba281de17df3990b0e4ea26bf10df9ac9dfe593d2c3b32",
+      "media": "F:\\Git\\xySubFilter\\Subtitles_CPU_killer_on_end_credits.mkv",
+      "drop_intervals": [
+        {
+          "count": 1,
+          "previous_position_ms": 1366827,
+          "position_ms": 1367849,
+          "elapsed_s": 28.001213
+        },
+        {
+          "count": 1,
+          "previous_position_ms": 1382810,
+          "position_ms": 1383811,
+          "elapsed_s": 44.00066
+        }
+      ],
+      "first_two_seconds_drops": 0,
+      "native_cleanup": {
+        "architecture": "x64",
+        "engine": "external64",
+        "original_prefer_libass": null,
+        "general_key_existed": true,
+        "native_rendering_requested": true,
+        "audio_visualization_override": 0,
+        "original_audio_visualization": "1",
+        "returncode": 0,
+        "audio_visualization_restored": true,
+        "native_preference_restored": true
+      },
+      "filter_cleanup": {
+        "dll": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\x64\\Release\\XySubFilter.dll",
+        "sha256": "3085522ec72b895e5f7b208354a35fc64da26d4492cc53c7592be2e098e8b721",
+        "original_completion_action": "2",
+        "original_user_registration": null,
+        "engine": "external64",
+        "filter_bitness": 64,
+        "original_engine_options": {
+          "D:OPExternalMediaEngineEnable": "1",
+          "D:OPExternalMediaEngineMode": "1",
+          "S:OPExternalMediaEngineExtList": "MP4"
+        },
+        "bitmap_cache_override": 256,
+        "original_bitmap_cache_value": {
+          "value": 64,
+          "type": 4
+        },
+        "player_pid": 13384,
+        "player_running_before_cleanup": true,
+        "player_exit_code_before_cleanup": null,
+        "engine_options_restored": true,
+        "registration_restored": true,
+        "bitmap_cache_restored": true
+      },
+      "latest_validation": [
+        {
+          "name": "render_subtitles.exe",
+          "bytes": 3291136,
+          "sha256": "5b628c2d0f598f8ae64e82c592fa129f0cadeb4e97b210be16a4b1daf24e124a"
+        },
+        {
+          "name": "render_subtitles.pdb",
+          "bytes": 28454912,
+          "sha256": "e0eaf20628e62d1c615643455fd8b747a822ee5b5c28031a6a8b0c1f6dff7ab8"
+        },
+        {
+          "name": "streaming_subtitles.exe",
+          "bytes": 3085312,
+          "sha256": "7e055048357dbe0b6299bd5022d2e9823b865e10d4adb7c7ab8cc37fb5106f74"
+        },
+        {
+          "name": "streaming_subtitles.pdb",
+          "bytes": 27422720,
+          "sha256": "92d12fdaaaf6a3629f77b762b2e61c14f7d68e650a4a0994f5719d6a6e44f7c0"
+        },
+        {
+          "name": "VSFilter.dll",
+          "bytes": 4179456,
+          "sha256": "5910b10fae0abd230a16c33a3434f98441c375083b3de27effdc8f29ae1c7598"
+        },
+        {
+          "name": "VSFilter.pdb",
+          "bytes": 33665024,
+          "sha256": "c13c16d45b815cbb00dada9e185e4f743e081548cb2e40503a5947526d9678b6"
+        },
+        {
+          "name": "XySubFilter.dll",
+          "bytes": 3888128,
+          "sha256": "3085522ec72b895e5f7b208354a35fc64da26d4492cc53c7592be2e098e8b721"
+        },
+        {
+          "name": "XySubFilter.pdb",
+          "bytes": 32493568,
+          "sha256": "b3986f531aba9f2a5a605c1313351f37d4e9bfbfae63f05a6bab1a5841ca5bb9"
+        },
+        {
+          "name": "xy_sub_filter_consumer.dll",
+          "bytes": 958976,
+          "sha256": "fdf1d554ea41fc089b2cbba5213e8b5d565891d2699a1ab3fcd09d34c8437fa9"
+        },
+        {
+          "name": "xy_sub_filter_consumer.pdb",
+          "bytes": 22999040,
+          "sha256": "b201ff9b0d4cb33b4f819d340f8e1ec4cde5aab65609c35970c08229716a1dc7"
+        }
+      ],
+      "raw_artifacts": "benchmark-results/play-trial-20261028/x64",
+      "completion": "end_of_file",
+      "initial_stats": {
+        "position_ms": 1340000,
+        "renderer": "MPC Video Renderer",
+        "frames_drawn": 28,
+        "frames_dropped": 0,
+        "average_fps": 14.1
+      },
+      "final_stats": {
+        "position_ms": 1441271,
+        "renderer": "MPC Video Renderer",
+        "frames_drawn": 2426,
+        "frames_dropped": 2,
+        "average_fps": 23.96
+      },
+      "logical_cpus": 8,
+      "subtitle_index": "0"
+    }
+  ],
+  "interpretation": "Two renderer drops per run, all later than the first two seconds. Close to zero for this sample/configuration, but recurring deadline misses remain. Polling intervals do not identify exact dropped frames or their CPU cause."
+}

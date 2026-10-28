@@ -1957,6 +1957,110 @@ BYTE* Rasterizer::CompositeAlphaMask(const SharedPtrOverlay& overlay, const CRec
 
 ///////////////////////////////////////////////////////////////////////////
 
+
+// The mask arithmetic below is the same fixed-point operation as FillAlphaMash.
+// In the masked case, discarding the low 8 product bits before adding 8 and
+// shifting 4 is exactly (shape * mask * opacity + 2048) >> 12.
+static __forceinline __m128i FusedCoverage(__m128i shape, __m128i mask, __m128i opacity, bool masked)
+{
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_mullo_epi16(_mm_unpacklo_epi8(shape,zero),opacity);
+    __m128i high = _mm_mullo_epi16(_mm_unpackhi_epi8(shape,zero),opacity);
+    if (masked)
+    {
+        low = _mm_mulhi_epu16(low,_mm_unpacklo_epi8(zero,mask));
+        high = _mm_mulhi_epu16(high,_mm_unpackhi_epi8(zero,mask));
+        low = _mm_srli_epi16(_mm_add_epi16(low,_mm_set1_epi16(8)),4);
+        high = _mm_srli_epi16(_mm_add_epi16(high,_mm_set1_epi16(8)),4);
+    }
+    else
+    {
+        low = _mm_srli_epi16(_mm_add_epi16(low,_mm_set1_epi16(32)),6);
+        high = _mm_srli_epi16(_mm_add_epi16(high,_mm_set1_epi16(32)),6);
+    }
+    return _mm_packus_epi16(low,high);
+}
+
+static __forceinline void BlendFused16(BYTE* dst, __m128i alpha,
+    const __m128i& red, const __m128i& green, const __m128i& blue)
+{
+    const __m128i zero = _mm_setzero_si128(), ones = _mm_set1_epi16(1);
+    const __m128i inverse = _mm_xor_si128(_mm_set1_epi8(char(0xff)),alpha);
+    const __m128i low = _mm_unpacklo_epi8(inverse,alpha), high = _mm_unpackhi_epi8(inverse,alpha);
+    const __m128i weights[4] = {
+        _mm_add_epi16(_mm_unpacklo_epi8(low,zero),ones),
+        _mm_add_epi16(_mm_unpackhi_epi8(low,zero),ones),
+        _mm_add_epi16(_mm_unpacklo_epi8(high,zero),ones),
+        _mm_add_epi16(_mm_unpackhi_epi8(high,zero),ones)
+    };
+    for (int i=0; i<4; ++i)
+    {
+        __m128i pixels = _mm_loadu_si128(reinterpret_cast<const __m128i*>(dst+i*16));
+        pixels = packed_pix_mix_sse2(pixels,red,green,blue,weights[i]);
+        _mm_storeu_si128(reinterpret_cast<__m128i*>(dst+i*16),pixels);
+    }
+}
+
+bool Rasterizer::DrawSingleColorFused(XyBitmap* bitmap, const SharedPtrOverlay& overlay,
+    const CRect& clipRect, const GrayImage2* mask, int xsub, int ysub,
+    const DWORD* switchpts, bool body, bool border, CRect* dirty)
+{
+    if (!bitmap || bitmap->type != XyBitmap::PACK || !switchpts || switchpts[1] != 0xffffffff) return false;
+    dirty->SetRectEmpty();
+    if ((!body && !border) || (border && !overlay->mBorder)) return true;
+    CRect clip = clipRect;
+    if (mask) clip &= CRect(mask->left_top,mask->size);
+    const int originX=(xsub+overlay->mOffsetX+4)>>3, originY=(ysub+overlay->mOffsetY+4)>>3;
+    CRect area(originX,originY,originX+overlay->mOverlayWidth,originY+overlay->mOverlayHeight);
+    area &= clip;
+    if (area.IsRectEmpty()) return true;
+    *dirty = area;
+    const DWORD color=switchpts[0];
+    const unsigned opacity=color>>24;
+    if (!opacity) return true;
+    ASSERT(area.left>=bitmap->x && area.top>=bitmap->y && area.right<=bitmap->x+bitmap->w && area.bottom<=bitmap->y+bitmap->h);
+    const int sourceOffset=(area.top-originY)*overlay->mOverlayPitch+area.left-originX;
+    const BYTE* shape=(border ? overlay->mBorder.get() : overlay->mBody.get())+sourceOffset;
+    const BYTE* subtract=border && !body ? overlay->mBody.get()+sourceOffset : NULL;
+    const BYTE* clipData=mask ? mask->data.get()+(area.top-mask->left_top.y)*mask->pitch+area.left-mask->left_top.x : NULL;
+    BYTE* dst=static_cast<BYTE*>(bitmap->bits)+(area.top-bitmap->y)*bitmap->pitch+(area.left-bitmap->x)*4;
+    const __m128i red=_mm_set1_epi32(color&0xff0000),green=_mm_set1_epi32((color&0xff00)<<8),blue=_mm_set1_epi32((color&0xff)<<16);
+    const __m128i alpha=_mm_set1_epi16(short(opacity));
+    for (int y=0; y<area.Height(); ++y)
+    {
+        int x=0;
+        for (; x+16<=area.Width(); x+=16)
+        {
+            __m128i coverage=_mm_loadu_si128(reinterpret_cast<const __m128i*>(shape+x));
+            if (subtract) coverage=_mm_subs_epu8(coverage,_mm_loadu_si128(reinterpret_cast<const __m128i*>(subtract+x)));
+            const __m128i clipValues=clipData ? _mm_loadu_si128(reinterpret_cast<const __m128i*>(clipData+x)) : _mm_setzero_si128();
+            coverage=FusedCoverage(coverage,clipValues,alpha,clipData!=NULL);
+            // Exact fixed-point endpoints: alpha 0 leaves the destination
+            // unchanged; alpha 255 writes color RGB and zero inverse alpha.
+            if (_mm_movemask_epi8(_mm_cmpeq_epi8(coverage,_mm_setzero_si128()))==0xffff) continue;
+            if (_mm_movemask_epi8(_mm_cmpeq_epi8(coverage,_mm_set1_epi8(char(0xff))))==0xffff)
+            {
+                const __m128i solid=_mm_set1_epi32(color&0x00ffffff);
+                for(int i=0;i<4;++i) _mm_storeu_si128(reinterpret_cast<__m128i*>(dst+x*4+i*16),solid);
+            }
+            else BlendFused16(dst+x*4,coverage,red,green,blue);
+        }
+        for (; x<area.Width(); ++x)
+        {
+            int coverage=shape[x];
+            if (subtract) coverage=max(0,coverage-int(subtract[x]));
+            const unsigned value=clipData ? (coverage*clipData[x]*opacity+2048)>>12 : (coverage*opacity+32)>>6;
+            if (value==255) *reinterpret_cast<DWORD*>(dst+x*4)=color&0x00ffffff;
+            else if (value) pixmix_sse2(reinterpret_cast<DWORD*>(dst+x*4),color,value);
+        }
+        shape+=overlay->mOverlayPitch;
+        if (subtract) subtract+=overlay->mOverlayPitch;
+        if (clipData) clipData+=mask->pitch;
+        dst+=bitmap->pitch;
+    }
+    return true;
+}
+
 void DrawSingleColorPackPix(      DWORD *dst,
                             const BYTE  *src, 
                             DWORD        color, 

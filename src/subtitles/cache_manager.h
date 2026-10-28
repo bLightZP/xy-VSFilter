@@ -249,10 +249,15 @@ private:
     bool m_fBorder;
 };
 
+struct GroupedDrawItems;
 class GroupedDrawItemsHashKey
 {
 public:
+    GroupedDrawItemsHashKey();
+    GroupedDrawItemsHashKey(const GroupedDrawItemsHashKey& key);
+    GroupedDrawItemsHashKey& operator=(const GroupedDrawItemsHashKey& key);
     bool operator==(const GroupedDrawItemsHashKey& key) const;
+    bool IsBorrowed() const { return m_borrowedItems != NULL; }
 
     ULONG UpdateHashValue();
     inline ULONG GetHashValue()const
@@ -267,6 +272,12 @@ private:
 
     Keys m_key;
     CRect m_clip_rect;
+    // Only GroupedDrawItems can create a synchronous lookup view. Copying or
+    // assigning that view always materializes owned child keys before caching.
+    const GroupedDrawItems* m_borrowedItems;
+    explicit GroupedDrawItemsHashKey(const GroupedDrawItems& items);
+    size_t GetCount() const;
+    const PKey& GetKey(size_t i) const;
 
     friend struct GroupedDrawItems;
 };

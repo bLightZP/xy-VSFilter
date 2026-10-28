@@ -1,0 +1,780 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 640
+PlayResY: 360
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,18,&H00FFFFFF,&H000000FF,&H00302010,&H80000000,0,0,0,0,100,100,0,0,1,1.5,1,7,10,10,10,1
+Style: Other,Tahoma,20,&H00C0D0FF,&H0000FF00,&H00112233,&H60000000,0,0,0,0,100,100,1,0,3,2,2,5,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:20.50,0:22:21.70,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:21.35,0:22:22.55,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:22.20,0:22:23.40,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:23.05,0:22:24.25,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:23.90,0:22:25.10,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:24.75,0:22:25.95,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:25.60,0:22:26.80,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:26.45,0:22:27.65,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:27.30,0:22:28.50,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:28.15,0:22:29.35,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:29.00,0:22:30.20,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,8)\clip(0,0,620,350)\t(0,950,\fs24)}mixed{\b1} style
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 1\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(164,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 2\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 3\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(320,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 4\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(398,8)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,8)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 6\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(554,8)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 8\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 9\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(164,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(320,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 12\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(398,50)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 13\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,50)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(554,50)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 16\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 17\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(164,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 18\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 19\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\p1\pos(320,92)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(398,92)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(554,92)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 23\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 24\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(86,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(164,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 26\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 27\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(320,134)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(398,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 29\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(476,134)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(554,134)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 31\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 32\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(164,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 34\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,176)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(320,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 36\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(398,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 37\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 38\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(554,176)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 39\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\p1\pos(8,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 41\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(164,218)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 43\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(320,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}mixed{\b1} style
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(398,218)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 46\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(554,218)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 47\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 48\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,260)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(164,260)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 51\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(320,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 52\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(398,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 53\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,260)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 54\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\p1\pos(554,260)\t(0,950,\c&H9020FF&\fax.12)}mixed{\b1} style
+Dialogue: 2,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\pos(8,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(86,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 57\Nnext line
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(164,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 58\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(242,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 59\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Other,,0,0,0,,{\p1\pos(320,302)\t(0,950,\c&H9020FF&\fax.12)}m 0 0 l 38 0 38 18 0 18
+Dialogue: 1,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(398,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 61\Nnext line
+Dialogue: 2,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(476,302)\t(0,950,\alpha&H90&\blur1.5\frz12)}word 62\Nnext line
+Dialogue: 0,0:22:29.85,0:22:31.05,Default,,0,0,0,,{\pos(554,302)\clip(0,0,620,350)\t(0,950,\fs24)}layout metrics

@@ -1,0 +1,353 @@
+{
+  "date": "2026-10-26",
+  "base_commit": "52768c309237f646cb8fbe8d5521af186a8269c4",
+  "scope": "Optional static libass and Main settings; native borrowed group-key lookup experiment and console benchmark modes",
+  "scheduling": "One render thread, logical CPU 7, affinity 0x80, Above Normal process priority",
+  "sample": {
+    "ass_sha256": "1ece3acc51ef4b091a6af7ab9f87d989e314c15d95e25ed883283d47f9656d72",
+    "first_frame": 32128,
+    "last_frame": 34555,
+    "frames": 2428,
+    "nonempty_frames": 2184,
+    "size": [
+      1920,
+      1080
+    ],
+    "fps": "24000/1001",
+    "bitmap_cache_items": 256
+  },
+  "validation": {
+    "architectures": [
+      "Win32",
+      "x64"
+    ],
+    "contracts_per_architecture": 19,
+    "filter_page_contracts_per_architecture": 2,
+    "fixture_cases_per_architecture": 54,
+    "sample_capacities": [
+      256,
+      0
+    ],
+    "extended_scripts_per_architecture": 8,
+    "pixel_mismatches": 0,
+    "composite_replay_frames_per_architecture": 2428,
+    "libass_actual_sample_frames": [
+      32800,
+      32801,
+      32802
+    ],
+    "libass_repeat_mismatches": 0,
+    "codec_private_header_only_load": "passed on both architectures",
+    "playback": "not run",
+    "python_pixel_coverage_tests": 3,
+    "final_owned_x64_pixel_gates": "19 contracts, 2 filter page contracts, 54 fixtures, 8 scripts, full sample at 256/0 and composition replay passed",
+    "benchmark_modes_exercised": {
+      "x64": [
+        "render",
+        "parse",
+        "composite"
+      ],
+      "Win32": [
+        "render",
+        "parse (focused smoke)",
+        "composite"
+      ]
+    }
+  },
+  "comparisons": {
+    "benchmark-x64": {
+      "render_ms": {
+        "candidate": 36386.604699999996,
+        "control": 34607.60155,
+        "reduction_percent": -5.140498244091685
+      },
+      "render_core_ms": {
+        "candidate": 36383.306450000004,
+        "control": 34604.60265,
+        "reduction_percent": -5.14007867100883
+      },
+      "parse_ms": {
+        "candidate": 6809.1952,
+        "control": 6356.2036499999995,
+        "reduction_percent": -7.126762686403243
+      },
+      "build_draw_ms": {
+        "candidate": 8103.1447499999995,
+        "control": 7511.363649999999,
+        "reduction_percent": -7.878477565122277
+      },
+      "composite_ms": {
+        "candidate": 18544.680249999998,
+        "control": 18113.79115,
+        "reduction_percent": -2.37879026224721
+      },
+      "tree_ms": {
+        "candidate": 1926.34465,
+        "control": 1733.2615,
+        "reduction_percent": -11.139874162092678
+      },
+      "merge_ms": {
+        "candidate": 1838.7730999999999,
+        "control": 1759.5695500000002,
+        "reduction_percent": -4.501302605515067
+      },
+      "group_ms": {
+        "candidate": 1437.1246,
+        "control": 1296.97745,
+        "reduction_percent": -10.805673606738498
+      },
+      "bitmap_ms": {
+        "candidate": 12364.62005,
+        "control": 12432.444950000001,
+        "reduction_percent": 0.5455475594122849
+      },
+      "thread_cpu_ms": {
+        "candidate": 36289.0625,
+        "control": 34296.875,
+        "reduction_percent": -5.808656036446469
+      }
+    },
+    "benchmark-x64-followup": {
+      "render_ms": {
+        "candidate": 31853.25935,
+        "control": 32570.1044,
+        "reduction_percent": 2.2009295432286025
+      },
+      "render_core_ms": {
+        "candidate": 31850.6258,
+        "control": 32567.60895,
+        "reduction_percent": 2.20152222750144
+      },
+      "parse_ms": {
+        "candidate": 6058.51655,
+        "control": 6056.54845,
+        "reduction_percent": -0.03249540586107713
+      },
+      "build_draw_ms": {
+        "candidate": 7158.5195,
+        "control": 7106.87905,
+        "reduction_percent": -0.7266262678270907
+      },
+      "composite_ms": {
+        "candidate": 16232.26235,
+        "control": 17060.259700000002,
+        "reduction_percent": 4.853368967179328
+      },
+      "tree_ms": {
+        "candidate": 1535.3013999999998,
+        "control": 1540.15345,
+        "reduction_percent": 0.31503679065226775
+      },
+      "merge_ms": {
+        "candidate": 1675.8818,
+        "control": 1666.0886500000001,
+        "reduction_percent": -0.5877928524391507
+      },
+      "group_ms": {
+        "candidate": 1148.05865,
+        "control": 1162.8486,
+        "reduction_percent": 1.2718723658436737
+      },
+      "bitmap_ms": {
+        "candidate": 11068.516800000001,
+        "control": 11887.0735,
+        "reduction_percent": 6.886107838064593
+      },
+      "thread_cpu_ms": {
+        "candidate": 31734.375,
+        "control": 32554.6875,
+        "reduction_percent": 2.519798416126706
+      }
+    },
+    "benchmark-Win32": {
+      "render_ms": {
+        "candidate": 31156.63775,
+        "control": 32245.8992,
+        "reduction_percent": 3.3779844166975437
+      },
+      "render_core_ms": {
+        "candidate": 31153.93855,
+        "control": 32243.3508,
+        "reduction_percent": 3.3787190939224665
+      },
+      "parse_ms": {
+        "candidate": 6180.439850000001,
+        "control": 6263.5094,
+        "reduction_percent": 1.3262461137201975
+      },
+      "build_draw_ms": {
+        "candidate": 7139.3465,
+        "control": 7214.8174500000005,
+        "reduction_percent": 1.046054879739211
+      },
+      "composite_ms": {
+        "candidate": 15701.823199999999,
+        "control": 16622.5046,
+        "reduction_percent": 5.538764597484313
+      },
+      "tree_ms": {
+        "candidate": 1352.73445,
+        "control": 1364.9724,
+        "reduction_percent": 0.8965712420265892
+      },
+      "merge_ms": {
+        "candidate": 1540.203,
+        "control": 1545.19495,
+        "reduction_percent": 0.32306279540973426
+      },
+      "group_ms": {
+        "candidate": 999.3216500000001,
+        "control": 1000.302,
+        "reduction_percent": 0.09800540236847288
+      },
+      "bitmap_ms": {
+        "candidate": 11021.5625,
+        "control": 11917.29025,
+        "reduction_percent": 7.516203190570103
+      },
+      "thread_cpu_ms": {
+        "candidate": 31156.25,
+        "control": 32234.375,
+        "reduction_percent": 3.3446437227338865
+      }
+    },
+    "benchmark-composite-x64": {
+      "render_ms": {
+        "candidate": 16545.6257,
+        "control": 17243.8772,
+        "reduction_percent": 4.049272051183472
+      },
+      "render_core_ms": {
+        "candidate": 0.0,
+        "control": 0.0,
+        "reduction_percent": null
+      },
+      "parse_ms": {
+        "candidate": 0.0,
+        "control": 0.0,
+        "reduction_percent": null
+      },
+      "build_draw_ms": {
+        "candidate": 0.0,
+        "control": 0.0,
+        "reduction_percent": null
+      },
+      "composite_ms": {
+        "candidate": 16544.602,
+        "control": 17243.13275,
+        "reduction_percent": 4.051066358576872
+      },
+      "tree_ms": {
+        "candidate": 1607.05615,
+        "control": 1585.6873,
+        "reduction_percent": -1.3476080687535141
+      },
+      "merge_ms": {
+        "candidate": 1691.6485,
+        "control": 1677.9751999999999,
+        "reduction_percent": -0.8148690159425653
+      },
+      "group_ms": {
+        "candidate": 1195.65075,
+        "control": 1170.5702,
+        "reduction_percent": -2.1425925587376105
+      },
+      "bitmap_ms": {
+        "candidate": 11209.8924,
+        "control": 11981.42525,
+        "reduction_percent": 6.439407949400677
+      },
+      "thread_cpu_ms": {
+        "candidate": 16531.25,
+        "control": 17078.125,
+        "reduction_percent": 3.20219579139982
+      }
+    }
+  },
+  "pooled_x64": {
+    "render_ms": {
+      "control": 33491.649900000004,
+      "candidate": 33611.548800000004,
+      "reduction_percent": -0.3579963971855671
+    },
+    "thread_cpu_ms": {
+      "control": 33320.3125,
+      "candidate": 33875.0,
+      "reduction_percent": -1.6647127784290783
+    },
+    "composite_ms": {
+      "control": 17538.84325,
+      "candidate": 17139.3096,
+      "reduction_percent": 2.2779931624054006
+    },
+    "bitmap_ms": {
+      "control": 12138.0114,
+      "candidate": 11580.80515,
+      "reduction_percent": 4.590589278899504
+    }
+  },
+  "binaries": {
+    "Win32": {
+      "XySubFilter.dll": "3910ae12e7ae462871596ceb2f73628bfc7e1424d76f2dcc22cdfcb3b855e781",
+      "VSFilter.dll": "7307147d5fad29560533ba961769c72f6c670737d0a2f8de59991d02355ed0eb",
+      "xy_sub_filter_consumer.dll": "7ef0c359d80ca7897a7a7c45670796de46b759f8fbec23f7b98b80242304ea8d",
+      "render_subtitles.exe": "67602b006901d036d14f00cc9647308eebf54a079d01e6a68c5dc8b44c2f63b3"
+    },
+    "x64": {
+      "XySubFilter.dll": "93c1b8e4a4f93019a66112bd55ac0a5b64303e58ea920651ab0e5f7dfb92d434",
+      "VSFilter.dll": "f9ca689ad124affbe0b321d8f6b7ce7ccdcda2a9fa078f1ecdee42e4ad029042",
+      "xy_sub_filter_consumer.dll": "535c3dbbd92e51a4266306e2a4b5d75a7dd0a3c6214b1ff30bc628b69197e858",
+      "render_subtitles.exe": "52368e4cfeddda914d6e850bf8fd0492e97fe6a014a8304bc90cd96b6d9bbd87"
+    }
+  },
+  "notes": [
+    "Native control materializes temporary owned group keys; candidate borrows a synchronous view and materializes cache ownership only on misses.",
+    "Libass performance is not evaluated or used as an acceptance criterion.",
+    "PC remained in use; frequency, shared-cache and memory effects remain despite priority/affinity.",
+    "Nested phase timings overlap. Thread CPU time has coarse per-frame resolution.",
+    "Zero renderer drops cannot be established by these offline tests."
+  ],
+  "default_native_group_key_mode": {
+    "Win32": "borrowed",
+    "x64": "owned"
+  },
+  "x64_decision": "Borrowed probe experiment remains build-only; full-render benefit was not established.",
+  "stable_binaries": {
+    "Win32": {
+      "XySubFilter.dll": {
+        "sha256": "3910ae12e7ae462871596ceb2f73628bfc7e1424d76f2dcc22cdfcb3b855e781",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\Win32\\Release\\XySubFilter.dll"
+      },
+      "VSFilter.dll": {
+        "sha256": "7307147d5fad29560533ba961769c72f6c670737d0a2f8de59991d02355ed0eb",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\Win32\\Release\\VSFilter.dll"
+      },
+      "xy_sub_filter_consumer.dll": {
+        "sha256": "7ef0c359d80ca7897a7a7c45670796de46b759f8fbec23f7b98b80242304ea8d",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\Win32\\Release\\xy_sub_filter_consumer.dll"
+      },
+      "render_subtitles.exe": {
+        "sha256": "67602b006901d036d14f00cc9647308eebf54a079d01e6a68c5dc8b44c2f63b3",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\Win32\\Release\\render_subtitles.exe"
+      }
+    },
+    "x64": {
+      "XySubFilter.dll": {
+        "sha256": "cc7d31e5a7a8a38335f8cc6f767c1ea0688aba8e4b3119f49b05f53b0e2a63ff",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\x64\\Release\\XySubFilter.dll"
+      },
+      "VSFilter.dll": {
+        "sha256": "21353e13bdf889771a75dd7a680eacfeea03ec47f4c8b580e7041ae518c29a6a",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\x64\\Release\\VSFilter.dll"
+      },
+      "xy_sub_filter_consumer.dll": {
+        "sha256": "7a59ee15bf68af33deca248eb58f899092289ee975e48cc5182f72bafe75ba2c",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\x64\\Release\\xy_sub_filter_consumer.dll"
+      },
+      "render_subtitles.exe": {
+        "sha256": "441c3ec091dd0ef7125ee6505946ff853e9ba3de05e3ec54e7cc9b701d1652dc",
+        "path": "F:\\Git\\xySubFilter\\bin\\lib_18.0\\x64\\Release\\render_subtitles.exe"
+      }
+    }
+  }
+}

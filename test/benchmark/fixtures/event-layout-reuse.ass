@@ -1,0 +1,33 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 640
+PlayResY: 360
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,24,&H00FFFFFF,&H000000FF,&H00102030,&H70000000,0,0,0,0,100,100,0,0,1,2,1,2,20,20,15,1
+Style: Box,Tahoma,18,&H00E0A070,&H0000FF00,&H00334455,&H40000000,-1,0,0,0,95,110,0.5,8,3,2,2,7,12,12,12,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:23:25.00,Default,,0,0,0,,{\q0\an7\pos(12,25)\t(0,3000,\c&H80AAFF&\alpha&H80&)}  a longer general text line that wraps over the available width\Nhard break\nsoft break\hNBSP
+Dialogue: 1,0:22:26.00,0:23:31.00,Default,,0,0,0,,{\q1\an8\pos(320,100)\t(0,1500,2,\1a&HFF&)\t(2000,4500,.5,\1c&HFF1000&)}balanced text with several words and more than one transform
+Dialogue: 2,0:22:32.00,0:23:37.00,Default,,0,0,0,,{\q2\an9\pos(620,110)\t(\alpha&H90&)}one\ntwo\Nthree
+Dialogue: 3,0:22:38.00,0:23:43.00,Default,,0,0,0,,{\q3\pos(320,190)\t(0,4000,\3c&HFF00AA&)}multiple words exercise automatic wrapping and compaction across lines
+Dialogue: 0,0:22:44.00,0:23:49.00,Default,,0,0,0,,{\rBox\pos(15,240)\t(0,4500,\alpha&H70&\3c&H10FF00&)}opaque background\Nanother line
+Dialogue: 1,0:22:50.00,0:23:55.00,Default,,0,0,0,,{\k50\pos(240,280)\t(0,4500,\c&HFF1080&)}karaoke with uniform layout
+Dialogue: 2,0:22:20.00,0:23:25.00,Default,,0,0,0,,{\p1\pos(250,60)\clip(220,30,330,110)\t(0,4500,\c&HFF10AA&\3a&H90&)}m 0 0 l 80 0 80 35 0 35
+Dialogue: 3,0:22:26.00,0:23:31.00,Default,,0,0,0,,{\p2\pbo-3\org(200,150)\fr15\pos(280,145)\t(0,4500,\alpha&H90&)}m 0 0 b 50 -10 80 50 20 80 l 0 0
+Dialogue: 0,0:22:32.00,0:23:37.00,Default,,0,0,0,,{\pos(100,90)\iclip(m 60 50 l 180 50 180 130 60 130)\t(0,4500,\alpha&H80&)}inverse vector mask
+Dialogue: 1,0:22:38.00,0:23:43.00,Default,,0,0,0,,{\move(10,320,600,320,0,4500)\clip(0,200,640,360)\fad(250,600)\t(0,4500,\c&H30FF70&)}movement and fading
+Dialogue: 2,0:22:44.00,0:23:49.00,Default,,0,0,0,,{\pos(310,160)\clip(50,50,600,300)\t(0,4500,\clip(150,100,500,280)\alpha&H70&)}animated clipping region
+Dialogue: 3,0:22:50.00,0:23:55.00,Default,,0,0,0,,{\an5\pos(320,180)\t(0,4000,\fs34\alpha&H80&)}metric change fallback
+Dialogue: 0,0:22:20.00,0:23:25.00,Default,,0,0,0,,{\pos(350,300)\t(0,4000,\fsp3\fscx125)}spacing scale fallback
+Dialogue: 1,0:22:26.00,0:23:31.00,Default,,0,0,0,,{\pos(400,50)\t(0,4000,\xbord8\frz40\blur3)}outline transform fallback
+Dialogue: 2,0:22:32.00,0:23:37.00,Default,,0,0,0,,{\pos(350,230)\t(0,4000,\alpha&H90&)}one{\c&H00FFFF&}two{\rBox}three
+Dialogue: 3,0:22:38.00,0:23:43.00,Default,,0,0,0,,{\pos(100,220)\t(0,4000,\alpha&H90&)}<b>HTML</b> mixed with text
+Dialogue: 0,0:22:44.00,0:23:49.00,Default,,0,0,0,,{\pos(200,300)\t(0,4000,\alpha&H90&)} \N \N 
+Dialogue: 1,0:22:50.00,0:23:55.00,Default,,0,0,0,,{\pos(320,150)\t(0,500,\c&H0080FF&)}prefix reset {\r}with inline changes
+Dialogue: 0,0:22:38.00,0:23:43.00,Default,,0,0,0,,{\kf150\pos(320,180)\fade(200,0,120,0,500,3000,4500)\clip(10,10,600,330)\t(0,4500,\clip(30,30,560,300))}same appearance karaoke and clip\Nsecond line
+Dialogue: 1,0:22:44.00,0:23:49.00,Box,,0,0,0,,{\pos(15,250)\move(15,250,150,270)\clip(0,200,600,360)\t(0,4500,\clip(50,210,500,340))}opaque box constant word style
+Dialogue: 2,0:22:20.00,0:23:50.00,Default,,0,0,0,,{\pos(320,180)\org(250,150)\blur.2\shad1\t(0,6000,\blur2.5\be1.25\xshad-3.5\yshad2\frx15\fry-10\frz30\fax.1\fay-.05)}raster changes with fixed layout\Nsecond line
+Dialogue: 3,0:22:32.00,0:23:55.00,Box,,0,0,0,,{\pos(110,120)\t(0,5000,\blur1.5\shad3\frz70\fax.2\alpha&H80&)}opaque animated raster words

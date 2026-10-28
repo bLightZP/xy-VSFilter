@@ -148,6 +148,7 @@ STDMETHODIMP CTextSubtitleInputPinHepler::NewSegment( REFERENCE_TIME tStart, REF
       // WebVTT can be read as one big blob of data during pin connection, instead of as samples during playback.
       // This depends on how it is being demuxed. So both situations need to be handled.
       // Don't remove existing data in case of WebVTT. Instead we check for duplicates in CSimpleTextSubtitle::Add()
+      m_pRTS->FlushLibass();
       m_pRTS->RemoveAllEntries();
       m_pRTS->CreateSegments();
     }
@@ -257,6 +258,7 @@ STDMETHODIMP CTextSubtitleInputPinHepler::Receive( IMediaSample* pSample )
             CStringW str = UTF8To16(CStringA((LPCSTR)pData, len)).Trim();
             if(!str.IsEmpty())
             {
+                m_pRTS->AddLibassPacket(pData, len, tStart, tStop);
                 STSEntry stse;
 
                 int fields = m_mt.subtype == MEDIASUBTYPE_ASS2 ? 10 : 9;
@@ -534,6 +536,7 @@ STDMETHODIMP_(CSubtitleInputPinHelper*) CSubtitleInputPin::CreateHelper( const C
 
                 pRTS->Open(mt1.pbFormat + dwOffset, mt1.cbFormat - dwOffset, DEFAULT_CHARSET, pRTS->m_name);
             }
+            pRTS->SetLibassEmbedded(mt.subtype == MEDIASUBTYPE_ASS || mt.subtype == MEDIASUBTYPE_SSA);
             ret = DEBUG_NEW CTextSubtitleInputPinHepler(pRTS, m_mt);
         }
         else if(mt.subtype == MEDIASUBTYPE_SSF)

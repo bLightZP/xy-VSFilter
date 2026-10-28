@@ -68,17 +68,19 @@ public:
         // This alias borrows v without a control-block allocation. Lookup does
         // not retain the probe; a cache miss receives an owned copy.
         const SharedConstV probe(SharedConstV(), &v);
-        POSITION pos = cacher->Lookup(probe);
+        bool added;
+        POSITION pos = cacher->FindOrAddOwned(probe, INVALID_ID,
+            [&v]() -> SharedConstV { return boost::make_shared<V>(v); }, &added);
         if (pos)
         {
-            cacher->UpdateCache(pos);
             _v = cacher->GetKeyAt(pos);
+            if (added) cacher->GetAt(pos) = AllocId();
             _id = cacher->GetAt(pos);
         }
         else
         {
             _v = boost::make_shared<V>(v);
-            Intern();
+            _id = AllocId();
         }
     }
 private:

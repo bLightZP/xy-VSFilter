@@ -185,6 +185,7 @@ protected:
     CAtlArray<STSEntry>   m_entries;
     CAtlArray<STSSegment> m_segments;
     virtual void OnChanged() {}
+    virtual void OnSourceLoaded(CTextFile* file, ULONGLONG start) {}
 
 public:
     bool           m_simple;

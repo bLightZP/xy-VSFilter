@@ -1,0 +1,17 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 320
+PlayResY: 180
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,24,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,2,1,2,10,10,10,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,25)\frz4\fr7\b1\be0.5\bord1\blur0.2}Longest command prefixes
+Dialogue: 1,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,60)\fn  Arial \fs+2\fscx110\fscy90\fsp1\t(0,2800,\frz12\fscx120)}Font and nested transforms
+Dialogue: 2,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,95)\alpha&H20&\1c&H80F0A0&\iclip(120,65,190,110)\xbord2\ybord3\xshad1\yshad-1}Inverse clip and colors
+Dialogue: 3,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,130)\unknown999\FRZ90\frzunknown\fspjunk\bzzz\q2}Unknown suffixes and case
+Dialogue: 4,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,160)\K10\kf20\ko30\k10\kt1\t(1.5,2700.5,\fay0.1)}Karaoke and decimal times
+Dialogue: 5,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\posjunk(160,80)\clipjunk(0,0,320,180)\1ajunk\fadejunk(30,50,20,0,1000,2000,3000)}Parenthesized suffixes
+Dialogue: 6,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,110)\あtag8\bあ\fryあ\fnArial\rDefault}Unicode command tails
+Dialogue: 7,0:22:20.00,0:22:23.00,Default,,0,0,0,,{\an5\pos(160,145)\fn 0\fs\fsc\shad\1c\alpha\rDefault}Empty arguments and reset

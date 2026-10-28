@@ -240,7 +240,7 @@ def filter_modules(pids):
                 if not kernel.K32GetModuleFileNameExW(handle,modules[index],name,len(name)):
                     raise c.WinError(c.get_last_error())
                 path = Path(name.value)
-                if re.search(r"xy.*sub|vsfilter|lav|mpc.*render|madvr",str(path),re.I):
+                if re.search(r"xy.*sub|vsfilter|lav|mpc.*render|mpcsubtitlehelper|madvr",str(path),re.I):
                     records.append({"ProcessId":pid,"ModuleName":path.name,"FileName":str(path)})
         finally:
             kernel.CloseHandle(handle)
@@ -409,7 +409,7 @@ def main():
         (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
         metadata["active_filter_dependencies"] = [
             {"name":m["ModuleName"],"path":m["FileName"],"sha256":hashlib.sha256(Path(m["FileName"]).read_bytes()).hexdigest()}
-            for m in modules if m["ProcessId"] == engine_pid and re.fullmatch(r"LAVVideo\.ax|MpcVideoRenderer(?:64)?\.ax|madVR(?:64)?\.ax",m["ModuleName"],re.I)]
+            for m in modules if m["ProcessId"] == engine_pid and re.fullmatch(r"LAVVideo\.ax|MpcVideoRenderer(?:64)?\.ax|MpcSubtitleHelper\.ax|madVR(?:64)?\.ax",m["ModuleName"],re.I)]
         if args.profile_session is not None:
             subprocess.run([str(collector / "VSDiagnostics.exe"),"start",str(args.profile_session),
                             f"/attach:{engine_pid}","/loadConfig:AgentConfigs\\CpuUsageLow.json"],cwd=collector,check=True)

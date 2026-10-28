@@ -1,0 +1,14 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IncludePath>$(SolutionDir)src\thirdparty\libass-deps\sources\libass\libass;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\libass\$(Platform)\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ass.lib;fribidi.lib;harfbuzz.lib;freetype.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Target Name="BuildStaticLibass" BeforeTargets="ClCompile" Condition="'$(ProjectName)' == 'subtitles'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(SolutionDir)tools\build_libass.ps1&quot; -Platform $(Platform) -Configuration $(Configuration)" />
+  </Target>
+</Project>

@@ -1,0 +1,766 @@
+{
+  "release": "v3.2.1.910",
+  "method": {
+    "logical_cpu": 5,
+    "affinity_mask": "0x20",
+    "priority": "AboveNormal",
+    "render_threads": 1,
+    "bitmap_cache_items": 64,
+    "render_size": [
+      1920,
+      1080
+    ],
+    "fps": "24000/1001",
+    "frames": [
+      32128,
+      34555
+    ],
+    "frame_count": 2428,
+    "timing_scope": "Per-request QueryPerformanceCounter around RenderEx only; input loading, font loading and bitmap SHA256 excluded. New renderer includes synchronous lookahead.",
+    "order": "original, v900, v910-Win32, v910-x64; reverse order; two fresh processes per executable",
+    "baseline_provenance": "Original fork native Win32 source-control harness; v900 measured word-keys-exact harness from published release provenance. Frozen executable toolchains can differ from the current toolchain.",
+    "limits": "Full-script input provides future events; not a streaming-packet model or actual dropped frames. No published x64 v900 package existed. Single CPU and priority verified externally for legacy executables; modern benchmark instrumentation is disabled to preserve common timing scope."
+  },
+  "builds": {
+    "original-Win32": {
+      "path": "benchmark-results/source-control/render_subtitles.exe",
+      "sha256": "f39249a2e3634d498a696b927448b565fafeb0034641475798d0ca3cc8e83747"
+    },
+    "v900-Win32": {
+      "path": "benchmark-results/word-keys-exact/render_subtitles.exe",
+      "sha256": "0397f5800faaacff3033163025693fd7b8e99d678a9f098c4110e5176a3a9645"
+    },
+    "v910-Win32": {
+      "path": "bin/lib_18.0/Win32/Release/render_subtitles.exe",
+      "sha256": "2fb003aaca64957f58d89bc8f5a70721254fee3b21a2e5b5d1dce4ba4c853ccc"
+    },
+    "v910-x64": {
+      "path": "bin/lib_18.0/x64/Release/render_subtitles.exe",
+      "sha256": "ea423d975dd1323aab4f142f908968be3baa687feeff88828b03751df0febf78"
+    }
+  },
+  "runs": [
+    {
+      "name": "original-Win32",
+      "round": 1,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 164.51469549979083,
+      "render_total_ms": 155990.7136,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 64.24658714991762,
+        "render_ms_p95": 161.8616,
+        "render_ms_p99": 204.1004,
+        "render_ms_max": 320.4834,
+        "over_41_708ms": 1197
+      },
+      "spike_ms": {
+        "32249": 93.6294,
+        "32693": 168.2145,
+        "32780": 288.6604,
+        "32854": 315.849,
+        "33157": 289.5131,
+        "33448": 298.5112,
+        "33973": 232.6566
+      }
+    },
+    {
+      "name": "v900-Win32",
+      "round": 1,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 42.50115999998525,
+      "render_total_ms": 34423.1156,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 14.177559967051069,
+        "render_ms_p95": 31.6647,
+        "render_ms_p99": 73.8788,
+        "render_ms_max": 152.8969,
+        "over_41_708ms": 52
+      },
+      "spike_ms": {
+        "32249": 78.5208,
+        "32693": 120.4178,
+        "32780": 142.9155,
+        "32854": 110.554,
+        "33157": 150.6342,
+        "33448": 152.8969,
+        "33973": 133.6254
+      }
+    },
+    {
+      "name": "v910-Win32",
+      "round": 1,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 30.244232300203294,
+      "render_total_ms": 21305.1994,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 8.774793822075782,
+        "render_ms_p95": 20.0082,
+        "render_ms_p99": 34.413,
+        "render_ms_max": 60.5046,
+        "over_41_708ms": 9
+      },
+      "spike_ms": {
+        "32249": 20.815,
+        "32693": 42.864,
+        "32780": 55.4526,
+        "32854": 44.7768,
+        "33157": 50.8721,
+        "33448": 60.5046,
+        "33973": 45.9361
+      }
+    },
+    {
+      "name": "v910-x64",
+      "round": 1,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 29.35042249993421,
+      "render_total_ms": 21436.6117,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 8.828917504118616,
+        "render_ms_p95": 20.3082,
+        "render_ms_p99": 35.5459,
+        "render_ms_max": 64.8245,
+        "over_41_708ms": 11
+      },
+      "spike_ms": {
+        "32249": 17.3016,
+        "32693": 44.2789,
+        "32780": 56.1189,
+        "32854": 47.8844,
+        "33157": 55.9787,
+        "33448": 64.8245,
+        "33973": 47.6349
+      }
+    },
+    {
+      "name": "v910-x64",
+      "round": 2,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 29.123652099864557,
+      "render_total_ms": 21322.6543,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 8.781982825370674,
+        "render_ms_p95": 20.5843,
+        "render_ms_p99": 35.9641,
+        "render_ms_max": 63.7256,
+        "over_41_708ms": 12
+      },
+      "spike_ms": {
+        "32249": 17.7969,
+        "32693": 44.7402,
+        "32780": 54.6051,
+        "32854": 47.6274,
+        "33157": 54.8986,
+        "33448": 63.7256,
+        "33973": 47.2617
+      }
+    },
+    {
+      "name": "v910-Win32",
+      "round": 2,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 30.0110814999789,
+      "render_total_ms": 21348.9673,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 8.79282014003295,
+        "render_ms_p95": 19.9745,
+        "render_ms_p99": 34.2916,
+        "render_ms_max": 67.4476,
+        "over_41_708ms": 8
+      },
+      "spike_ms": {
+        "32249": 19.8682,
+        "32693": 42.0537,
+        "32780": 52.7734,
+        "32854": 46.0668,
+        "33157": 49.5567,
+        "33448": 67.4476,
+        "33973": 47.913
+      }
+    },
+    {
+      "name": "v900-Win32",
+      "round": 2,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 42.342123199952766,
+      "render_total_ms": 34448.6487,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 14.188076070840197,
+        "render_ms_p95": 32.0503,
+        "render_ms_p99": 71.9291,
+        "render_ms_max": 153.5883,
+        "over_41_708ms": 54
+      },
+      "spike_ms": {
+        "32249": 78.6448,
+        "32693": 121.014,
+        "32780": 142.8084,
+        "32854": 111.3987,
+        "33157": 153.2422,
+        "33448": 153.5883,
+        "33973": 109.0163
+      }
+    },
+    {
+      "name": "original-Win32",
+      "round": 2,
+      "affinity_verified": "0x20",
+      "priority_verified": "AboveNormal",
+      "pixel_mismatches": 0,
+      "process_wall_seconds": 162.04755189991556,
+      "render_total_ms": 154201.9401,
+      "metrics": {
+        "frames": 2428,
+        "nonempty_frames": 2184,
+        "render_ms_mean": 63.50986000823723,
+        "render_ms_p95": 159.5574,
+        "render_ms_p99": 199.106,
+        "render_ms_max": 338.2388,
+        "over_41_708ms": 1195
+      },
+      "spike_ms": {
+        "32249": 91.5502,
+        "32693": 179.7149,
+        "32780": 288.6444,
+        "32854": 248.4079,
+        "33157": 283.7727,
+        "33448": 338.2388,
+        "33973": 231.9501
+      }
+    }
+  ],
+  "medians": {
+    "original-Win32": {
+      "frames": 2428.0,
+      "nonempty_frames": 2184.0,
+      "render_ms_mean": 63.87822357907743,
+      "render_ms_p95": 160.7095,
+      "render_ms_p99": 201.60320000000002,
+      "render_ms_max": 329.3611,
+      "over_41_708ms": 1196.0
+    },
+    "v900-Win32": {
+      "frames": 2428.0,
+      "nonempty_frames": 2184.0,
+      "render_ms_mean": 14.182818018945632,
+      "render_ms_p95": 31.8575,
+      "render_ms_p99": 72.90395000000001,
+      "render_ms_max": 153.24259999999998,
+      "over_41_708ms": 53.0
+    },
+    "v910-Win32": {
+      "frames": 2428.0,
+      "nonempty_frames": 2184.0,
+      "render_ms_mean": 8.783806981054365,
+      "render_ms_p95": 19.991349999999997,
+      "render_ms_p99": 34.3523,
+      "render_ms_max": 63.9761,
+      "over_41_708ms": 8.5
+    },
+    "v910-x64": {
+      "frames": 2428.0,
+      "nonempty_frames": 2184.0,
+      "render_ms_mean": 8.805450164744645,
+      "render_ms_p95": 20.44625,
+      "render_ms_p99": 35.755,
+      "render_ms_max": 64.27505,
+      "over_41_708ms": 11.5
+    }
+  },
+  "comparisons": {
+    "original-Win32": {
+      "mean_speedup": 7.272270863516835,
+      "mean_reduction_percent": 86.24913704718082,
+      "p99_reduction_percent": 82.96043912001397
+    },
+    "v900-Win32": {
+      "mean_speedup": 1.6146550179821,
+      "mean_reduction_percent": 38.0672658330607,
+      "p99_reduction_percent": 52.88005656757968
+    }
+  },
+  "validation": {
+    "version": "3.2.1.910",
+    "architectures": {
+      "Win32": {
+        "unchanged_source_hashes": 52,
+        "contracts_passed": [
+          "tag-storage",
+          "scalar-parameter",
+          "draw-reuse",
+          "constant-drawing",
+          "static-drawing",
+          "polygon-scanner",
+          "maintenance",
+          "clipper-retention",
+          "lazy-intern",
+          "fused-alpha",
+          "lookahead",
+          "paint-bundle",
+          "prepared-layout",
+          "font-layout",
+          "ass-command",
+          "libass",
+          "group-view",
+          "hash",
+          "cache",
+          "intern",
+          "geometry",
+          "inline-list",
+          "alpha-buffer",
+          "zero-alpha",
+          "effect",
+          "reconstruction-pool",
+          "layer-key",
+          "reconstruction-cache",
+          "word-key-cache",
+          "group-key",
+          "cache-capacity",
+          "karaoke-hash",
+          "grouping",
+          "allocation-probe"
+        ],
+        "fixture_cases_identical": 54,
+        "sample_frames_each": 2428,
+        "sample_cache_items": [
+          256,
+          0
+        ],
+        "pixel_mismatches": 0,
+        "files": [
+          {
+            "name": "render_subtitles.exe",
+            "bytes": 2804736,
+            "sha256": "2fb003aaca64957f58d89bc8f5a70721254fee3b21a2e5b5d1dce4ba4c853ccc"
+          },
+          {
+            "name": "render_subtitles.pdb",
+            "bytes": 30355456,
+            "sha256": "547abc68cec10baa3997f2fe9ca559486d3717bd2ac2b11b13576e2f2af0f61d"
+          },
+          {
+            "name": "streaming_subtitles.exe",
+            "bytes": 2644480,
+            "sha256": "47cbf6e4cfdb7600101117f55d619795eab02d711c7ceca6967640b03b17c40b"
+          },
+          {
+            "name": "streaming_subtitles.pdb",
+            "bytes": 29642752,
+            "sha256": "acb8aff118afcfac6e6efba424e4836f71f59b1e3ac947ccaadb30c619938169"
+          },
+          {
+            "name": "VSFilter.dll",
+            "bytes": 3538944,
+            "sha256": "9051eb1aadcb9d9d44a2f3c925272be7265f6f918f8083796291b54401f5af8c"
+          },
+          {
+            "name": "VSFilter.pdb",
+            "bytes": 35401728,
+            "sha256": "2948ddd2f548d041971092b0f5cb551d04e4c11c904e5cafdc02cad20663a7a2"
+          },
+          {
+            "name": "xy_sub_filter_consumer.dll",
+            "bytes": 830976,
+            "sha256": "7034be31e2bc6ff8869211abb07cdbabcad58070525c9168a9f09a2ed078415a"
+          },
+          {
+            "name": "xy_sub_filter_consumer.pdb",
+            "bytes": 25022464,
+            "sha256": "032e9916c3fc6f9a3d73a794d2ba9cca06546185e11109f1616f26150c6b8979"
+          },
+          {
+            "name": "XySubFilter.dll",
+            "bytes": 3288576,
+            "sha256": "aee1f07f822b99c04ce55d76c12d763b06732692bfebc84c5abeddde0707d9e5"
+          },
+          {
+            "name": "XySubFilter.pdb",
+            "bytes": 33984512,
+            "sha256": "a3512b4138a3c7c4d26871923a8a03d0973c6d7a618a7f76eefd91298c8e1f76"
+          }
+        ]
+      },
+      "x64": {
+        "unchanged_source_hashes": 52,
+        "contracts_passed": [
+          "tag-storage",
+          "scalar-parameter",
+          "draw-reuse",
+          "constant-drawing",
+          "static-drawing",
+          "polygon-scanner",
+          "maintenance",
+          "clipper-retention",
+          "lazy-intern",
+          "fused-alpha",
+          "lookahead",
+          "paint-bundle",
+          "prepared-layout",
+          "font-layout",
+          "ass-command",
+          "libass",
+          "group-view",
+          "hash",
+          "cache",
+          "intern",
+          "geometry",
+          "inline-list",
+          "alpha-buffer",
+          "zero-alpha",
+          "effect",
+          "reconstruction-pool",
+          "layer-key",
+          "reconstruction-cache",
+          "word-key-cache",
+          "group-key",
+          "cache-capacity",
+          "karaoke-hash",
+          "grouping",
+          "allocation-probe"
+        ],
+        "fixture_cases_identical": 54,
+        "sample_frames_each": 2428,
+        "sample_cache_items": [
+          256,
+          0
+        ],
+        "pixel_mismatches": 0,
+        "files": [
+          {
+            "name": "render_subtitles.exe",
+            "bytes": 3291136,
+            "sha256": "ea423d975dd1323aab4f142f908968be3baa687feeff88828b03751df0febf78"
+          },
+          {
+            "name": "render_subtitles.pdb",
+            "bytes": 29921280,
+            "sha256": "1c73bc4fc96474414e6b0ec8905b2cd61c8b4d49f48458c34c048644ed745d6a"
+          },
+          {
+            "name": "streaming_subtitles.exe",
+            "bytes": 3085312,
+            "sha256": "c1157a2328b733f7627b47539b0f627fc15532ce41f617c7c87d320b1776024e"
+          },
+          {
+            "name": "streaming_subtitles.pdb",
+            "bytes": 28880896,
+            "sha256": "1d82619bf98d58f34bc2c2ac186c656dd42d103debdcfa15e1f3a673b37b15e9"
+          },
+          {
+            "name": "VSFilter.dll",
+            "bytes": 4179456,
+            "sha256": "839a5caf68cda75fe0effc55b6edd34be71f77acf6c407915e27136f4e2e3c6b"
+          },
+          {
+            "name": "VSFilter.pdb",
+            "bytes": 35213312,
+            "sha256": "da4c1b7ff332f22f4c17426ea4abd0c8e4b08054a0909a4928b29039499e9f60"
+          },
+          {
+            "name": "xy_sub_filter_consumer.dll",
+            "bytes": 958976,
+            "sha256": "e7d9826a01240dab6878f3b331d31bee5e17824b0a7d7f32cb38c10dd7b9ce2a"
+          },
+          {
+            "name": "xy_sub_filter_consumer.pdb",
+            "bytes": 24309760,
+            "sha256": "bdbc226e1557ba6c3c224cf350e5c6b220043f0d4434f9e8557783528af1e60f"
+          },
+          {
+            "name": "XySubFilter.dll",
+            "bytes": 3888128,
+            "sha256": "bcb6aa01ad4b38ed90ccf6aec8605aa6eff3354e25390b1fa3c106c058afee32"
+          },
+          {
+            "name": "XySubFilter.pdb",
+            "bytes": 34025472,
+            "sha256": "25538a99ced94b1d39dccae34a7cc69b2d7a469d6186b7ac944cba33fb455cec"
+          }
+        ]
+      }
+    },
+    "cross_architecture_pixel_mismatches": 0,
+    "python_tests_passed": true
+  },
+  "baseline_source_verification": {
+    "v900_renderer_sources_verified_against_tag": 12,
+    "tag": "v3.2.1.900",
+    "source_commit": "e61a07fa41d17f23e2ee848354f5aedd9bb616fd",
+    "latest_renderer_sources_match_preceding_validated_build": 52
+  },
+  "input_sha256": "1ece3acc51ef4b091a6af7ab9f87d989e314c15d95e25ed883283d47f9656d72",
+  "fonts_sha256": {
+    "Comixheavy.ttf": "03e19bbd6a4ac527656aeb0d06ac8d8ca9c8b874b6486c0b6400ad50547470da",
+    "Cookies.ttf": "18453044817ab975d7878c1d630e165aeda790dc0936d659ecc47cc8174807a5",
+    "font-10.otf": "22ea3dee11ce4d88b7eb36304fb87e3e67a6bca1e61ee438af62d7e6de195784",
+    "font-11.ttf": "b5e7cce222c824fe1e418bb264d10ddc0509f2d7a22b7eae4591dcf38f8e8343",
+    "font-12.ttf": "1746a7774f3661ddeda86b2a8c23e392f0457829c8fe0cc65f15495894c85ce6",
+    "font-13.otf": "fa63c285e73a4a7e8476e317282209a800e553420a3d89ed7dc9c81e1b8857a1",
+    "font-14.ttf": "fee4fe78635c4715603fc6506680085a568f027cbf97c5e4faee2e69cfd35407",
+    "font-15.ttf": "4be62a33ea0336d4427d323ff10fd0282ecbd2502041f73b73680f20e132e615",
+    "font-16.ttf": "192dd60b71de0a44049a91d8785bd110022e81696634676536cb5f6f7009883c",
+    "font-17.ttf": "9ce23df7ba97fd04117fc02d991bf881e1ccd0327ea655669db8d5821fc5d28b",
+    "font-18.ttf": "46c167142ca89ad0b5ed693957fab05c271154cfb0e85eed27ef922dfee65f54",
+    "font-19.ttf": "717fa710626078e8c948ad62f7d169f884df0f8aab34837f4cebcac2f02bc39e",
+    "font-20.ttf": "bf1b8130069b44b9148eeece35e5423bedac49777ba746615b826b8276574a7b",
+    "font-21.ttf": "be8bbf7105500e8fc1f9429307fb396905a0e6cff63fe1eb751bb319d0f1b0db",
+    "font-22.ttf": "515c518beb806857ed193b65aae411eb27b29259b470a551e6569d8c6c5f8948",
+    "font-23.ttf": "a88a857345588201665897dd1ccbdc0471c75821f904d8168528d10eb52e637e",
+    "font-24.ttf": "51dc8de9c6aa1c2372c0ebe0450411be782db9ddb5e5a9e45c9c3add9af71179",
+    "font-25.ttf": "25c27bda376be1cd3c64d3a0915d2e2b9c7aedb3c3c1d2de85ab9995ccc64e35",
+    "font-26.ttf": "aa3b0ef53db12e3d45094030cac0e69d384e44cc5978643dd4390041cad546e2",
+    "font-27.otf": "2fd4aa6f7a9ee72abb27d6da4d4cb91b73a679193becdaf08085a8c00c55e04b",
+    "font-28.ttf": "c6a95bd78138082615a2e47bc9f737d2e7e71920f0c42cbd14723c94b175f7c9",
+    "font-29.otf": "9ec396983508f77d60abc7d579fd02b09fd6b84b3362d090403c698e80d315ae",
+    "font-30.ttf": "aedaac8e767dfe50334d19294a786d1071b79b3ef7baddbac94834d84a7f2b18",
+    "font-31.otf": "8a5d6f4cce85f4dce2add1aa3884cb136352eaf8290e7272e12c92fb9782ed3f",
+    "font-32.otf": "4441906d775dffdca7039ef707ca40598283f2080f095084701bd4ef2fc83fc4",
+    "font-33.otf": "ea240c779864c947a67bb5a332d73fe0f32df95e44580c25824ec6fb86e04206",
+    "font-34.ttf": "af1bf87d347b1378fd9f46746326db6cbafb19912e87ade9bce66a2d39b59010",
+    "font-35.ttf": "592f3852cda6582cac735477b6861dcd71f151976844b248fb71aaf25a2594f2",
+    "font-36.ttf": "36a02094357f9e2b0a671faa94739a85fb0ce7e3c996f0ecc431a328d181db33",
+    "font-37.ttf": "c50bf4845cd9bf659eb06d1cccd2b1a756d0d31db3274fc2d2eb99c2981a98c2",
+    "font-38.ttf": "662431a95e53fae89d075a2a1b62406571d60683f84c20465bbc708697c5c902",
+    "font-39.ttf": "b18855f5ec2fc769e7a1a9f64926c97873ac0d8cac1465edf1d461c371b1321a",
+    "font-40.otf": "11aa9c796ee52bfcedabb7925f9f2d80258c2d8ff63a9d08f30b7c3bb1bbe7d5",
+    "font-5.ttf": "03e19bbd6a4ac527656aeb0d06ac8d8ca9c8b874b6486c0b6400ad50547470da",
+    "font-6.ttf": "18453044817ab975d7878c1d630e165aeda790dc0936d659ecc47cc8174807a5",
+    "font-7.otf": "7b508ef1b77291c7eb8b96662d9e32826e49c263318d04ec5568909f72bc6089",
+    "font-8.ttf": "452277cba5c6f2eda0f800fbda106dc84946e04f14ac835a93645eca2db29307",
+    "font-9.otf": "1dd7b517d92c2e13792db1ee00181aa29889343ff92e44b4a97ee9fd7c097649"
+  },
+  "spikes": {
+    "original-Win32": {
+      "32249": {
+        "median_ms": 92.5898,
+        "samples_ms": [
+          93.6294,
+          91.5502
+        ]
+      },
+      "32693": {
+        "median_ms": 173.9647,
+        "samples_ms": [
+          168.2145,
+          179.7149
+        ]
+      },
+      "32780": {
+        "median_ms": 288.6524,
+        "samples_ms": [
+          288.6604,
+          288.6444
+        ]
+      },
+      "32854": {
+        "median_ms": 282.12845,
+        "samples_ms": [
+          315.849,
+          248.4079
+        ]
+      },
+      "33157": {
+        "median_ms": 286.6429,
+        "samples_ms": [
+          289.5131,
+          283.7727
+        ]
+      },
+      "33448": {
+        "median_ms": 318.375,
+        "samples_ms": [
+          298.5112,
+          338.2388
+        ]
+      },
+      "33973": {
+        "median_ms": 232.30335,
+        "samples_ms": [
+          232.6566,
+          231.9501
+        ]
+      }
+    },
+    "v900-Win32": {
+      "32249": {
+        "median_ms": 78.58279999999999,
+        "samples_ms": [
+          78.5208,
+          78.6448
+        ]
+      },
+      "32693": {
+        "median_ms": 120.7159,
+        "samples_ms": [
+          120.4178,
+          121.014
+        ]
+      },
+      "32780": {
+        "median_ms": 142.86195,
+        "samples_ms": [
+          142.9155,
+          142.8084
+        ]
+      },
+      "32854": {
+        "median_ms": 110.97635,
+        "samples_ms": [
+          110.554,
+          111.3987
+        ]
+      },
+      "33157": {
+        "median_ms": 151.9382,
+        "samples_ms": [
+          150.6342,
+          153.2422
+        ]
+      },
+      "33448": {
+        "median_ms": 153.24259999999998,
+        "samples_ms": [
+          152.8969,
+          153.5883
+        ]
+      },
+      "33973": {
+        "median_ms": 121.32085000000001,
+        "samples_ms": [
+          133.6254,
+          109.0163
+        ]
+      }
+    },
+    "v910-Win32": {
+      "32249": {
+        "median_ms": 20.3416,
+        "samples_ms": [
+          20.815,
+          19.8682
+        ]
+      },
+      "32693": {
+        "median_ms": 42.45885,
+        "samples_ms": [
+          42.864,
+          42.0537
+        ]
+      },
+      "32780": {
+        "median_ms": 54.113,
+        "samples_ms": [
+          55.4526,
+          52.7734
+        ]
+      },
+      "32854": {
+        "median_ms": 45.421800000000005,
+        "samples_ms": [
+          44.7768,
+          46.0668
+        ]
+      },
+      "33157": {
+        "median_ms": 50.2144,
+        "samples_ms": [
+          50.8721,
+          49.5567
+        ]
+      },
+      "33448": {
+        "median_ms": 63.9761,
+        "samples_ms": [
+          60.5046,
+          67.4476
+        ]
+      },
+      "33973": {
+        "median_ms": 46.924549999999996,
+        "samples_ms": [
+          45.9361,
+          47.913
+        ]
+      }
+    },
+    "v910-x64": {
+      "32249": {
+        "median_ms": 17.54925,
+        "samples_ms": [
+          17.3016,
+          17.7969
+        ]
+      },
+      "32693": {
+        "median_ms": 44.509550000000004,
+        "samples_ms": [
+          44.2789,
+          44.7402
+        ]
+      },
+      "32780": {
+        "median_ms": 55.361999999999995,
+        "samples_ms": [
+          56.1189,
+          54.6051
+        ]
+      },
+      "32854": {
+        "median_ms": 47.7559,
+        "samples_ms": [
+          47.8844,
+          47.6274
+        ]
+      },
+      "33157": {
+        "median_ms": 55.43865,
+        "samples_ms": [
+          55.9787,
+          54.8986
+        ]
+      },
+      "33448": {
+        "median_ms": 64.27505,
+        "samples_ms": [
+          64.8245,
+          63.7256
+        ]
+      },
+      "33973": {
+        "median_ms": 47.4483,
+        "samples_ms": [
+          47.6349,
+          47.2617
+        ]
+      }
+    }
+  }
+}

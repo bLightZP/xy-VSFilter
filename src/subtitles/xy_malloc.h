@@ -15,5 +15,14 @@ void  xy_free( void * );
 
 extern std::size_t g_xy_malloc_used_size;
 
+// Optional serial native-harness probe. Counts xy_malloc traffic only, not
+// ATL/STL/shared_ptr allocations. The caller restores the previous probe.
+struct XyAllocationStats
+{
+    unsigned __int64 allocCalls, freeCalls, requestedBytes, failures;
+    std::size_t peakUsed;
+};
+XyAllocationStats* xy_set_allocation_stats(XyAllocationStats* stats);
+
 #endif // end of __XY_MALLOC_H_22FA5F7D_A5C3_4D8D_B4E6_5FB954770019__
 

@@ -138,3 +138,315 @@ Build `render_subtitles.vcxproj` with `/p:Platform=x64` for the native x64 gates
 Counter snapshots are refreshed after setup while still paused at 22:20, immediately before the measured Run. Module snapshots use explicit WOW64-aware native enumeration. Comparisons reject changed engine, filter bitness, active dependency hashes, polling cadence and window geometry.
 
 MPC-VR may reset only `FramesDrawn` in the first Run interval. The raw reset flag remains saved. Summary validation permits that specific first-two-seconds case only when the dropped counter started from zero and stays independently monotonic, with continuous renderer and media position. Such drawn resets are explicitly listed in the summary; drawn frames never serve as a drop-percentage denominator. Decreases in dropped frames, later/unclassified resets, renderer replacement, seek discontinuities, missing values and inconsistent deltas fail validation. `test_compare_playback.py` checks these gates, including retention of first-interval drops and combined player/helper CPU and private-byte accounting.
+
+## Compact-grouping diagnostics
+
+Serial offline checks were reauthorized on 2026-10-26, on one logical CPU at
+Above Normal priority. Playback remains paused. The [grouping checkpoint](../../docs/performance-20261026-compact-grouping.md)
+records the earlier validation and the subsequent group-key-view work.
+
+The following are additional harness entry points:
+
+```powershell
+render_subtitles.exe --grouping-contract
+render_subtitles.exe --allocation-probe-contract
+render_subtitles.exe --group-view-contract
+render_subtitles.exe --diagnostics --bitmap-cache-items 256 default.ass <fonts> <new-phases.csv>
+python test/benchmark/summarize_diagnostics.py <control-phases.csv> <candidate-phases.csv> --output <new-summary.json>
+```
+
+`--grouping-contract` exercises overlaps, more than 128 input items, inverse clips,
+reservation, optional diagnostics and retained frames. `--allocation-probe-contract`
+checks xy_malloc-only calls/bytes/peak/release and nested scope restoration.
+`--group-view-contract` checks miss ownership,
+hit identity, copying/assignment, mutation, eviction, bypass and retained pixels.
+`fixtures/grouping-stress.ass` exercises compact membership storage and a rectangle
+that spans more than eight output groups.
+
+Diagnostic CSV columns overlap: render-core/composite totals contain nested
+phases. Final draw growth counts measure capacity changes during append;
+pre-reservation allocations are excluded. The scoped allocator probe sees
+xy_malloc traffic only, not ATL/STL/shared_ptr heap allocations. Native diagnostics
+are off by default, change no COM API and are not enabled in ordinary playback.
+The fresh collector also records the active MPCSubtitleHelper.ax path/hash.
+
+If x64 native linking reports LNK4020, the observed successful rebuild was a
+serial subtitles-library Rebuild, harness Rebuild, then serial DLL links, all
+with v145/Release and `/nr:false /m:1`. Keep generated PDBs with their actual DLLs.
+
+## Standalone console performance app
+
+`render_subtitles.exe --benchmark` verifies Above Normal process priority and
+restricts the process to one allowed logical CPU. Rendering runs serially on the
+calling thread. `--cpu N` selects a CPU in the current processor group; the default
+is the highest allowed CPU represented by the process affinity mask. The actual
+mask and priority are recorded in the log. All correctness entry points also run
+on one logical CPU at Above Normal priority.
+
+```
+render_subtitles.exe --benchmark --mode render --cpu 7 --bitmap-cache-items 256 default.ass fonts render.csv
+render_subtitles.exe --benchmark --mode parse --cpu 7 default.ass fonts parse.csv
+render_subtitles.exe --benchmark --mode composite --cpu 7 default.ass fonts composite.csv
+```
+
+`render` times the production RenderEx path. `parse` times ParseScript plus
+temporary subtitle cleanup, including list destruction; it produces no pixels.
+`composite` prepares actual draw inputs outside the timed section and times
+production rectangle splitting/grouping, bitmap lookup and drawing. Input
+preparation, output hashing and CSV writes are excluded from this selected
+interval. Replay modes use the sample's 1080p geometry and 24000/1001 timing.
+Geometry is initialized once; sequential timestamps preserve cache history.
+XY allocation counters are collected only in complete-render mode. Nested phase
+timings overlap. Thread CPU time has coarse per-frame resolution; use aggregate
+CPU totals alongside wall-time distributions.
+
+`--first-frame` and `--last-frame` select inclusive source frame indices. Defaults
+are 32128..34555 (22:20–EOF). Every new process starts a fresh renderer and cache
+state; subsequent frames warm caches naturally. `--no-hash` and
+`--no-diagnostics` are optional timing-only controls, separate from correctness.
+
+`run_native_benchmark.py` runs control/candidate serially in alternating order,
+records executable/script/font hashes, checks all frame pixel hashes (except in
+parse mode), and reports total/median/p95/p99/max time. For example:
+
+```
+python test/benchmark/run_native_benchmark.py --control control/render_subtitles.exe --candidate candidate/render_subtitles.exe --script default.ass --fonts fonts --output new-results --cpu 7 --rounds 2
+```
+
+The build-only `/p:XyBenchmarkOwnedGroupKeys=true` control materializes temporary
+owned group-key snapshots. Normal x86 builds use borrowed synchronous probes;
+x64 retains owned snapshots because complete-render timing was inconclusive.
+Use `/p:XyBenchmarkOwnedGroupKeys=false` to test borrowed x64 probes. Rebuild
+the subtitles library, relink the console app and preserve its EXE/PDB before
+switching the property. Keep compiler, dependencies and other sources identical.
+
+Priority and affinity reduce scheduling variability but do not eliminate shared
+cache/memory/frequency effects from other applications. These results measure
+subtitle CPU work; they do not establish renderer drops during playback.
+
+## Optional libass correctness checks
+
+See [libass integration](../../docs/libass-integration.md) for static source builds.
+`--libass-contract` tests the backend; `--filter-contract xy <XySubFilter.dll>` and
+`--filter-contract vs <VSFilter.dll>` instantiate the real filter and Main page in
+a hidden host, check option round-tripping and layout, and do not write registry
+settings. No player or filter registration is needed. Libass performance is not
+an acceptance criterion. Its visual output has a separate baseline from Native.
+
+Focused pixel checks use `compare_rendered.py --first-frame N --last-frame M`;
+missing pixel hashes are rejected. Run `python test/benchmark/test_compare_rendered.py`
+for coverage-gate checks. With VS 18.11, clean-rebuild filter/console projects
+after switching the group-key build property to avoid stale incremental linker
+debug data; release subtitles objects embed their types with `/Z7`.
+
+## Final draw-slot storage regression
+
+`--inline-list-contract` also covers empty, inline and spilled final draw lists,
+POSITION stability across 257 appends, layer ordering and owner release.
+`fixtures/draw-slot-spill.ass` exercises 257 alternating style runs, multiple
+lines, inverse clipping and an overlapping translucent polygon. Render it with
+the frozen control and candidate on each architecture and compare all hashes.
+A diagnostic run must report more than 1,000 input items in at least one frame
+to establish that the large single-event spill path was reached. See the
+[inline-storage report](../../docs/performance-20261026-inline-composite.md) for
+the x64 comparisons and validation records.
+
+## ASS command and first-parameter storage checks
+
+`render_subtitles.exe --ass-command-contract` compares command recognition with
+the legacy longest-prefix matcher in 31,200 cases and checks inline/spilled
+parameter ownership and order. `fixtures/ass-command-prefixes.ass` is UTF-8 with
+a BOM and covers ambiguous/unknown prefixes, case, Unicode, whitespace, empty
+arguments and nested transforms. Compare it with the preserved control on each
+architecture.
+
+For event-spike measurements, use complete sequential sample passes and select
+frames from source event start times before examining candidate timings. Keep
+parse-only results separate: their cache history differs from full rendering,
+and they do not produce pixels. Always check the recorded `mode` in each
+benchmark summary rather than inferring it from a folder name. See the
+[event-spike report](../../docs/performance-20261026-event-spikes.md).
+
+## Font/style and layout checks
+
+`--font-layout-contract` checks Unicode entry borrowing and ANSI conversion
+lifetimes, cached/uncached equivalence, forced defaults, all PAR compensation
+modes at two factors, source edits and preservation of selected styles.
+`font-style-layout.ass` and `font-style-layout-ansi.ass` compare with a frozen
+legacy renderer across single-word alignment/wrapping, whitespace/breaks, NBSP,
+large/tiny words, multiple lines, font resets and polygons. The Unicode fixture
+has a BOM; the ANSI fixture intentionally does not.
+
+Source-line profile attribution must distinguish CString copy-on-write/refcount
+work from actual character-buffer allocation. `CloneData` can share an existing
+buffer, and `Trim()` does not clone a font name when no trimming is needed.
+See the [font/layout report](../../docs/performance-20261027-font-layout.md).
+
+## Frame-owned grouping scratch
+
+The [scratch-storage report](../../docs/performance-20261027-grouping-scratch.md)
+compares contiguous metadata plus frame-owned memberships with the frozen
+font/layout build. Keep per-event shadow/outline/body order and the existing
+rectangle algorithm. The grouping contract, large draw-slot-spill and inverse-clip
+fixtures, retained-frame checks, full sample at 256/zero cache entries and
+composition replay are the relevant pixel gates on both architectures.
+Full-render and composition-only timings have different scope; record them
+separately and keep builds outside timed runs.
+
+## General event preparation and layout reuse
+
+`--prepared-layout-contract` checks the prepared path against a renderer with
+`SetPreparedLayoutCacheLimit(0)`, including context edits, retained frames and
+byte admission. `event-layout-reuse.ass` supplies varied legacy comparisons;
+`event-layout-load.ass` supplies independent two-font animated text load.
+The console prints prepared-layout hits/builds/fallbacks/updates and accounted
+bytes. Every first-use preparation cost stays inside render/parse timing.
+See the [implementation and results](../../docs/performance-20261027-event-layout.md).
+
+
+## General spike-reduction checks
+
+The console now has 28 focused contracts. New entry points are:
+
+- `--maintenance-contract`: verified order reuse, ties/order edits, same-segment
+  streaming insertion, deadlines, seeks, invalidation and FRAME/FPS fallback.
+- `--lazy-intern-contract`: one probe, owned copies only on misses, identity and
+  zero/runtime capacity. Existing group-view/key contracts check retained keys.
+- `--clipper-retention-contract`: weak mask reuse and release after MRU eviction.
+- `--fused-alpha-contract`: every opacity, coverage pairs, masked/unmasked
+  body/border subtraction, clipping, subpixel offsets, vector/tail widths,
+  arbitrary destination bytes and planar/multicolor fallbacks against legacy.
+- `--lookahead-contract`: blank-request preparation, text/polygons, edits before
+  activation, static/metric fallback, insertion, seeks/expiry and retained frames.
+- `--paint-bundle-contract`: all requested-layer combinations, one shared owner,
+  post-factory painting, alias lifetime and cycle-free release.
+
+`fixtures/spike-bursts.ass` has twelve independent 64-event bursts with two
+fonts, text, drawings, styled runs and changing raster/layout properties.
+Compare all 2,428 timestamps with a frozen legacy renderer on both architectures.
+For its shorter timing load, use `--first-frame 32128 --last-frame 32450`.
+Production code has no knowledge of this fixture or the private media.
+
+Full rendering includes the synchronous lookahead work inside `RenderEx`,
+including blank-frame requests. The nested `parse_ms` field excludes that work;
+parse-only and composition replay have different scope and cache histories.
+Do not present the parse-phase reduction as the complete CPU saving. The 4 ms
+allowance is checked between source events, so a single construction can
+overshoot it. Request cadence affects available preparation opportunities.
+The console logs attempted/retained/skipped events, preparation time and the
+largest unit, together with order reuse and expiry-scan counts.
+
+Current default admissions are 64 MiB syntax, 64 MiB/16,384 reconstructed states
+and 32 MiB prepared layouts. Cache limits are accounted ownership bounds;
+measure process peak commit separately. Raster/bitmap cache capacities are not
+blanket-enlarged. See the [report](../../docs/performance-20261027-spike-paths.md)
+and [portable measurements](../../docs/benchmarks/20261027-spike-paths.json).
+
+
+## Packet arrival and recurring playback spikes
+
+`streaming_subtitles.vcxproj` builds a separate console with the same shared
+native library and the existing harness's font, scheduling and pixel helpers.
+It removes native future entries and feeds decoded events through `Add` only
+when their presentation time is within the configured delivery lead. Dataset
+reading/sorting and header/style setup are excluded; relevant insertion and
+RenderEx work, including initial active events, are timed. No video is played.
+
+Build this project directly with the same SolutionDir/Release/platform/toolset
+arguments as `render_subtitles.vcxproj`. For example, from a Developer shell:
+
+```powershell
+MSBuild.exe test\benchmark\streaming_subtitles.vcxproj /p:SolutionDir=F:\Git\xySubFilter\ /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v145 /m:1 /nr:false
+python test/benchmark/run_packet_benchmark.py --exe bin/lib_18.0/x64/Release/streaming_subtitles.exe --script benchmark-results/media/default.ass --fonts benchmark-results/media --gold benchmark-results/source-control/render.csv --output benchmark-results/packet-leads-new --rounds 4
+```
+
+The runner compares lookahead off/on within this optimized build, using a
+256-entry bitmap cache, CPU 7 and Above Normal priority on the current host.
+Defaults are 0/250/1000 ms packet lead, frames 32700..32830 and the independently
+preselected 32780 burst. Change `--first-frame`, `--last-frame` and
+`--burst-frame` together for another region. The source frame clock is currently
+24000/1001 fps at 1920x1080, matching the primary harness. Use `--allowance-us`
+for a different nonzero lookahead allowance, at most 4000 us.
+
+Every output frame must match the supplied full-script gold. Zero lead must
+prepare zero future events. Complete-window timing is retained; separate
+`steady_metrics` excludes only the first independently initialized model
+request. Later activation, new-font and raster spikes remain in the steady
+statistics. The user's acceptance permits one isolated pause-resume drop;
+this console does not perform an actual pause/resume test.
+
+This is a model of packet availability, not a measurement of actual DirectShow
+packet lead, pin decoding/locking, graph concurrency or dropped frames. Actual
+arrival/request cadence determines how much lookahead can help embedded tracks.
+See the [results and limits](../../docs/performance-20261027-spike-paths.md).
+
+### Retained preparation/draw checks (2026-10-27)
+
+The `--constant-drawing-contract`, `--static-drawing-contract`,
+`--polygon-scanner-contract` and `--draw-reuse-contract` checks cover the new
+native paths. Run these together with the existing 28 contracts on both x64 and
+Win32. The scanner test contains a test-only legacy oracle and 2,000 deterministic
+differentials; the draw test covers all five native bitmap formats, all subpixel
+levels, retained frames, eviction, cache budgets and the 128-item blend threshold.
+It explicitly flushes the bitmap MRU on format changes because its existing keys
+omit the pixel format. This is a harness requirement, not a new format-cache fix.
+
+[prepared-draw-reuse.ass](fixtures/prepared-draw-reuse.ass) is an independent
+160-event regression input with varied text, paths, step/nested drawing commands,
+clips, motion, low opacity and karaoke. Compare it with the frozen preceding build
+as well as comparing the complete private sample and existing public fixtures.
+
+Diagnostic CSVs now include descriptor hits/misses, ordinary machine/draw/overlay
+key factory allocation counts, and charged descriptor bytes. These are counters
+for the tracked cached-event draw path, not every C++/CRT/ATL allocation; they
+supplement `xy_alloc_calls`. Retained descriptor metadata has a separate 32 MiB
+budget (4 KiB charged per plan); raster owners are weak between requests and remain controlled by
+existing image MRUs. Frame-scoped pins retain strong owners while composition
+uses them, then release them; copied frame slots preserve the pin lifetime. Frame-specific additive decisions do not mutate descriptors.
+
+The [implementation and comparison report](../../docs/performance-20261027-top-three.md)
+and [analysis script](../../docs/benchmarks/20261027-top-three-analysis.py) document
+four fresh-process passes per build and architecture, the seven review spikes,
+all 17 preselected activation bursts, and following requests. These are native
+console measurements, not actual renderer drop counts. No playback is needed to
+reproduce this comparison.
+
+### Zero-lead parsing checks
+
+`--scalar-parameter-contract` adds collision/eviction, ownership, empty/reset and
+legacy syntax, style, CRT locale/rounding, exact-real bounds, signed zero and
+Win32 24/53-bit precision checks for the renderer's bounded
+scalar parameter cache. Run it with the existing 32 contracts on x64 and Win32.
+[scalar-parameters.ass](fixtures/scalar-parameters.ass) supplies an independent
+pixel comparison against the preceding build.
+
+The packet probe accepts optional trailing flags `--diagnostics`, `--no-layout`,
+`--no-draw-reuse` and `--no-scalar-cache`. Diagnostics reset phase counters per
+request and report layout/draw construction plus scalar hits/misses. Feature-off
+runs isolate mechanisms; final timings use the default uninstrumented scope.
+Always verify the CPU affinity and Above Normal line in every child log. Python
+launchers must pass a pointer-sized Windows process handle and check affinity
+setter results; an unchecked ctypes call can fail and leave the default CPU.
+
+See [the zero-lead report](../../docs/performance-20261027-zero-lead.md) for the
+frozen latest/older controls, selected-core and original-core comparisons,
+neighboring requests, rejected prototypes and exact-output gates. These are
+packet-delivery models, not observed playback drops. No playback is run.
+
+### Cold tag/parameter storage checks (2026-10-28)
+
+`--tag-storage-contract` supplements the existing 33 contracts with 6,000
+parameter operations, alias-safe growth, reserve/truncate/refill, nested ownership,
+5,000 stable tag addresses and separate numeric spills. It prints header sizes
+and spill-growth counts for common arities; those are storage/subset-allocation
+measurements, not a count of every CRT allocation or a rendering speedup.
+
+Compare [tag-storage.ass](fixtures/tag-storage.ass), an independent 100-event
+short/long/malformed-parameter fixture, against the frozen preceding executable.
+Use the full sample, all existing scripts and both bitmap capacities as before.
+The packed storage changes capacity accounting, so report admission statistics
+and peak process commit alongside timing rather than attributing every gain to
+allocation speed alone. Keep full render and isolated parse/reconstruction scopes
+separate. Continue one rendering thread/core at Above Normal; no playback.
+
+See [the cold-storage implementation/results](../../docs/performance-20261028-tag-storage.md) for repeated timings, memory, rejected alternatives and exact-output gates.

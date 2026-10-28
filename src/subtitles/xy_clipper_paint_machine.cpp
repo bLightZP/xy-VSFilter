@@ -15,8 +15,9 @@ void CClipperPaintMachine::Paint(SharedPtrGrayImage2 *output)
     ASSERT(output);
     if (m_clipper!=NULL)
     {
-        ClipperAlphaMaskCacheKey key(m_clipper);
-        key.UpdateHashValue();
+        *output = m_mask.lock();
+        if (*output) return;
+        const ClipperAlphaMaskCacheKey& key = m_hash_key;
         ClipperAlphaMaskMruCache * cache = CacheManager::GetClipperAlphaMaskMruCache();
         POSITION pos = cache->Lookup(key);
         if( pos!=NULL )
@@ -29,6 +30,7 @@ void CClipperPaintMachine::Paint(SharedPtrGrayImage2 *output)
             (*output).reset(m_clipper->Paint());
             cache->UpdateCache(key, *output);
         }
+        m_mask = *output;
     }
 }
 
