@@ -100,11 +100,11 @@ render_subtitles.exe --fixtures <new-fixture.csv>
 render_subtitles.exe default.ass <font-directory> <new-output.csv>
 ```
 
-The render check evaluates all 2,428 source frame midpoints within 22:20–EOF at 24000/1001 fps, at 1920x1080. Compare `(frame, time_100ns, bitmaps, sha256)` between control and candidate. SHA256 covers each bitmap's position, size, and visible RGBA bytes, excluding cache identities and pitch padding. This validates rendered output independently of decoder/renderer drops. Offline `render_ms` is wall time and is sensitive to other activity; use it for diagnosis, with the playback CPU CSV for end-to-end measurements.
+The render check evaluates all 2,428 source frame midpoints within 22:20Ã¢â‚¬â€œEOF at 24000/1001 fps, at 1920x1080. Compare `(frame, time_100ns, bitmaps, sha256)` between control and candidate. SHA256 covers each bitmap's position, size, and visible RGBA bytes, excluding cache identities and pitch padding. This validates rendered output independently of decoder/renderer drops. Offline `render_ms` is wall time and is sensitive to other activity; use it for diagnosis, with the playback CPU CSV for end-to-end measurements.
 
 `--cache-contract` compares cached and bypassed renders across animation, expiry, backward seeking, text edits, malformed tags, a tiny cache budget, and stream invalidation. `--fixtures` emits 54 small rendering cases for comparison with a preserved control executable, covering numeric, transform, clip, karaoke, drawing, and malformed-tag behavior. The normal render prints event-cache hits/misses, current retention and peak accounted retention. The admission accounting conservatively charges shared data to each owner; it is distinct from Windows private-byte measurements.
 
-`--intern-contract` checks string identity, owned storage after caller mutation, and live-value survival after cache eviction. The ASS files under `fixtures/` exercise inverse rectangular clipping with multiple lines and fractional polygon coordinates, plus omitted numeric arguments. Render each with both preserved executables using the normal three-argument invocation, then compare their hashes. These fixtures use the same 22:20–EOF timestamps as the sample.
+`--intern-contract` checks string identity, owned storage after caller mutation, and live-value survival after cache eviction. The ASS files under `fixtures/` exercise inverse rectangular clipping with multiple lines and fractional polygon coordinates, plus omitted numeric arguments. Render each with both preserved executables using the normal three-argument invocation, then compare their hashes. These fixtures use the same 22:20Ã¢â‚¬â€œEOF timestamps as the sample.
 
 `--geometry-contract` compares cold and warm polygon vertices and metrics, exercises an actual path-cache hit, checks exact scale matching and owned buffers after eviction, and rejects a simulated text-path collision for zero script scales. `fixtures/geometry-reuse.ass` adds animated drawing scale, rotation and baseline coverage against an unmodified renderer.
 
@@ -201,7 +201,7 @@ timings overlap. Thread CPU time has coarse per-frame resolution; use aggregate
 CPU totals alongside wall-time distributions.
 
 `--first-frame` and `--last-frame` select inclusive source frame indices. Defaults
-are 32128..34555 (22:20–EOF). Every new process starts a fresh renderer and cache
+are 32128..34555 (22:20Ã¢â‚¬â€œEOF). Every new process starts a fresh renderer and cache
 state; subsequent frames warm caches naturally. `--no-hash` and
 `--no-diagnostics` are optional timing-only controls, separate from correctness.
 
@@ -450,3 +450,27 @@ allocation speed alone. Keep full render and isolated parse/reconstruction scope
 separate. Continue one rendering thread/core at Above Normal; no playback.
 
 See [the cold-storage implementation/results](../../docs/performance-20261028-tag-storage.md) for repeated timings, memory, rejected alternatives and exact-output gates.
+
+## Render layout and allocation regression tests
+
+`render_subtitles.exe --layout-contract` exercises wrapper output/layout separation,
+static invalidation, cropped combining and both alpha conventions, retained frame
+ownership, allocation faults, native/libass geometry and recovery, and reentrant
+consumer queue invalidation. It includes 1080p and 8K output/layout combinations.
+
+`render_subtitles.exe --layout-filter-contract xy <XySubFilter.dll>` and
+`render_subtitles.exe --layout-filter-contract vs <VSFilter.dll>` load the actual
+More pages and test staged typing, Apply/Cancel, bad persisted dimensions and
+atomic settings validation. HKCU is redirected for the test process to a unique
+subtree under `Software\xySubFilterLayoutTests`, removed on normal exit. Run each
+command in a subprocess with a 30-second timeout; after a killed process, remove
+only its dedicated test subtree. These tests do not need filter registration or
+playback. Run matching executable/DLL architectures on both Win32 and x64.
+
+The supported bounds and validation evidence are documented in
+[the layout implementation report](../../docs/render-layout-fixes-20261030.md).
+
+Use `run_layout_regressions.py --exe <render_subtitles.exe> --xy-dll <XySubFilter.dll>
+--vs-dll <VSFilter.dll> --output <results.json>` to run all three new contracts with
+a 30-second watchdog per process and cleanup of that process's isolated test
+settings after a failure or timeout.

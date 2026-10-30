@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <memory>
+#include <new>
 #include "draw_item.h"
 #include <vector>
 #include <algorithm>
@@ -384,8 +386,9 @@ void CompositeDrawItem::Draw( XySubRenderFrame**output, CompositeDrawItemListLis
     }
     XySubRenderFrameCreater *render_frame_creater = XySubRenderFrameCreater::GetDefaultCreater();
 
-    *output = render_frame_creater->NewXySubRenderFrame(grouped_draw_items.GetCount());
-    XySubRenderFrame& sub_render_frame = **output;
+    *output = NULL;
+    std::unique_ptr<XySubRenderFrame> frame(render_frame_creater->NewXySubRenderFrame(grouped_draw_items.GetCount()));
+    XySubRenderFrame& sub_render_frame = *frame;
 
     AlphaMaskBuffer alphaBuffer;
     RenderPhaseTimer bitmapTimer(diagnostics, RenderDiagnostics::BITMAP);
@@ -393,6 +396,7 @@ void CompositeDrawItem::Draw( XySubRenderFrame**output, CompositeDrawItemListLis
     {
         grouped_draw_items[i].Draw(&(sub_render_frame.m_bitmaps.GetAt(i)), &(sub_render_frame.m_bitmap_ids.GetAt(i)), alphaBuffer);
     }
+    *output = frame.release();
 }
 
 void CreateDrawItemExTree( CompositeDrawItemListList& input,
@@ -679,6 +683,7 @@ void GroupedDrawItems::Draw( SharedPtrXyBitmap *bitmap, int *bitmap_identity_num
     if (pos==NULL)
     {
         XyBitmap *tmp = XySubRenderFrameCreater::GetDefaultCreater()->CreateBitmap(clip_rect);
+        if (!tmp) throw std::bad_alloc();
         bitmap->reset(tmp);
 
         for (size_t i = 0; i < draw_item_list.GetCount(); ++i)

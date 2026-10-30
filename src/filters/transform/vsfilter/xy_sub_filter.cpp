@@ -356,6 +356,8 @@ HRESULT XySubFilter::OnOptionChanged( unsigned field )
     }
     switch(field)
     {
+    case BIN2_RENDER_LAYOUT:
+    case BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE:
     case SIZE_ASS_PLAY_RESOLUTION:
     case SIZE_USER_SPECIFIED_LAYOUT_SIZE:
     case DOUBLE_FPS:
@@ -1037,7 +1039,7 @@ void XySubFilter::SetupFRD(CStringArray& paths, CAtlArray<HANDLE>& handles)
     XY_LOG_INFO(XY_LOG_VAR_2_STR(paths.GetCount())<<XY_LOG_VAR_2_STR(handles.GetCount()));
     CAutoLock cAutolock(&m_csFilter);
 
-    for(unsigned i = 2; i < handles.GetCount(); i++)
+    for(unsigned i = 3; i < handles.GetCount(); i++)
     {
         FindCloseChangeNotification(handles[i]);
     }
@@ -1047,6 +1049,7 @@ void XySubFilter::SetupFRD(CStringArray& paths, CAtlArray<HANDLE>& handles)
 
     handles.Add(m_frd.EndThreadEvent);
     handles.Add(m_frd.RefreshEvent);
+    handles.Add(m_consumerInvalidation.Event());
 
     m_frd.mtime.SetCount(m_frd.files.GetCount());
 
@@ -1084,6 +1087,7 @@ DWORD XySubFilter::ThreadProc()
     XY_LOG_INFO(XY_LOG_VAR_2_STR(this));
     SetThreadPriority(m_hThread, THREAD_PRIORITY_LOWEST/*THREAD_PRIORITY_BELOW_NORMAL*/);
 
+    const HRESULT comInitialized = CoInitializeEx(NULL, COINIT_MULTITHREADED);
     CStringArray paths;
     CAtlArray<HANDLE> handles;
 
@@ -1101,7 +1105,17 @@ DWORD XySubFilter::ThreadProc()
         {
             SetupFRD(paths, handles);
         }
-        else if(idx >= (WAIT_OBJECT_0 + 2) && idx < (WAIT_OBJECT_0 + handles.GetCount()))
+        else if (idx == WAIT_OBJECT_0 + 2)
+        {
+            CComPtr<ISubRenderConsumer> consumer;
+            {
+                CAutoLock lock(&m_csFilter);
+                consumer = m_consumer;
+            }
+            HRESULT hr = m_consumerInvalidation.Dispatch(consumer);
+            if (FAILED(hr)) XY_LOG_WARN("Consumer Clear failed: " << hr);
+        }
+        else if(idx >= (WAIT_OBJECT_0 + 3) && idx < (WAIT_OBJECT_0 + handles.GetCount()))
         {
             bool fLocked = true;
             IsSubtitleReloaderLocked(&fLocked);
@@ -1166,11 +1180,12 @@ DWORD XySubFilter::ThreadProc()
         }
     }
 
-    for(unsigned i = 2; i < handles.GetCount(); i++)
+    for(unsigned i = 3; i < handles.GetCount(); i++)
     {
         FindCloseChangeNotification(handles[i]);
     }
 
+    if (SUCCEEDED(comInitialized)) CoUninitialize();
     return 0;
 }
 
@@ -1186,6 +1201,7 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
 
     HRESULT hr;
     CComPtr<IXySubRenderFrame> sub_render_frame;
+    ULONGLONG deliveryGeneration;
     {
         CAutoLock cAutoLock(&m_csFilter);
 
@@ -1202,6 +1218,7 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
         start = (start - 10000i64 * m_SubtitleDelay) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
         stop = (stop - 10000i64 * m_SubtitleDelay) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
 
+        deliveryGeneration = m_consumerInvalidation.Generation();
         REFERENCE_TIME now = start; //NOTE: It seems that the physically right way is (start + stop) / 2, but...
         m_last_requested = now;
 
@@ -1251,10 +1268,15 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
 
         }
     }
-    CAutoLock cAutoLock(&m_csConsumer);
     //fix me: print osd message
     TRACE_RENDERER_REQUEST("Returnning "<<XY_LOG_VAR_2_STR(hr)<<XY_LOG_VAR_2_STR(sub_render_frame));
-    hr =  m_consumer->DeliverFrame(start, stop, context, sub_render_frame);
+    CComPtr<ISubRenderConsumer> consumer;
+    {
+        CAutoLock lock(&m_csFilter);
+        consumer = m_consumer;
+    }
+    hr = consumer ? consumer->DeliverFrame(start, stop, context, sub_render_frame) : VFW_E_NOT_CONNECTED;
+    m_consumerInvalidation.Delivered(deliveryGeneration);
     return hr;
 }
 
@@ -1919,17 +1941,14 @@ void XySubFilter::InvalidateSubtitle( REFERENCE_TIME rtInvalidate /*= -1*/, DWOR
 {
     CAutoLock cAutolock(&m_csFilter);
 
+    if (!m_sub_provider && nSubtitleId == -1) m_consumerInvalidation.Schedule();
     if(m_sub_provider)
     {
         if (nSubtitleId == -1 || nSubtitleId == reinterpret_cast<DWORD_PTR>(m_curSubStream))
         {
-            if (m_last_requested>rtInvalidate)
-            {
-                ASSERT(0);
-                XY_LOG_ERROR("New subtitle samples received after a request.");
-            }
             m_sub_provider->Invalidate(rtInvalidate);
-            XY_LOG_INFO("Subtitles cleared in provider and consumer");
+            m_consumerInvalidation.Schedule();
+            XY_LOG_INFO("Provider invalidated; consumer clear scheduled");
         }
     }
 }
@@ -2086,10 +2105,7 @@ HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
     if (update_subtitle)
     {
         UpdateSubtitle(false);
-        //if (clear_consumer)
-        //{
-    	//    m_consumer->Clear();
-        //}
+        // UpdateSubtitle schedules consumer invalidation outside the render lock.
     }
     return hr;
 }

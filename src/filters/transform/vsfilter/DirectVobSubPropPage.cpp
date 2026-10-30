@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "../../../subtitles/RenderLimits.h"
 #include <commdlg.h>
 #include <afxdlgs.h>
 #include "DirectVobSubFilter.h"
@@ -352,6 +353,47 @@ HRESULT CDVSBasePPage::OnDeactivate()
     return NOERROR;
 }
 
+HRESULT CDVSBasePPage::ApplyLayoutSettings(bool renderToOriginal)
+{
+    DirectVobSubXyOptions::RenderLayoutSettings settings = {};
+    const int ids[] = {IDC_EDIT_LAYOUT_SIZE_X, IDC_EDIT_LAYOUT_SIZE_Y};
+    LONG* dimensions[] = {&settings.size.cx, &settings.size.cy};
+    for (int i = 0; i < 2; ++i) {
+        wchar_t text[32] = {};
+        const int length = GetDlgItemTextW(m_Dlg, ids[i], text, _countof(text));
+        unsigned value = 0;
+        bool valid = length > 0 && length < 6;
+        for (int j = 0; valid && j < length; ++j) {
+            valid = text[j] >= L'0' && text[j] <= L'9';
+            if (valid) value = value * 10 + text[j] - L'0';
+        }
+        if (!valid || value < RenderLimits::MinUserLayout || value > RenderLimits::MaxUserLayout) {
+            SetFocus(GetDlgItem(m_Dlg, ids[i]));
+            SendDlgItemMessage(m_Dlg, ids[i], EM_SETSEL, 0, -1);
+            EDITBALLOONTIP tip = {sizeof(tip), L"Invalid render layout",
+                L"Enter a complete width and height between 16 and 12800. Layout settings have not been applied.", TTI_WARNING};
+            SendDlgItemMessage(m_Dlg, ids[i], EM_SHOWBALLOONTIP, 0, reinterpret_cast<LPARAM>(&tip));
+            return E_INVALIDARG;
+        }
+        *dimensions[i] = value;
+    }
+    const LRESULT selection = SendDlgItemMessage(m_Dlg, IDC_COMBO_LAYOUT_SIZE_OPT, CB_GETCURSEL, 0, 0);
+    if (selection == CB_ERR) return E_INVALIDARG;
+    settings.mode = (int)SendDlgItemMessage(m_Dlg, IDC_COMBO_LAYOUT_SIZE_OPT, CB_GETITEMDATA, selection, 0);
+    settings.renderToOriginal = renderToOriginal;
+    return m_pDirectVobSubXy->XySetBin(DirectVobSubXyOptions::BIN2_RENDER_LAYOUT, &settings, sizeof(settings));
+}
+
+HRESULT CDVSMorePPage::ApplyStagedSettings()
+{
+    return ApplyLayoutSettings(false);
+}
+
+HRESULT CXySubFilterMorePPage::ApplyStagedSettings()
+{
+    return ApplyLayoutSettings(m_checkbox_render_to_original_video_size.GetCheck() == BST_CHECKED);
+}
+
 HRESULT CDVSBasePPage::OnApplyChanges()
 {
     ASSERT(m_pDirectVobSub);
@@ -360,6 +402,8 @@ HRESULT CDVSBasePPage::OnApplyChanges()
 
     if(m_bIsInitialized)
     {
+        HRESULT hr = ApplyStagedSettings();
+        if (FAILED(hr)) return hr;
         OnDeactivate();
         UpdateObjectData(true);
         m_pDirectVobSub->UpdateRegistry(); // *
@@ -1007,6 +1051,7 @@ void CDVSTimingPPage::UpdateControlData(bool fSave)
 CDVSMorePPage::CDVSMorePPage(LPUNKNOWN pUnk, HRESULT* phr) :
 CDVSBasePPage(NAME("DirectVobSub More Property Page"), pUnk, IDD_DVSMOREPAGE, IDD_DVSMOREPAGE)
 {
+    m_fDisableInstantUpdate = true;
     BindControl(IDC_SPINPathCache, m_path_cache);
     BindControl(IDC_SPINScanlineCache, m_scanline_cache);
     BindControl(IDC_SPINOverlayNoBlurCache, m_overlay_no_blur_cache);
@@ -1106,10 +1151,7 @@ void CDVSMorePPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSubXy->XySetInt(DirectVobSubXyOptions::INT_SUBPIXEL_POS_LEVEL, m_subpixel_pos_level);
         CHECK_N_LOG(hr, "Failed to set option");
-        hr = m_pDirectVobSubXy->XySetInt(DirectVobSubXyOptions::INT_LAYOUT_SIZE_OPT, m_layout_size_opt);
-        CHECK_N_LOG(hr, "Failed to set option");
-        hr = m_pDirectVobSubXy->XySetSize(DirectVobSubXyOptions::SIZE_USER_SPECIFIED_LAYOUT_SIZE, m_layout_size);
-        CHECK_N_LOG(hr, "Failed to set option");
+        // Layout settings were validated and committed together before this transfer.
     }
     else
     {
@@ -1210,9 +1252,9 @@ void CDVSMorePPage::UpdateControlData(bool fSave)
         m_combo_layout_size_opt.SetItemData(2, DirectVobSubXyOptions::LAYOUT_SIZE_OPT_USER_SPECIFIED);
         m_combo_layout_size_opt.SetCurSel( temp );
 
-        m_layout_size_x.SetRange32(1, 12800);
+        m_layout_size_x.SetRange32(RenderLimits::MinUserLayout, RenderLimits::MaxUserLayout);
         m_layout_size_x.SetPos32(m_layout_size.cx);
-        m_layout_size_y.SetRange32(1, 12800);
+        m_layout_size_y.SetRange32(RenderLimits::MinUserLayout, RenderLimits::MaxUserLayout);
         m_layout_size_y.SetPos32(m_layout_size.cy);
     }
 }
@@ -1929,6 +1971,7 @@ CXySubFilterMorePPage::CXySubFilterMorePPage(LPUNKNOWN pUnk, HRESULT* phr)
     :CDVSBasePPage(NAME("XySubFilter Property Page (more)"), pUnk
     , IDD_XY_SUB_FILTER_MOREPAGE, IDD_XY_SUB_FILTER_MOREPAGE)
 {
+    m_fDisableInstantUpdate = true;
     BindControl(IDC_SPINPathCache, m_path_cache);
     BindControl(IDC_SPINScanlineCache, m_scanline_cache);
     BindControl(IDC_SPINOverlayNoBlurCache, m_overlay_no_blur_cache);
@@ -2069,10 +2112,7 @@ void CXySubFilterMorePPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSubXy->XySetInt(DirectVobSubXyOptions::INT_SUBPIXEL_POS_LEVEL, m_subpixel_pos_level);
         CHECK_N_LOG(hr, "Failed to set option");
-        hr = m_pDirectVobSubXy->XySetInt(DirectVobSubXyOptions::INT_LAYOUT_SIZE_OPT, m_layout_size_opt);
-        CHECK_N_LOG(hr, "Failed to set option");
-        hr = m_pDirectVobSubXy->XySetSize(DirectVobSubXyOptions::SIZE_USER_SPECIFIED_LAYOUT_SIZE, m_layout_size);
-        CHECK_N_LOG(hr, "Failed to set option");
+        // Layout settings were validated and committed together before this transfer.
         hr = m_pDirectVobSub->put_HideSubtitles(m_fHideSubtitles);
         CHECK_N_LOG(hr, "Failed to set option");
 		hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_ALLOW_MOVING, m_fAllowMoving);
@@ -2087,8 +2127,7 @@ void CXySubFilterMorePPage::UpdateObjectData(bool fSave)
         hr = m_pDirectVobSubXy->XySetInt(DirectVobSubXyOptions::INT_RGB_OUTPUT_TV_LEVEL, m_rgb_level);
         CHECK_N_LOG(hr, "Failed to set option");
 
-        hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE, m_render_to_original_video_size);
-        CHECK_N_LOG(hr, "Failed to set option");
+        // Render-to-original is part of the layout transaction.
 
         hr = m_pDirectVobSubXy->XySetInt(DirectVobSubXyOptions::INT_MAX_CACHE_SIZE_MB, m_cache_size);
         CHECK_N_LOG(hr, "Failed to set option");
@@ -2261,9 +2300,9 @@ void CXySubFilterMorePPage::UpdateControlData(bool fSave)
         m_combo_layout_size_opt.SetItemData(2, DirectVobSubXyOptions::LAYOUT_SIZE_OPT_USER_SPECIFIED);
         m_combo_layout_size_opt.SetCurSel( temp );
 
-        m_layout_size_x.SetRange32(1, 12800);
+        m_layout_size_x.SetRange32(RenderLimits::MinUserLayout, RenderLimits::MaxUserLayout);
         m_layout_size_x.SetPos32(m_layout_size.cx);
-        m_layout_size_y.SetRange32(1, 12800);
+        m_layout_size_y.SetRange32(RenderLimits::MinUserLayout, RenderLimits::MaxUserLayout);
         m_layout_size_y.SetPos32(m_layout_size.cy);
 
         m_hidesub.SetCheck(m_fHideSubtitles);

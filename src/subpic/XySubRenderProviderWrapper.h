@@ -57,13 +57,11 @@ private:
     CComPtr<IXySubRenderFrame> m_xy_sub_render_frame;
     REFERENCE_TIME m_start, m_stop;
     CRect m_output_rect, m_subtitle_target_rect;
-    CSize m_original_video_size;
+    CSize m_layout_size;
     bool m_use_dst_alpha;
     bool m_render_to_original_video_size;
 
     double m_fps;
 
     int m_max_bitmap_count2;
-    CComPtr<ISubPicExAllocator> m_allocator;
-    CComPtr<ISubPicEx> m_subpic;
 };

@@ -22,6 +22,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="render_subtitles.cpp" />
+    <ClCompile Include="..\..\src\filters\transform\vsfilter\XyOptionsImpl.cpp" />
     <ClCompile Include="..\..\src\filters\transform\vsfilter\xy_logger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "RenderLimits.h"
+#include <memory>
+#include <new>
 #include "xy_bitmap.h"
 #include "xy_malloc.h"
 #include "../SubPic/ISubPic.h"
@@ -42,6 +45,10 @@ XyBitmap::~XyBitmap()
 
 XyBitmap * XyBitmap::CreateBitmap( const CRect& target_rect, MemLayout layout )
 {
+    if (!RenderLimits::Rect(target_rect) || (layout != PACK && layout != PLANNA)) return NULL;
+    int checkedPitch;
+    std::size_t checkedBytes;
+    if (!RenderLimits::Buffer(target_rect.Width(), target_rect.Height(), 4, checkedPitch, checkedBytes)) return NULL;
     XyBitmap *result = DEBUG_NEW XyBitmap();
     if (result==NULL)
     {
@@ -59,13 +66,14 @@ XyBitmap * XyBitmap::CreateBitmap( const CRect& target_rect, MemLayout layout )
     {
     case PACK:
         result->pitch = w16*4;
-        result->bits = xy_malloc(4*w16*result->h, (result->x*4)&15);
+        result->bits = xy_malloc(checkedBytes, (result->x*4)&15);
         result->plans[0] = reinterpret_cast<BYTE*>(result->bits);
         break;
     case PLANNA:
-        result->bits = xy_malloc(4*w16*result->h, result->x&15);
+        result->bits = xy_malloc(checkedBytes, result->x&15);
         result->pitch = w16;
         result->plans[0] = reinterpret_cast<BYTE*>(result->bits);
+        if (!result->bits) { delete result; return NULL; }
         result->plans[1] = result->plans[0] + result->pitch * result->h;
         result->plans[2] = result->plans[1] + result->pitch * result->h;
         result->plans[3] = result->plans[2] + result->pitch * result->h;
@@ -75,6 +83,7 @@ XyBitmap * XyBitmap::CreateBitmap( const CRect& target_rect, MemLayout layout )
         result->bits = NULL;
         break;
     }
+    if (!result->bits) { delete result; return NULL; }
     ClearBitmap(result);
     return result;
 }
@@ -231,6 +240,8 @@ void XyBitmap::BltPack( SubPicDesc& spd, POINT pos, SIZE size, LPCVOID pixels, i
     if(y < r.top) {y_src = r.top-y; h -= r.top-y; y = r.top;}
     if(x+w > r.right) w = r.right-x;
     if(y+h > r.bottom) h = r.bottom-y;
+
+    if (w <= 0 || h <= 0 || !pixels || !spd.bits) return;
 
     const BYTE* src = reinterpret_cast<const BYTE*>(pixels) + y_src*pitch + x_src*4;
 
@@ -465,14 +476,15 @@ HRESULT XySubRenderFrameCreater::GetColorSpace( XyColorSpace *color_space )
 
 XySubRenderFrame* XySubRenderFrameCreater::NewXySubRenderFrame( UINT bitmap_count )
 {
-    XySubRenderFrame *result = DEBUG_NEW XySubRenderFrame();
+    std::unique_ptr<XySubRenderFrame> result(new XySubRenderFrame());
     ASSERT(result);
     result->m_output_rect = m_output_rect;
     result->m_clip_rect = m_clip_rect;
     result->m_xy_color_space = m_xy_color_space;
     result->m_bitmap_ids.SetCount(bitmap_count);
     result->m_bitmaps.SetCount(bitmap_count);
-    return result;
+    result->m_left = result->m_top = 0;
+    return result.release();
 }
 
 XyBitmap* XySubRenderFrameCreater::CreateBitmap( const RECT& target_rect )

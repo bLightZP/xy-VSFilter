@@ -3,6 +3,7 @@
 #include <atlsync.h>
 #include "DirectVobSub.h"
 #include "SubRenderIntf.h"
+#include "../../../subpic/ConsumerInvalidation.h"
 #include "SubRenderOptionsImpl.h"
 
 class CDirectVobSubFilter;
@@ -150,6 +151,7 @@ private:
     SystrayIconData m_tbid;
     HANDLE m_hSystrayThread;
 
+    ConsumerInvalidation m_consumerInvalidation;
     CComPtr<ISubRenderConsumer> m_consumer;
     ULONGLONG m_context_id;
 

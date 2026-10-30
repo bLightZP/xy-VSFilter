@@ -23,6 +23,8 @@ struct XyAllocationStats
     std::size_t peakUsed;
 };
 XyAllocationStats* xy_set_allocation_stats(XyAllocationStats* stats);
+// Thread-local fault injection for the regression harness; -1 disables it.
+long xy_set_allocation_failure_countdown(long count);
 
 #endif // end of __XY_MALLOC_H_22FA5F7D_A5C3_4D8D_B4E6_5FB954770019__
 

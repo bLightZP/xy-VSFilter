@@ -13,6 +13,7 @@
 #pragma comment(lib, "psapi.lib")
 #include <set>
 #include <vector>
+#include <memory>
 #include <stdexcept>
 #include <cstdio>
 #include <locale.h>
@@ -1944,6 +1945,8 @@ static int LibassContract()
     return 0;
 }
 
+#include "layout_contract.h"
+
 static int FilterContract(const wchar_t* path, bool xy)
 {
     Require(SUCCEEDED(CoInitializeEx(NULL,COINIT_APARTMENTTHREADED)), "Cannot initialize COM");
@@ -2156,6 +2159,8 @@ int wmain(int argc, wchar_t** argv)
     if (!AfxWinInit(g_hInst, NULL, GetCommandLineW(), 0)) return 2;
     try {
         if (argc < 2 || wcscmp(argv[1], L"--benchmark")) ConfigureBenchmark(-1);
+        if (argc==4 && !wcscmp(argv[1],L"--layout-filter-contract")) return LayoutFilterContract(argv[3],!wcscmp(argv[2],L"xy"));
+        if (argc==2 && !wcscmp(argv[1],L"--layout-contract")) return LayoutContract();
         if (argc==4 && !wcscmp(argv[1],L"--filter-contract")) return FilterContract(argv[3],!wcscmp(argv[2],L"xy"));
         if (argc == 2 && !wcscmp(argv[1], L"--libass-contract")) {
             return LibassContract();

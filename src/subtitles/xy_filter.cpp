@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "RenderLimits.h"
 #include "../dsutil/vd.h"
 
 typedef const UINT8 CUINT8, *PCUINT8;
@@ -871,28 +872,27 @@ void xy_float_2_byte_transpose_sse(UINT8 *dst, int dst_width, int dst_stride,
 /****
  * To Do: decent CPU capability check
  **/
-void xy_gaussian_blur(PUINT8 dst, int dst_stride,
+bool xy_gaussian_blur(PUINT8 dst, int dst_stride,
     PCUINT8 src, int width, int height, int stride, 
     const float *gt_x, int r_x, int gt_ex_width_x, 
     const float *gt_y, int r_y, int gt_ex_width_y)
 {
+    if (!dst || !src || !gt_x || !gt_y || width <= 0 || height <= 0 ||
+        width > RenderLimits::MaxDimension || height > RenderLimits::MaxDimension ||
+        r_x < 0 || r_y < 0 || r_x > 2047 || r_y > 2047 || width > stride || width+2*r_x > dst_stride) return false;
     ASSERT(width<=stride && width+2*r_x<=dst_stride);
     int ex_mask_width_x = ((r_x*2+1)+3)&~3;
     ASSERT(ex_mask_width_x<=gt_ex_width_x);
     if (ex_mask_width_x>gt_ex_width_x)
     {
-        int o=0;
-        o=o/o;
-        exit(-1);
+        return false;
     }
 
     int ex_mask_width_y = ((r_y*2+1)+3)&~3;
     ASSERT(ex_mask_width_y<=gt_ex_width_y);
     if (ex_mask_width_y>gt_ex_width_y)
     {
-        int o=0;
-        o=o/o;
-        exit(-1);
+        return false;
     }
 
 
@@ -901,7 +901,14 @@ void xy_gaussian_blur(PUINT8 dst, int dst_stride,
     int fheight = (height+3)&~3;
     int fstride_ver = (fheight+ex_mask_width_y)*sizeof(float);
 
-    PUINT8 buff_base = reinterpret_cast<PUINT8>(xy_malloc(height*fstride + (fwidth + ex_mask_width_x)*fstride_ver));
+    if (std::size_t(height) > RenderLimits::MaxBufferBytes / std::size_t(fstride) ||
+        std::size_t(fwidth + ex_mask_width_x) > RenderLimits::MaxBufferBytes / std::size_t(fstride_ver)) return false;
+    const std::size_t horizontalBytes = std::size_t(height) * fstride;
+    const std::size_t verticalBytes = std::size_t(fwidth + ex_mask_width_x) * fstride_ver;
+    if (horizontalBytes > RenderLimits::MaxBufferBytes || verticalBytes > RenderLimits::MaxBufferBytes ||
+        horizontalBytes > RenderLimits::MaxBufferBytes - verticalBytes) return false;
+    PUINT8 buff_base = reinterpret_cast<PUINT8>(xy_malloc(horizontalBytes + verticalBytes));
+    if (!buff_base) return false;
     
     float *hor_buff_base = reinterpret_cast<float*>(buff_base);
     float *hor_buff = hor_buff_base + ex_mask_width_x;    
@@ -933,6 +940,7 @@ void xy_gaussian_blur(PUINT8 dst, int dst_stride,
     // TODOX64 : fixme!
     _mm_empty();
 #endif
+    return true;
 }
 
 

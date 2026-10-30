@@ -196,6 +196,7 @@ HRESULT LibassRenderer::Render(IXySubRenderFrame** output, const RECT& video, co
     owned = result;
     if (!bounds.IsRectEmpty()) {
         XySubRenderFrame::SharedBitmap bitmap(creator->CreateBitmap(bounds));
+        if (!bitmap) return E_OUTOFMEMORY;
         XyColorSpace space;
         creator->GetColorSpace(&space);
         for (ASS_Image* image = images; image; image = image->next) {

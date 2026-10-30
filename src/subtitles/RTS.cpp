@@ -20,6 +20,8 @@
  */
 
 #include "stdafx.h"
+#include "RenderLimits.h"
+#include <memory>
 #include <new>
 #include <cstdint>
 #include <cstddef>
@@ -231,17 +233,18 @@ void CWord::PaintFromNoneBluredOverlay(SharedPtrOverlay raterize_result, const O
 {
     if( Rasterizer::IsItReallyBlur(m_style.get().fBlur, m_style.get().fGaussianBlur) )
     {
-        overlay->reset(DEBUG_NEW Overlay());
+        SharedPtrOverlay blurred(DEBUG_NEW Overlay());
         if (!Rasterizer::Blur(
             *raterize_result, 
             m_style.get().fBlur, 
             m_style.get().fGaussianBlur, 
             m_target_scale_x, 
             m_target_scale_y, 
-            *overlay))
+            blurred))
         {
-            *overlay = raterize_result;
+            throw std::bad_alloc(); // Never cache a partially rendered or unblurred replacement.
         }
+        *overlay = blurred;
     }
     else
     {
@@ -2539,6 +2542,7 @@ bool CRenderedTextSubtitle::Init( const CRectCoor2& video_rect, const CRectCoor2
     const SIZE& layout_size )
 {
     XY_LOG_INFO(_T(""));
+    if (!RenderLimits::Geometry(video_rect, subtitle_target_rect, layout_size)) return false;
     Deinit();
 
     m_video_rect = CRect(video_rect.left*MAX_SUB_PIXEL, 
@@ -4750,6 +4754,7 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame,
     const RECT& video_rect, const RECT& subtitle_target_rect,
     const SIZE& original_video_size,
     REFERENCE_TIME rt, double fps )
+try
 {
     TRACE_RENDERER_REQUEST("Begin RenderEx rt"<<rt);
     if (!subRenderFrame)
@@ -4777,6 +4782,8 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame,
         layout_size.cx = m_layout_size.cx;
         layout_size.cy = m_layout_size.cy;
     }
+
+    if (!RenderLimits::Geometry(cvideo_rect, subtitle_target_rect, layout_size)) return E_INVALIDARG;
 
     XyColorSpace color_space = XY_CS_ARGB;
     switch(spd_type)
@@ -4836,6 +4843,12 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame,
     RenderPhaseTimer renderTimer(diagnostics, RenderDiagnostics::RENDER);
     if (diagnostics) ++diagnostics->frames;
     CSubtitle2List sub2List;
+    struct RecycleOnFailure {
+        CRenderedTextSubtitle* renderer;
+        CSubtitle2List* subtitles;
+        bool pending;
+        ~RecycleOnFailure() { if (pending) renderer->ClearUnCachedSubtitle(*subtitles); }
+    } recycle = {this, &sub2List, true};
     HRESULT hr;
     {
         RenderPhaseTimer timer(diagnostics, RenderDiagnostics::PARSE);
@@ -4874,20 +4887,24 @@ STDMETHODIMP CRenderedTextSubtitle::RenderEx( IXySubRenderFrame**subRenderFrame,
         RenderPhaseTimer timer(diagnostics, RenderDiagnostics::BUILD_DRAW);
         DoRender(m_video_rect.Size(), m_video_rect.TopLeft(), margin_rect, sub2List, &compDrawItemListList);
         ClearUnCachedSubtitle(sub2List);
+        recycle.pending = false;
     }
 
     TRACE_RENDERER_REQUEST("Begin Draw");
     XySubRenderFrame *sub_render_frame;
     CompositeDrawItem::Draw(&sub_render_frame, compDrawItemListList, diagnostics);
-    sub_render_frame->MoveTo(video_rect.left, video_rect.top);
-    (*subRenderFrame = sub_render_frame)->AddRef();
+    std::unique_ptr<XySubRenderFrame> frame(sub_render_frame);
+    frame->MoveTo(video_rect.left, video_rect.top);
 
     PrepareUpcoming(rt,fps,preparationStart.QuadPart);
     ShrinkCache();
 
+    (*subRenderFrame = frame.release())->AddRef();
     TRACE_RENDERER_REQUEST("Finished");
     return hr;
 }
+catch (const std::bad_alloc&) { return E_OUTOFMEMORY; }
+catch (const CAtlException& error) { return error.m_hr; }
 
 void CRenderedTextSubtitle::DoRender( const SIZECoor2& output_size, 
     const POINTCoor2& video_org,

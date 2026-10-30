@@ -20,6 +20,7 @@
  */
 
 #include "stdafx.h"
+#include "../../../subtitles/RenderLimits.h"
 #include "DirectVobSub.h"
 #include "VSFilter.h"
 #include <numeric>
@@ -847,7 +848,7 @@ HRESULT DirectVobSubImpl::DoGetField( unsigned field, void *value )
                 *size_value = m_xy_size_opt[SIZE_ASS_PLAY_RESOLUTION];
                 break;
             }
-            if (size_value->cx * size_value->cy == 0)
+            if (!RenderLimits::Size(*size_value))
             {
                 *size_value = m_xy_size_opt[SIZE_ORIGINAL_VIDEO];
             }
@@ -866,6 +867,9 @@ HRESULT DirectVobSubImpl::DoSetField( unsigned field, void const *value )
     {
     case BOOL_SUBTITLE_RELOADER_LOCK:
         return LockSubtitleReloader(*(bool*)value);
+    case SIZE_USER_SPECIFIED_LAYOUT_SIZE:
+        if (!RenderLimits::UserLayout(*(const SIZE*)value)) return E_INVALIDARG;
+        break;
     case INT_LAYOUT_SIZE_OPT:
         if (*(int*)value<0 || *(int*)value>=LAYOUT_SIZE_OPT_COUNT)
         {
@@ -1014,6 +1018,21 @@ STDMETHODIMP DirectVobSubImpl::XySetBin( unsigned field, LPVOID value, int size 
     CAutoLock cAutoLock(m_propsLock);
     switch(field)
     {
+    case BIN2_RENDER_LAYOUT:
+        {
+            if (!value || size != sizeof(RenderLayoutSettings)) return E_INVALIDARG;
+            const RenderLayoutSettings& settings = *static_cast<const RenderLayoutSettings*>(value);
+            if (settings.mode < 0 || settings.mode >= LAYOUT_SIZE_OPT_COUNT ||
+                !RenderLimits::UserLayout(settings.size)) return E_INVALIDARG;
+            const bool original = settings.renderToOriginal != FALSE;
+            if (m_xy_int_opt[INT_LAYOUT_SIZE_OPT] == settings.mode &&
+                m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE] == settings.size &&
+                m_xy_bool_opt[BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE] == original) return S_FALSE;
+            m_xy_int_opt[INT_LAYOUT_SIZE_OPT] = settings.mode;
+            m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE] = settings.size;
+            m_xy_bool_opt[BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE] = original;
+            return OnOptionChanged(BIN2_RENDER_LAYOUT);
+        }
     case BIN_OUTPUT_COLOR_FORMAT:
         if( size!=GetOutputColorSpaceNumber() )
             return E_INVALIDARG;
@@ -1189,7 +1208,7 @@ CDirectVobSub::CDirectVobSub( const Option *options, CCritSec * pLock )
 
     m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cx = theApp.GetProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_USER_SPECIFIED_LAYOUT_SIZE_X), 0);
     m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cy = theApp.GetProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_USER_SPECIFIED_LAYOUT_SIZE_Y), 0);
-    if (m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cx<=0 || m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cy<=0)
+    if (!RenderLimits::UserLayout(m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE]))
     {
         m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cx = 1280;
         m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cy = 720;
@@ -1611,7 +1630,7 @@ CDVS4XySubFilter::CDVS4XySubFilter( const Option *options, CCritSec * pLock )
 
     m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cx = theApp.GetProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_USER_SPECIFIED_LAYOUT_SIZE_X), 0);
     m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cy = theApp.GetProfileInt(ResStr(IDS_R_GENERAL), ResStr(IDS_RG_USER_SPECIFIED_LAYOUT_SIZE_Y), 0);
-    if (m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cx<=0 || m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cy<=0)
+    if (!RenderLimits::UserLayout(m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE]))
     {
         m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cx = 1280;
         m_xy_size_opt[SIZE_USER_SPECIFIED_LAYOUT_SIZE].cy = 720;

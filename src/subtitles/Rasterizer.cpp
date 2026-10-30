@@ -20,6 +20,8 @@
  */
 
 #include "stdafx.h"
+#include "RenderLimits.h"
+#include <new>
 #include <string.h>
 #include <cmath>
 #include <vector>
@@ -72,7 +74,7 @@ public:
         g_f = NULL;
 
         this->sigma = 0;
-        init(sigma);
+        if (init(sigma) != 0) throw std::bad_alloc();
     }
     GaussianCoefficients(const GaussianCoefficients& priv)
         :g_r(priv.g_r),g_w(priv.g_w),sigma(priv.sigma),g_f(NULL)
@@ -80,7 +82,7 @@ public:
     {
         if (this->g_w_ex > 0 && this != &priv) {
             this->g_f = reinterpret_cast<float*>(xy_malloc(this->g_w_ex * sizeof(float)));
-            ASSERT(this->g_f);
+            if (!this->g_f) throw std::bad_alloc();
             memcpy(g_f, priv.g_f, this->g_w_ex * sizeof(g_f[0]));
         }
     }
@@ -555,7 +557,7 @@ static void ass_gauss_blur(unsigned char *buffer, unsigned *tmp2,
     }
 }
 
-void xy_gaussian_blur(PUINT8 dst, int dst_stride,
+bool xy_gaussian_blur(PUINT8 dst, int dst_stride,
     PCUINT8 src, int width, int height, int stride, 
     const float *gt_x, int r_x, int gt_ex_width_x, 
     const float *gt_y, int r_y, int gt_ex_width_y);
@@ -1063,20 +1065,20 @@ bool Rasterizer::Blur(const Overlay& input_overlay, float be_strength,
             SharedPtrOverlay tmp(DEBUG_NEW Overlay());
 
             bool rv = GaussianBlur(input_overlay, gaussian_blur_strength, target_scale_x, target_scale_y, tmp);
-            ASSERT(rv);
+            if (!rv) return false;
             rv = BeBlur(*tmp, be_strength, target_scale_x, target_scale_y, output_overlay);
-            ASSERT(rv);
+            if (!rv) return false;
         }
         else
         {
             bool rv = GaussianBlur(input_overlay, gaussian_blur_strength, target_scale_x, target_scale_y, output_overlay);
-            ASSERT(rv);
+            if (!rv) return false;
         }
     }
     else if (be_strength)
     {
         bool rv = BeBlur(input_overlay, be_strength, target_scale_x, target_scale_y, output_overlay);
-        ASSERT(rv);
+        if (!rv) return false;
     }
     return true;
 }
@@ -1096,6 +1098,9 @@ bool Rasterizer::GaussianBlur( const Overlay& input_overlay, double gaussian_blu
     double gaussian_blur_strength_x = gaussian_blur_strength*target_scale_x;
     double gaussian_blur_strength_y = gaussian_blur_strength*target_scale_y;
 
+    if (!std::isfinite(gaussian_blur_strength_x) || !std::isfinite(gaussian_blur_strength_y) ||
+        gaussian_blur_strength_x <= 0 || gaussian_blur_strength_y <= 0 ||
+        gaussian_blur_strength_x > 1365 || gaussian_blur_strength_y > 1365) return false;
     int gaussian_blur_radius_x = (static_cast<int>( ceil(gaussian_blur_strength_x*3) ) | 1)/2;//fix me: rounding err?    
     int gaussian_blur_radius_y = (static_cast<int>( ceil(gaussian_blur_strength_y*3) ) | 1)/2;//fix me: rounding err?
     if( gaussian_blur_radius_x < 1 && gaussian_blur_strength>GAUSSIAN_BLUR_THREHOLD )
@@ -1111,6 +1116,13 @@ bool Rasterizer::GaussianBlur( const Overlay& input_overlay, double gaussian_blu
     const GaussianCoefficients& filter_x = fw_filter_x.get();
     const GaussianCoefficients& filter_y = fw_filter_y.get();
 
+    int checkedPitch;
+    std::size_t checkedBytes;
+    if (input_overlay.mOverlayWidth <= 0 || input_overlay.mOverlayWidth > RenderLimits::MaxDimension ||
+        input_overlay.mOverlayHeight <= 0 || input_overlay.mOverlayHeight > RenderLimits::MaxDimension ||
+        !RenderLimits::Buffer(input_overlay.mOverlayWidth + filter_x.g_r * 2,
+            input_overlay.mOverlayHeight + filter_y.g_r * 2, 1, checkedPitch, checkedBytes) ||
+        double(checkedBytes) * (filter_x.g_w + filter_y.g_w) > 4294967296.0) return false;
     int bluradjust_x = filter_x.g_r * 8;
     int bluradjust_y = filter_y.g_r * 8;
     output_overlay->mOffsetX       = input_overlay.mOffsetX - bluradjust_x;
@@ -1122,24 +1134,26 @@ bool Rasterizer::GaussianBlur( const Overlay& input_overlay, double gaussian_blu
 
     output_overlay->mOverlayPitch = (output_overlay->mOverlayWidth+15)&~15;
 
-    BYTE* blur_plan = reinterpret_cast<BYTE*>(xy_malloc(output_overlay->mOverlayPitch * output_overlay->mOverlayHeight));
+    BYTE* blur_plan = reinterpret_cast<BYTE*>(xy_malloc(checkedBytes));
+    if (!blur_plan) return false;
+    SharedPtrByte blur_owner(blur_plan, xy_free);
     //memset(blur_plan, 0, output_overlay->mOverlayPitch * output_overlay->mOverlayHeight);
 
     const BYTE* plan_input = input_overlay.mfWideOutlineEmpty ? input_overlay.mBody.get() : input_overlay.mBorder.get();    
     ASSERT(output_overlay->mOverlayWidth>=filter_x.g_w && output_overlay->mOverlayHeight>=filter_y.g_w);
-    xy_gaussian_blur(blur_plan, output_overlay->mOverlayPitch, 
+    if (!xy_gaussian_blur(blur_plan, output_overlay->mOverlayPitch,
         plan_input, input_overlay.mOverlayWidth, input_overlay.mOverlayHeight, input_overlay.mOverlayPitch, 
         filter_x.g_f, filter_x.g_r, filter_x.g_w_ex, 
-        filter_y.g_f, filter_y.g_r, filter_y.g_w_ex);
+        filter_y.g_f, filter_y.g_r, filter_y.g_w_ex)) return false;
     if (input_overlay.mfWideOutlineEmpty)
     {
-        output_overlay->mBody.reset(blur_plan, xy_free);
+        output_overlay->mBody = blur_owner;
     }
     else
     {
-        output_overlay->mBorder.reset(blur_plan, xy_free);
+        output_overlay->mBorder = blur_owner;
 
-        BYTE* body = reinterpret_cast<BYTE*>(xy_malloc(output_overlay->mOverlayPitch * output_overlay->mOverlayHeight));
+        BYTE* body = reinterpret_cast<BYTE*>(xy_malloc(checkedBytes));
         if( body==NULL )
         {
             return false;
@@ -1169,7 +1183,18 @@ bool Rasterizer::BeBlur( const Overlay& input_overlay, float be_strength,
     output_overlay->CleanUp();
     output_overlay->mfWideOutlineEmpty = input_overlay.mfWideOutlineEmpty;
 
-    ASSERT(be_strength>0 && target_scale_x>0 && target_scale_y>0);
+    const double scaledPasses = double(be_strength) * 0.5 * (target_scale_x + target_scale_y);
+    const double padX = target_scale_x * std::sqrt(be_strength * 0.25f) + 0.5;
+    const double padY = target_scale_y * std::sqrt(be_strength * 0.25f) + 0.5;
+    if (!std::isfinite(scaledPasses) || scaledPasses <= 0 || scaledPasses > 4096 ||
+        !std::isfinite(padX) || !std::isfinite(padY) || padX < 0 || padY < 0 || padX > 4096 || padY > 4096 ||
+        input_overlay.mOverlayWidth <= 0 || input_overlay.mOverlayWidth > RenderLimits::MaxDimension ||
+        input_overlay.mOverlayHeight <= 0 || input_overlay.mOverlayHeight > RenderLimits::MaxDimension) return false;
+    int checkedPitch;
+    std::size_t checkedBytes;
+    if (!RenderLimits::Buffer(input_overlay.mOverlayWidth + int(padX) * 2,
+        input_overlay.mOverlayHeight + int(padY) * 2, 1, checkedPitch, checkedBytes) ||
+        double(checkedBytes) * (scaledPasses + 1) > 4294967296.0) return false;
     int bluradjust_x = static_cast<int>( target_scale_x*std::sqrt(be_strength*0.25f)+0.5 );//fix me: rounding err?
     bluradjust_x *= 8;
     int bluradjust_y = static_cast<int>(target_scale_y*std::sqrt(be_strength*0.25f)+0.5);//fix me: rounding err?
@@ -1184,7 +1209,7 @@ bool Rasterizer::BeBlur( const Overlay& input_overlay, float be_strength,
 
     output_overlay->mOverlayPitch = (output_overlay->mOverlayWidth+15)&~15;
 
-    BYTE* body = reinterpret_cast<BYTE*>(xy_malloc(output_overlay->mOverlayPitch * output_overlay->mOverlayHeight));
+    BYTE* body = reinterpret_cast<BYTE*>(xy_malloc(checkedBytes));
     if( body==NULL )
     {
         return false;
@@ -1194,7 +1219,7 @@ bool Rasterizer::BeBlur( const Overlay& input_overlay, float be_strength,
     BYTE* border = NULL;
     if (!output_overlay->mfWideOutlineEmpty)
     {
-        border = reinterpret_cast<BYTE*>(xy_malloc(output_overlay->mOverlayPitch * output_overlay->mOverlayHeight));
+        border = reinterpret_cast<BYTE*>(xy_malloc(checkedBytes));
         if (border==NULL)
         {
             return false;
@@ -1209,6 +1234,7 @@ bool Rasterizer::BeBlur( const Overlay& input_overlay, float be_strength,
         byte* plan_selected = i==0 ? body : border;
         const byte* plan_input = i==0 ? input_overlay.mBody.get() : input_overlay.mBorder.get();
 
+        if (!plan_selected || !plan_input) continue;
         plan_selected += (bluradjust_x>>3) + (bluradjust_y>>3)*output_overlay->mOverlayPitch;
         if ( plan_selected!=NULL && plan_input!=NULL )
         {

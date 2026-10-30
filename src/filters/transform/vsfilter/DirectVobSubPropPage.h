@@ -38,6 +38,8 @@ protected:
 
 	virtual bool OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {return(false);}
 	virtual void UpdateObjectData(bool fSave) {}
+    virtual HRESULT ApplyStagedSettings() { return S_OK; }
+    HRESULT ApplyLayoutSettings(bool renderToOriginal);
 	virtual void UpdateControlData(bool fSave) {}
 
 protected:
@@ -172,6 +174,7 @@ class CDVSMorePPage : public CDVSBasePPage
     CSpinButtonCtrl m_layout_size_x, m_layout_size_y;
     CComboBox m_combo_subpixel_pos, m_combo_layout_size_opt;
 protected:
+    HRESULT ApplyStagedSettings();
     virtual bool OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     virtual void UpdateControlData(bool fSave);
     virtual void UpdateObjectData(bool fSave);
@@ -315,6 +318,7 @@ class CXySubFilterMorePPage : public CDVSBasePPage
     CComboBox m_combo_yuv_matrix, m_combo_yuv_range, m_combo_rgb_level;
     CEdit m_edit_cache_size;
 protected:
+    HRESULT ApplyStagedSettings();
     virtual bool OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     virtual void UpdateControlData(bool fSave);
     virtual void UpdateObjectData(bool fSave);

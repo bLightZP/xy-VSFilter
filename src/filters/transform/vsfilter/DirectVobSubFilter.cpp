@@ -2281,6 +2281,9 @@ HRESULT CDirectVobSubFilter::OnOptionChanged( unsigned field )
     case INT_ASPECT_RATIO_SETTINGS:
         UpdateSubtitle(false);
         break;
+    case BIN2_RENDER_LAYOUT:
+    case INT_LAYOUT_SIZE_OPT:
+    case SIZE_USER_SPECIFIED_LAYOUT_SIZE:
     case BOOL_VOBSUBSETTINGS_BUFFER:
     case BOOL_VOBSUBSETTINGS_ONLY_SHOW_FORCED_SUBS:
     case BOOL_VOBSUBSETTINGS_POLYGONIZE:

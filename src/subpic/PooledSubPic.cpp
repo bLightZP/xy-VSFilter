@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "PooledSubPic.h"
 #include "../subtitles/xy_malloc.h"
+#include "../subtitles/RenderLimits.h"
 
 #if ENABLE_XY_LOG_ALLOCATOR
 #  define TRACE_ALLOCATOR(msg) XY_LOG_TRACE(msg)
@@ -222,6 +223,10 @@ STDMETHODIMP_(bool) CPooledSubPicAllocator::IsSpdColorTypeSupported( int type )
 CPooledSubPic* CPooledSubPicAllocator::DoAlloc()
 {
     SubPicDesc spd;
+    if (!RenderLimits::Size(_maxsize)) return NULL;
+    const std::size_t rowBytes = std::size_t(_maxsize.cx) * 4;
+    if (std::size_t(_maxsize.cy) > RenderLimits::MaxBufferBytes / rowBytes) return NULL;
+    const std::size_t bytes = rowBytes * _maxsize.cy;
     spd.type = _type;
     spd.w = _maxsize.cx;
     spd.h = _maxsize.cy;
@@ -232,11 +237,11 @@ CPooledSubPic* CPooledSubPicAllocator::DoAlloc()
     //if(!(spd.bits = new BYTE[spd.pitch*spd.h]))
     if(_type == MSP_AYUV_PLANAR)
     {
-        spd.bits = reinterpret_cast<BYTE*>(xy_malloc(spd.pitch*spd.h*4));
+        spd.bits = reinterpret_cast<BYTE*>(xy_malloc(bytes));
     }
     else
     {
-        spd.bits = reinterpret_cast<BYTE*>(xy_malloc(spd.pitch*spd.h));
+        spd.bits = reinterpret_cast<BYTE*>(xy_malloc(bytes));
     }
     if(!spd.bits)
     {

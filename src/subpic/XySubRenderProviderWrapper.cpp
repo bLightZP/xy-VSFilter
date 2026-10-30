@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "XySubRenderProviderWrapper.h"
+#include "../subtitles/RenderLimits.h"
+#include <memory>
+#include <new>
 
 #if ENABLE_XY_LOG_RENDERER_REQUEST2
 #  define TRACE_RENDERER_REQUEST(msg) XY_LOG_TRACE(msg)
@@ -293,85 +296,47 @@ STDMETHODIMP XySubRenderProviderWrapper2::Connect( IXyOptions *consumer )
     return hr;
 }
 
-STDMETHODIMP XySubRenderProviderWrapper2::RequestFrame( IXySubRenderFrame**subRenderFrame, REFERENCE_TIME now )
+STDMETHODIMP XySubRenderProviderWrapper2::RequestFrame(IXySubRenderFrame** subRenderFrame, REFERENCE_TIME now)
 {
-    ASSERT(m_consumer);
-    double fps;
     CheckPointer(subRenderFrame, E_POINTER);
     *subRenderFrame = NULL;
-
-    HRESULT hr = m_consumer->XyGetDouble(DirectVobSubXyOptions::DOUBLE_FPS, &fps);
-    if (FAILED(hr))
-    {
-        XY_LOG_ERROR("Failed to get fps. "<<XY_LOG_VAR_2_STR(hr));
-        return hr;
-    }
-    m_fps = fps;//fix me: invalidate
-
+    if (!m_consumer) return E_UNEXPECTED;
+    double fps;
     CRect output_rect, subtitle_target_rect;
-    CSize original_video_size;
-    bool use_dst_alpha = false;
-    bool combine_bitmap = false;
-    bool render_to_original_video_size = false;
-
-    ASSERT(m_consumer);
-    hr = m_consumer->XyGetRect(DirectVobSubXyOptions::RECT_VIDEO_OUTPUT, &output_rect);
-    ASSERT(SUCCEEDED(hr));
-    hr = m_consumer->XyGetRect(DirectVobSubXyOptions::RECT_SUBTITLE_TARGET, &subtitle_target_rect);
-    ASSERT(SUCCEEDED(hr));
-    ASSERT(output_rect.Width()<=subtitle_target_rect.Width() && output_rect.Height()<=subtitle_target_rect.Height());
-    hr = m_consumer->XyGetSize(DirectVobSubXyOptions::SIZE_LAYOUT_WITH, &original_video_size);
-    ASSERT(SUCCEEDED(hr));
-    hr = m_consumer->XyGetInt(DirectVobSubXyOptions::INT_MAX_BITMAP_COUNT2, &m_max_bitmap_count2);
-    ASSERT(SUCCEEDED(hr));
-    hr = m_consumer->XyGetBool(DirectVobSubXyOptions::BOOL_SUB_FRAME_USE_DST_ALPHA, &use_dst_alpha);
-    hr = m_consumer->XyGetBool(DirectVobSubXyOptions::BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE, &render_to_original_video_size);
-
-    if (render_to_original_video_size)
-    {
+    CSize layout_size, original_video_size;
+    bool use_dst_alpha = false, render_to_original_video_size = false;
+    int max_bitmap_count;
+    HRESULT hr;
+#define READ_OPTION(call) do { hr = (call); if (FAILED(hr)) return hr; } while (0)
+    READ_OPTION(m_consumer->XyGetDouble(DirectVobSubXyOptions::DOUBLE_FPS, &fps));
+    READ_OPTION(m_consumer->XyGetRect(DirectVobSubXyOptions::RECT_VIDEO_OUTPUT, &output_rect));
+    READ_OPTION(m_consumer->XyGetRect(DirectVobSubXyOptions::RECT_SUBTITLE_TARGET, &subtitle_target_rect));
+    READ_OPTION(m_consumer->XyGetSize(DirectVobSubXyOptions::SIZE_LAYOUT_WITH, &layout_size));
+    READ_OPTION(m_consumer->XyGetInt(DirectVobSubXyOptions::INT_MAX_BITMAP_COUNT2, &max_bitmap_count));
+    READ_OPTION(m_consumer->XyGetBool(DirectVobSubXyOptions::BOOL_SUB_FRAME_USE_DST_ALPHA, &use_dst_alpha));
+    READ_OPTION(m_consumer->XyGetBool(DirectVobSubXyOptions::BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE, &render_to_original_video_size));
+    if (render_to_original_video_size) {
+        READ_OPTION(m_consumer->XyGetSize(DirectVobSubXyOptions::SIZE_ORIGINAL_VIDEO, &original_video_size));
+        if (!RenderLimits::Size(original_video_size)) return E_INVALIDARG;
         output_rect = CRect(CPoint(), original_video_size);
         subtitle_target_rect = output_rect;
     }
+#undef READ_OPTION
+    if (!std::isfinite(fps) || fps <= 0 || max_bitmap_count < 1 ||
+        !RenderLimits::Geometry(output_rect, subtitle_target_rect, layout_size)) return E_INVALIDARG;
 
+    const bool changed = m_layout_size != layout_size || m_use_dst_alpha != use_dst_alpha ||
+        m_output_rect != output_rect || m_subtitle_target_rect != subtitle_target_rect ||
+        m_render_to_original_video_size != render_to_original_video_size ||
+        m_fps != fps || m_max_bitmap_count2 != max_bitmap_count;
+    if (changed) Invalidate();
+    m_layout_size = layout_size;
+    m_use_dst_alpha = use_dst_alpha;
+    m_output_rect = output_rect;
+    m_subtitle_target_rect = subtitle_target_rect;
     m_render_to_original_video_size = render_to_original_video_size;
-
-    bool should_invalidate = false;
-    bool should_invalidate_allocator = false;
-    if (m_original_video_size!=original_video_size
-        || m_use_dst_alpha!=use_dst_alpha
-        || m_output_rect!=output_rect
-        || m_subtitle_target_rect!=subtitle_target_rect)
-    {
-        should_invalidate = true;
-        should_invalidate_allocator = (m_subtitle_target_rect!=subtitle_target_rect)==TRUE;
-
-        m_original_video_size  = original_video_size;
-        m_use_dst_alpha        = use_dst_alpha;
-        m_output_rect          = output_rect;
-        m_subtitle_target_rect = subtitle_target_rect;
-    }
-
-    if (m_xy_sub_render_frame)
-    {
-        int count = 0;
-        hr = m_xy_sub_render_frame->GetBitmapCount(&count);
-        should_invalidate = (count>m_max_bitmap_count2);
-    }
-    if (should_invalidate)
-    {
-        XY_LOG_INFO("Output rects or max_bitmap_count or alpha type changed.");
-        Invalidate();
-    }
-    if (should_invalidate_allocator)
-    {
-        CSize max_size(m_subtitle_target_rect.right, m_subtitle_target_rect.bottom);
-
-        m_allocator = DEBUG_NEW CPooledSubPicAllocator(MSP_RGB32, max_size,2);
-        ASSERT(m_allocator);
-
-        m_allocator->SetCurSize(max_size);
-        m_allocator->SetCurVidRect(CRect(CPoint(0,0),max_size));
-    }
+    m_fps = fps;
+    m_max_bitmap_count2 = max_bitmap_count;
 
     POSITION pos = m_provider->GetStartPosition(now, fps);
     if (!pos)
@@ -416,125 +381,84 @@ STDMETHODIMP XySubRenderProviderWrapper2::Invalidate( REFERENCE_TIME rtInvalidat
     return S_OK;
 }
 
-HRESULT XySubRenderProviderWrapper2::Render( REFERENCE_TIME now, POSITION pos )
+HRESULT XySubRenderProviderWrapper2::Render(REFERENCE_TIME now, POSITION pos)
 {
-    if(m_start <= now && now < m_stop && m_xy_sub_render_frame)
-    {
-        return S_FALSE;
-    }
-
-    m_xy_sub_render_frame = NULL;
-    HRESULT hr = E_FAIL;
-
-    if(FAILED(m_provider->Lock())) {
-        return hr;
-    }
-
-    int spd_type = m_use_dst_alpha ? MSP_RGBA : MSP_RGBA_F;
-    hr = m_provider->RenderEx(&m_xy_sub_render_frame, spd_type, 
-        m_output_rect, m_subtitle_target_rect,
-        m_original_video_size, now, m_fps);
-    ASSERT(SUCCEEDED(hr));
-
-    bool should_combine = false;
-    if (m_xy_sub_render_frame)
-    {
-        int count = 0;
-        hr = m_xy_sub_render_frame->GetBitmapCount(&count);
-        ASSERT(SUCCEEDED(hr));
-        should_combine = count > m_max_bitmap_count2;
-    }
-    if (should_combine)
-    {
-        hr = CombineBitmap(now);
-        ASSERT(SUCCEEDED(hr));
-        TRACE_RENDERER_REQUEST("Finished combine bitmap");
-    }
-
-    if (!m_provider->IsAnimated(pos))
-    {
-        m_start = m_provider->GetStart(pos, m_fps);
-        m_stop = m_provider->GetStop(pos, m_fps);
-    }
-    else
-    {
-        m_start = now;
-        m_stop = now+1;
-    }
-    XY_LOG_TRACE(XY_LOG_VAR_2_STR(m_start)<<XY_LOG_VAR_2_STR(m_stop));
-
-    m_provider->Unlock();
+    if (m_start <= now && now < m_stop && m_xy_sub_render_frame) return S_FALSE;
+    m_xy_sub_render_frame.Release();
+    m_start = m_stop = 0;
+    HRESULT hr = m_provider->Lock();
+    if (FAILED(hr)) return hr;
+    struct UnlockProvider {
+        ISubPicProviderEx2* provider;
+        ~UnlockProvider() { provider->Unlock(); }
+    } unlock = {m_provider};
+    try {
+        const int spd_type = m_use_dst_alpha ? MSP_RGBA : MSP_RGBA_F;
+        hr = m_provider->RenderEx(&m_xy_sub_render_frame, spd_type,
+            m_output_rect, m_subtitle_target_rect, m_layout_size, now, m_fps);
+        if (SUCCEEDED(hr) && m_xy_sub_render_frame) {
+            int count = 0;
+            hr = m_xy_sub_render_frame->GetBitmapCount(&count);
+            if (SUCCEEDED(hr) && count > m_max_bitmap_count2) hr = CombineBitmap(now);
+        }
+        if (SUCCEEDED(hr)) {
+            if (!m_provider->IsAnimated(pos)) {
+                m_start = m_provider->GetStart(pos, m_fps);
+                m_stop = m_provider->GetStop(pos, m_fps);
+            } else {
+                m_start = now;
+                m_stop = now + 1;
+            }
+        }
+    } catch (const std::bad_alloc&) { hr = E_OUTOFMEMORY; }
+      catch (const CAtlException& error) { hr = error.m_hr; }
+    if (FAILED(hr)) m_xy_sub_render_frame.Release();
     return hr;
 }
 
 HRESULT XySubRenderProviderWrapper2::CombineBitmap(REFERENCE_TIME now)
 {
-    static int s_combined_bitmap_id = 0x10000000;//fixme: important! Uncombined bitmap id MUST < 0x10000000.
-
-    XY_LOG_TRACE(now);
-    HRESULT hr = NOERROR;
-    if (m_xy_sub_render_frame)
-    {
-        m_subpic = NULL;
-        hr = m_allocator->AllocDynamicEx(&m_subpic);
-        if(FAILED(hr) || !m_subpic) {
-            XY_LOG_FATAL("Failed to allocate subpic. "<<XY_LOG_VAR_2_STR(hr));
-            return hr;
-        }
-
-        int count = 0;
-        hr = m_xy_sub_render_frame->GetBitmapCount(&count);
-        ASSERT(SUCCEEDED(hr));
-        if (count==1)
-        {
-            return S_OK;
-        }
-        SubPicDesc spd;
-        hr = m_subpic->Lock(spd);
-        if (FAILED(hr))
-        {
-            XY_LOG_ERROR("Failed to lock spd. "<<XY_LOG_VAR_2_STR(hr));
-            return hr;
-        }
-        DWORD color = 0x00000000;
-        hr = m_subpic->ClearDirtyRect(color);
-        if(FAILED(hr))
-        {
-            XY_LOG_ERROR("Failed to clear dirty rect. "<<XY_LOG_VAR_2_STR(hr));
-            return hr;
-        }
-        CRect dirty_rect;
-        for (int i=0;i<count;i++)
-        {
-            POINT pos;
-            SIZE size;
-            LPCVOID pixels;
-            int pitch;
-            hr = m_xy_sub_render_frame->GetBitmap(i, NULL, &pos, &size, &pixels, &pitch );
-            if (FAILED(hr))
-            {
-                XY_LOG_ERROR("Failed to get bitmap. "<<XY_LOG_VAR_2_STR(hr));
-                return hr;
-            }
-            ASSERT(SUCCEEDED(hr));
-            dirty_rect |= CRect(pos, size);
+    static LONG combined_id = 0x10000000;
+    int count = 0;
+    HRESULT hr = m_xy_sub_render_frame->GetBitmapCount(&count);
+    if (FAILED(hr) || count <= 1) return hr;
+    CRect bounds;
+    for (int i = 0; i < count; ++i) {
+        POINT pos; SIZE size;
+        hr = m_xy_sub_render_frame->GetBitmap(i, NULL, &pos, &size, NULL, NULL);
+        if (FAILED(hr)) return hr;
+        if (!RenderLimits::Size(size) || pos.x < -RenderLimits::MaxDimension || pos.y < -RenderLimits::MaxDimension ||
+            pos.x > RenderLimits::MaxDimension || pos.y > RenderLimits::MaxDimension) return E_INVALIDARG;
+        CRect rect(pos, size);
+        rect &= m_subtitle_target_rect;
+        if (!rect.IsRectEmpty()) bounds |= rect;
+    }
+    std::unique_ptr<XySubRenderFrame> frame(new XySubRenderFrame());
+    frame->m_output_rect = m_output_rect;
+    frame->m_clip_rect = m_subtitle_target_rect;
+    frame->m_xy_color_space = m_use_dst_alpha ? XY_CS_ARGB : XY_CS_ARGB_F;
+    frame->m_left = frame->m_top = 0;
+    if (!bounds.IsRectEmpty()) {
+        XySubRenderFrame::SharedBitmap bitmap(XyBitmap::CreateBitmap(bounds, XyBitmap::PACK));
+        if (!bitmap) return E_OUTOFMEMORY;
+        // CreateBitmap clears to inverse-alpha transparent black.
+        if (!m_use_dst_alpha) XyBitmap::FlipAlphaValue(bitmap->bits, bitmap->w, bitmap->h, bitmap->pitch);
+        SubPicDesc spd = {};
+        spd.type = MSP_RGB32; spd.bpp = 32;
+        spd.w = bitmap->w; spd.h = bitmap->h; spd.pitch = bitmap->pitch; spd.bits = (BYTE*)bitmap->bits;
+        for (int i = 0; i < count; ++i) {
+            POINT pos; SIZE size; LPCVOID pixels; int pitch;
+            hr = m_xy_sub_render_frame->GetBitmap(i, NULL, &pos, &size, &pixels, &pitch);
+            if (FAILED(hr)) return hr;
+            if (!pixels || !RenderLimits::Size(size) || pitch < size.cx * 4) return E_INVALIDARG;
+            pos.x -= bounds.left; pos.y -= bounds.top;
             XyBitmap::BltPack(spd, pos, size, pixels, pitch);
         }
-        dirty_rect &= m_subtitle_target_rect;
-        hr = m_subpic->Unlock(&dirty_rect);
-        if (FAILED(hr))
-        {
-            XY_LOG_ERROR("Failed to unlock. "<<XY_LOG_VAR_2_STR(dirty_rect)<<XY_LOG_VAR_2_STR(hr));
-            return hr;
-        }
-        hr = m_subpic->GetDirtyRect(&dirty_rect);
-        ASSERT(SUCCEEDED(hr));
-        CMemSubPic * mem_subpic = dynamic_cast<CMemSubPic*>((ISubPicEx *)m_subpic);
-        ASSERT(mem_subpic);
-
-        m_xy_sub_render_frame = DEBUG_NEW XySubRenderFrameWrapper(mem_subpic, m_output_rect, m_subtitle_target_rect
-            , s_combined_bitmap_id++, &hr);
-        return hr;
+        bitmap->x -= m_output_rect.left;
+        bitmap->y -= m_output_rect.top;
+        frame->m_bitmaps.Add(bitmap);
+        frame->m_bitmap_ids.Add(InterlockedIncrement(&combined_id));
     }
-    return hr;
+    m_xy_sub_render_frame = frame.release();
+    return S_OK;
 }

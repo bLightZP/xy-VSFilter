@@ -9,6 +9,13 @@
 
 extern std::size_t g_xy_malloc_used_size = 0;
 static XyAllocationStats* s_allocation_stats = NULL;
+static thread_local long s_failure_countdown = -1;
+long xy_set_allocation_failure_countdown(long count)
+{
+    const long previous = s_failure_countdown;
+    s_failure_countdown = count;
+    return previous;
+}
 
 XyAllocationStats* xy_set_allocation_stats(XyAllocationStats* stats)
 {
@@ -27,6 +34,11 @@ void *xy_malloc( std::size_t i_size, int align_shift )
         ++s_allocation_stats->allocCalls;
         s_allocation_stats->requestedBytes += i_size;
     }
+    if (i_size > std::size_t(-1) - 15 - sizeof(void*) - sizeof(i_size) || s_failure_countdown == 0) {
+        if (s_allocation_stats) ++s_allocation_stats->failures;
+        return NULL;
+    }
+    if (s_failure_countdown > 0) --s_failure_countdown;
     const int ALIGNMENT = 16;
     const int MASK = ALIGNMENT - 1;
     uint8_t * buf;
