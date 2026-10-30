@@ -1,18 +1,24 @@
-# xy-VSFilter v3.2.1.900 (20261023)
-https://github.com/bLightZP/xy-VSFilter/
+# xy-VSFilter v3.2.1.920 (2026-10-30)
 
-Active branch: codex/sol-6.1-xhigh-v3.2.1.900
+Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
-Optimization fork of [pinterf/xy-VSFilter](https://github.com/pinterf/xy-VSFilter/).
-See [release notes](docs/releases/v3.2.1.900.md), [benchmark evidence](docs/benchmarks/v3.2.1.900.json), and the [architecture graph](docs/knowledge-graph.md).
+[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
 
-A modification by pinterf. 
+Each architecture package includes the three filter DLLs and standalone rendering/streaming benchmark consoles. Matching PDB symbols, pinned dependency sources, build and validation records, and SHA256 checksums are separate release assets. Choose the architecture that matches your player/DirectShow graph.
 
-Mod base: 'official' xy_sub_filter_rc5
-https://github.com/Cyberbeing/xy-VSFilter/tree/xy_sub_filter_rc5
+| Component | Purpose |
+| --- | --- |
+| `VSFilter.dll` | DirectShow subtitle rendering and Avisynth subtitle filters. |
+| `XySubFilter.dll` | Subtitle provider for compatible consumers such as madVR or MPC Video Renderer. |
+| `xy_sub_filter_consumer.dll` | DirectShow video transform that receives and blends XySubFilter frames. |
 
-Plus:
-- VSFilter: Avisynth filters
+Native rendering is the default. To use libass for ASS/SSA, enable **Prefer libass rendering** in the Main property page's Rendering group. Libass and its dependencies are statically linked into the filters. See [libass configuration and source builds](docs/libass-integration.md).
+
+On the More property page, custom render-layout dimensions take effect on **Apply/OK**. Each dimension supports **16–12,800 pixels**. **Render To Original Video Size** uses the video's actual dimensions independently of the selected subtitle layout.
+
+This is an [optimization fork](https://github.com/bLightZP/xy-VSFilter/) of [pinterf/xy-VSFilter](https://github.com/pinterf/xy-VSFilter/), based on [Cyberbeing's xy_sub_filter_rc5](https://github.com/Cyberbeing/xy-VSFilter/tree/xy_sub_filter_rc5) with pinterf's Avisynth additions. The active branch is `codex/sol-6.1-xhigh-v3.2.1.900`.
+
+For development, see the [architecture graph](docs/knowledge-graph.md), [benchmark and regression-test instructions](test/benchmark/README.md), and [v3.2.1.910 performance comparison](docs/benchmarks/20261028-release-comparison.json).
 
 # Useful links:
 [Doom9 forum](https://forum.doom9.org/showthread.php?t=168282)
@@ -20,7 +26,6 @@ Plus:
 [Avisynth wiki](http://avisynth.nl/index.php/Xy-VSFilter)
 
 # Info:
-- The v3.2.1.900 release contains Win32 (x86) VSFilter.dll, XySubFilter.dll and xy_sub_filter_consumer.dll, with matching symbols in a separate archive.
 
 - VSFilter.DLL: Included Avisynth filters (name and parameter signature)
   
@@ -29,11 +34,29 @@ Plus:
       TextSubSwapUV "b"
       MaskSub "[file]s[width]i[height]i[fps]f[length]i[charset]i[vfr]s[pixel_type]s"
 
-- Warning by the XySubFilter-3.1.0.746 beta authors (on forum's 1st post, from 2015):
-  
-  After downloading XySubFilter BETA3, you must ensure to run the 'Install' bat (not only replace) or else XySubFilter's autoload helper required for entering the DirectShow graph with external subtitles will not be installed
-
 # Change log:
+
+## v3.2.1.920 (2026-10-30)
+
+- Stage resolution edits until Apply/OK, validate custom dimensions before changing settings, and recover safely from invalid saved sizes.
+- Correct **Render To Original Video Size** to use actual video dimensions separately from logical subtitle layout.
+- Allocate combining buffers only when needed and size them to occupied subtitle bounds, preserving frames retained by the consumer.
+- Check allocation sizes and blur work, propagate allocation/rendering failures safely, and clean up partial output.
+- Refresh static and queued frames after settings changes; preserve alpha conventions and transparent gaps when combining bitmaps.
+- Add layout, property-page, allocation-failure, retained-frame, and queue-clearing regression tests. Win32 and x64 passed **74 contract runs** in total, with matching output across **54 fixtures and 2,428 credits frames per architecture**.
+
+See the [full changelog](docs/releases/v3.2.1.920.md) and [release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.920).
+
+## v3.2.1.910 (2026-10-28)
+
+- Add the optional **Prefer libass rendering** setting for ASS/SSA in both filter paths, with embedded subtitles, attached fonts, and style overrides. Statically link libass 0.17.4, FreeType 2.14.1, HarfBuzz 11.5.1, and FriBidi 1.0.16.
+- Add **Win32 and x64 release packages**, matching symbols, dependency sources/licenses, and standalone benchmark consoles.
+- Optimize native ASS command parsing and scalar-parameter reuse, compact tag storage, and reduce repeated text, style, and ownership allocations.
+- Reuse eligible layouts, vector geometry, and draw descriptors; prepare upcoming events; reduce sorting/grouping work; and fuse single-color mask generation with SSE2 alpha blending.
+- Correct cache-capacity, zero-capacity bypass, bitmap ownership/identity, and karaoke-key behavior; reduce edge-blur scratch memory.
+- Expand synthetic rendering, ownership, grammar, cache, and streaming-packet tests and performance diagnostics.
+
+See the [full changelog and performance results](docs/releases/v3.2.1.910.md) and [release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.910).
 
 ## v3.2.1.900 (20261023)
 
