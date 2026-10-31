@@ -1,4 +1,4 @@
-# xy-VSFilter v3.2.1.940
+# xy-VSFilter v3.2.1.940 (2026-11-01)
 
 Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
@@ -40,11 +40,11 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
 
 # Change log:
 
-## v3.2.1.940
+## v3.2.1.940 (2026-11-01)
 
 - **Fix native ASS subtitle flickering caused by out-of-range animated alpha values.** Alpha targets are reduced to eight bits before animation. The new **Fix out of range alpha in native renderer** setting is enabled by default under **Main > Rendering**; disabling it restores the previous native behavior.
 
-See the [full changelog](docs/releases/v3.2.1.940.md) and [validation results](docs/native-alpha-compatibility-940.md).
+See the [full changelog](docs/releases/v3.2.1.940.md), [release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.940), and [validation results](docs/native-alpha-compatibility-940.md).
 
 ## v3.2.1.930 (2026-10-31)
 
