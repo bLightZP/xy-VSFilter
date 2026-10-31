@@ -289,6 +289,7 @@ STDMETHODIMP XySubFilter::JoinFilterGraph(IFilterGraph* pGraph, LPCWSTR pName)
             m_filter_info_string = m_xy_str_opt[STRING_NAME];
             CAutoLock cAutoLock(&m_csConsumer);
             m_consumer = NULL;
+            m_consumerInvalidation.Reset();
         }
         ::DeleteSystray(&m_hSystrayThread, &m_tbid);
         m_workaround_mpc_hc   = false;
@@ -1108,11 +1109,13 @@ DWORD XySubFilter::ThreadProc()
         else if (idx == WAIT_OBJECT_0 + 2)
         {
             CComPtr<ISubRenderConsumer> consumer;
+            ULONGLONG epoch;
             {
                 CAutoLock lock(&m_csFilter);
                 consumer = m_consumer;
+                epoch = m_consumerInvalidation.Epoch();
             }
-            HRESULT hr = m_consumerInvalidation.Dispatch(consumer);
+            HRESULT hr = m_consumerInvalidation.Dispatch(consumer, epoch);
             if (FAILED(hr)) XY_LOG_WARN("Consumer Clear failed: " << hr);
         }
         else if(idx >= (WAIT_OBJECT_0 + 3) && idx < (WAIT_OBJECT_0 + handles.GetCount()))
@@ -1201,7 +1204,9 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
 
     HRESULT hr;
     CComPtr<IXySubRenderFrame> sub_render_frame;
-    ULONGLONG deliveryGeneration;
+    CComPtr<ISubRenderConsumer> consumer;
+    ConsumerInvalidation::Delivery delivery;
+    const REFERENCE_TIME videoStart = start, videoStop = stop;
     {
         CAutoLock cAutoLock(&m_csFilter);
 
@@ -1218,7 +1223,6 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
         start = (start - 10000i64 * m_SubtitleDelay) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
         stop = (stop - 10000i64 * m_SubtitleDelay) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
 
-        deliveryGeneration = m_consumerInvalidation.Generation();
         REFERENCE_TIME now = start; //NOTE: It seems that the physically right way is (start + stop) / 2, but...
         m_last_requested = now;
 
@@ -1267,16 +1271,13 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
             m_xy_bool_opt[BOOL_IS_MOVABLE] = (!rts) || ((rts->IsMovable()) && ((rts->IsSimple()) || (m_xy_bool_opt[BOOL_ALLOW_MOVING])));
 
         }
+        consumer = m_consumer;
+        m_consumerInvalidation.Begin(delivery, videoStop, stop);
     }
     //fix me: print osd message
     TRACE_RENDERER_REQUEST("Returnning "<<XY_LOG_VAR_2_STR(hr)<<XY_LOG_VAR_2_STR(sub_render_frame));
-    CComPtr<ISubRenderConsumer> consumer;
-    {
-        CAutoLock lock(&m_csFilter);
-        consumer = m_consumer;
-    }
-    hr = consumer ? consumer->DeliverFrame(start, stop, context, sub_render_frame) : VFW_E_NOT_CONNECTED;
-    m_consumerInvalidation.Delivered(deliveryGeneration);
+    hr = consumer ? consumer->DeliverFrame(videoStart, videoStop, context, sub_render_frame) : VFW_E_NOT_CONNECTED;
+    m_consumerInvalidation.Finish(delivery, SUCCEEDED(hr));
     return hr;
 }
 
@@ -1299,6 +1300,7 @@ STDMETHODIMP XySubFilter::Disconnect( void )
             }
             CAutoLock cAutoLock(&m_csConsumer);
             m_consumer = NULL;
+            m_consumerInvalidation.Reset();
         }
         else
         {
@@ -1688,7 +1690,7 @@ bool XySubFilter::Open()
     return (m_pSubStreams.GetCount() > 0);
 }
 
-void XySubFilter::UpdateSubtitle(bool fApplyDefStyle/*= true*/)
+void XySubFilter::UpdateSubtitle(bool fApplyDefStyle/*= true*/, bool clearConsumer/*= true*/)
 {
     XY_LOG_INFO(XY_LOG_VAR_2_STR(fApplyDefStyle));
     CAutoLock cAutolock(&m_csFilter);
@@ -1698,7 +1700,7 @@ void XySubFilter::UpdateSubtitle(bool fApplyDefStyle/*= true*/)
         XY_LOG_WARN("Some subtitle frames are cached already!");
         m_last_requested = -1;
     }
-    InvalidateSubtitle();
+    InvalidateSubtitle(-1, -1, clearConsumer);
 
     CComPtr<ISubStream> pSubStream;
 
@@ -1937,20 +1939,16 @@ void XySubFilter::SetSubtitle( ISubStream* pSubStream, bool fApplyDefStyle /*= t
     }
 }
 
-void XySubFilter::InvalidateSubtitle( REFERENCE_TIME rtInvalidate /*= -1*/, DWORD_PTR nSubtitleId /*= -1*/ )
+void XySubFilter::InvalidateSubtitle( REFERENCE_TIME rtInvalidate /*= -1*/, DWORD_PTR nSubtitleId /*= -1*/, bool clearConsumer/*= true*/ )
 {
     CAutoLock cAutolock(&m_csFilter);
 
-    if (!m_sub_provider && nSubtitleId == -1) m_consumerInvalidation.Schedule();
-    if(m_sub_provider)
-    {
-        if (nSubtitleId == -1 || nSubtitleId == reinterpret_cast<DWORD_PTR>(m_curSubStream))
-        {
-            m_sub_provider->Invalidate(rtInvalidate);
-            m_consumerInvalidation.Schedule();
-            XY_LOG_INFO("Provider invalidated; consumer clear scheduled");
-        }
-    }
+    if (nSubtitleId != -1 && nSubtitleId != reinterpret_cast<DWORD_PTR>(m_curSubStream)) return;
+    if (m_sub_provider) m_sub_provider->Invalidate(rtInvalidate);
+    if (!clearConsumer) return;
+    if (rtInvalidate < 0) m_consumerInvalidation.Schedule();
+    else m_consumerInvalidation.Packet(rtInvalidate, m_SubtitleDelay,
+        m_SubtitleSpeedNormalizedMul, m_SubtitleSpeedNormalizedDiv);
 }
 
 HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
@@ -1967,6 +1965,7 @@ HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
     HRESULT hr = NOERROR;
     CAutoLock cAutolock(&m_csFilter);
 
+    if (!m_consumer) return VFW_E_NOT_CONNECTED;
     if (getNameAndVersion)
     {
         LPWSTR str;
@@ -2039,10 +2038,11 @@ HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
 
     ULONGLONG rt_fps;
     hr = m_consumer->GetUlonglong("frameRate", &rt_fps);
-    if (FAILED(hr))
+    if (FAILED(hr) || rt_fps == 0)
     {
         XY_LOG_ERROR("Failed to get fps from consumer.");
         rt_fps = 10000000.0/24.0;
+        hr = S_OK;
     }
     //fix me: is it right?
     //fix me: use REFERENCE_TIME instead?
@@ -2082,9 +2082,11 @@ HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
     {
         XY_LOG_INFO("FPS changed from "<<m_xy_double_opt[DOUBLE_FPS]
             <<" to "<<fps);
-        hr = XySetDouble(DOUBLE_FPS, fps);
-        CHECK_N_LOG(hr, "Failed to set option");
-        ASSERT(SUCCEEDED(hr));
+        // These are inputs for this request, not a user edit of queued frames.
+        // Keep genuine VFR changes (including one-tick duration jitter) local.
+        m_xy_double_opt[DOUBLE_FPS] = fps;
+        ++m_context_id;
+        InvalidateSubtitle(-1, -1, false);
     }
     if (m_xy_str_opt[STRING_CONSUMER_YUV_MATRIX]!=consumer_yuv_matrix) {
         XY_LOG_INFO(L"Consumer yuv matrix changed from "<<m_xy_str_opt[STRING_CONSUMER_YUV_MATRIX].GetString()
@@ -2104,8 +2106,8 @@ HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
 
     if (update_subtitle)
     {
-        UpdateSubtitle(false);
-        // UpdateSubtitle schedules consumer invalidation outside the render lock.
+        ++m_context_id;
+        UpdateSubtitle(false, false);
     }
     return hr;
 }
@@ -2517,14 +2519,13 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
                             consumer = new_consumer;
                         }
                     }
-					m_consumer = consumer;
-					hr = UpdateParamFromConsumer(true);
                 }
             }
         }
         EndEnumFilters;//Add a ; so that my editor can do a correct auto-indent
         if (consumer)
         {
+            m_consumerInvalidation.Reset();
             m_consumer = consumer;
             hr = UpdateParamFromConsumer(true);
             if (FAILED(hr))
@@ -2536,6 +2537,7 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
             {
                 XY_LOG_ERROR("Failed to connect "<<XY_LOG_VAR_2_STR(consumer)<<XY_LOG_VAR_2_STR(hr));
                 m_consumer = NULL;
+                m_consumerInvalidation.Reset();
                 return hr;
             }
             XY_LOG_INFO("Connected with "<<XY_LOG_VAR_2_STR(consumer)<<" "

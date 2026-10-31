@@ -252,6 +252,9 @@ def main():
     parser.add_argument("--player", type=Path, default=Path("Z:/zpAI/zplayer.exe"))
     parser.add_argument("--media", type=Path, default=Path("F:/Git/xySubFilter/Subtitles_CPU_killer_on_end_credits.mkv"))
     parser.add_argument("--port", type=int, default=33001)
+    parser.add_argument("--seek-seconds", type=int, default=1340)
+    parser.add_argument("--paused-seconds", type=int, default=0)
+    parser.add_argument("--expected-renderer", help="Required substring of the active renderer name")
     parser.add_argument("--engine", choices=("internal32", "external32", "external64"), default="internal32")
     parser.add_argument("--expected-filter", type=Path)
     parser.add_argument("--profile-session", type=int)
@@ -262,12 +265,14 @@ def main():
     parser.add_argument("--startup-poll-interval", type=float, default=1.0,
                         help="Diagnostic polling interval for the first two seconds (default: 1)")
     args = parser.parse_args()
+    if args.seek_seconds < 0 or not 0 <= args.paused_seconds <= 300:
+        parser.error("Seek must be nonnegative and paused hold must be in [0, 300]")
     if not 0 < args.startup_poll_interval <= 1:
         parser.error("startup poll interval must be in (0, 1]")
     bits = 64 if args.engine == "external64" else 32
     reg_view = winreg.KEY_WOW64_64KEY if bits == 64 else winreg.KEY_WOW64_32KEY
     args.output.mkdir(parents=True, exist_ok=False)
-    metadata = {"player": str(args.player), "media": str(args.media), "seek_seconds": 1340,
+    metadata = {"player": str(args.player), "media": str(args.media), "seek_seconds": args.seek_seconds,
                 "player_sha256": hashlib.sha256(args.player.read_bytes()).hexdigest(),
                 "logical_cpus": os.cpu_count(), "default_subtitle": True,
                 "startup_poll_interval_s": args.startup_poll_interval, "engine": args.engine, "filter_bitness": bits}
@@ -350,15 +355,17 @@ def main():
         tcp.send("1703 0")
         if tcp.query("1700") != "0":
             raise RuntimeError("The default subtitle track did not become active")
-        tcp.send("5000 1340")
+        tcp.send("5000 " + str(args.seek_seconds))
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             initial = tcp.stats()
-            if initial["position_ms"] is not None and abs(initial["position_ms"] - 1340000) < 100:
+            if initial["position_ms"] is not None and abs(initial["position_ms"] - args.seek_seconds * 1000) < 100:
                 break
             time.sleep(.1)
         else:
-            raise TimeoutError("Seek to 22:20 did not complete")
+            raise TimeoutError("Seek to benchmark start did not complete")
+        if args.expected_renderer and args.expected_renderer.lower() not in initial["renderer"].lower():
+            raise RuntimeError("Requested renderer was not loaded; refusing a fallback benchmark")
         metadata["initial_stats"] = initial
         metadata["subtitle_index"] = tcp.query("1700")
         metadata["subtitle_name"] = next((event["message"][5:] for event in reversed(tcp.messages)
@@ -423,10 +430,19 @@ def main():
         # Metadata collection can outlast an asynchronous helper's seek snapshot.
         # Read the actual paused counters immediately before the measured Run.
         initial = tcp.stats()
-        if tcp.query("1000") != "2" or initial["position_ms"] is None or abs(initial["position_ms"] - 1340000) >= 100:
+        if tcp.query("1000") != "2" or initial["position_ms"] is None or abs(initial["position_ms"] - args.seek_seconds * 1000) >= 100:
             raise RuntimeError("Playback did not stay paused at the benchmark start")
         metadata["initial_stats"] = initial
         print("SETUP " + json.dumps({k: metadata[k] for k in ("player_pid", "initial_stats", "subtitle_index", "duration_ms")}), flush=True)
+        metadata["paused_samples"] = []
+        for second in range(args.paused_seconds):
+            time.sleep(1)
+            stats = tcp.stats()
+            if tcp.query("1000") != "2":
+                raise RuntimeError("Playback resumed during the paused queue check")
+            metadata["paused_samples"].append(stats)
+            if second % 20 == 0:
+                print("PAUSED " + json.dumps(stats), flush=True)
         columns = ["utc", "elapsed_s", "monotonic_s", "position_ms", "renderer", "frames_drawn",
                    "frames_dropped", "average_fps", "delta_frames_drawn", "delta_frames_dropped",
                    "counter_reset", "reply_ms"]
@@ -476,6 +492,8 @@ def main():
             print("COMPLETE " + json.dumps({"reason": completion, "seconds": metadata["capture_wall_seconds"], "final": previous}), flush=True)
             if completion == "timeout":
                 raise TimeoutError("Playback did not reach the end within 220 seconds")
+            if completion != "end_of_file":
+                raise RuntimeError("Playback stopped before reaching the end")
     except Exception as error:
         metadata["error"] = repr(error)
         metadata["error_utc"] = datetime.now(timezone.utc).isoformat()

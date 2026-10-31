@@ -8,6 +8,7 @@ class SubtitleInputPin2 : public CSubtitleInputPin
 {
 public:
     SubtitleInputPin2(XySubFilter* pFilter, CCritSec* pLock, CCritSec* pSubLock, HRESULT* phr);
+    STDMETHODIMP NewSegment(REFERENCE_TIME start, REFERENCE_TIME stop, double rate);
 
 protected:
     virtual void AddSubStream(ISubStream* pSubStream);

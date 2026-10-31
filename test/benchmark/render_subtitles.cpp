@@ -1946,6 +1946,7 @@ static int LibassContract()
 }
 
 #include "layout_contract.h"
+#include "queue_contract.h"
 
 static int FilterContract(const wchar_t* path, bool xy)
 {
@@ -2161,6 +2162,9 @@ int wmain(int argc, wchar_t** argv)
         if (argc < 2 || wcscmp(argv[1], L"--benchmark")) ConfigureBenchmark(-1);
         if (argc==4 && !wcscmp(argv[1],L"--layout-filter-contract")) return LayoutFilterContract(argv[3],!wcscmp(argv[2],L"xy"));
         if (argc==2 && !wcscmp(argv[1],L"--layout-contract")) return LayoutContract();
+        if (argc==2 && !wcscmp(argv[1],L"--queue-state-contract")) return QueueStateContract();
+        if (argc==2 && !wcscmp(argv[1],L"--alpha-wrap-contract")) return AlphaWrapContract();
+        if (argc==4 && !wcscmp(argv[1],L"--queue-filter-contract")) return QueueFilterContract(argv[3],!wcscmp(argv[2],L"libass"));
         if (argc==4 && !wcscmp(argv[1],L"--filter-contract")) return FilterContract(argv[3],!wcscmp(argv[2],L"xy"));
         if (argc == 2 && !wcscmp(argv[1], L"--libass-contract")) {
             return LibassContract();

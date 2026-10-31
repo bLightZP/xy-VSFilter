@@ -84,9 +84,9 @@ private:
     void SetRgbOutputLevel();
     bool Open();
 
-    void UpdateSubtitle(bool fApplyDefStyle = true);
+    void UpdateSubtitle(bool fApplyDefStyle = true, bool clearConsumer = true);
     void SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyle = true);
-    void InvalidateSubtitle(REFERENCE_TIME rtInvalidate = -1, DWORD_PTR nSubtitleId = -1);
+    void InvalidateSubtitle(REFERENCE_TIME rtInvalidate = -1, DWORD_PTR nSubtitleId = -1, bool clearConsumer = true);
 
     HRESULT UpdateParamFromConsumer(bool getNameAndVersion=false);
 

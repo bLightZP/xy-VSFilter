@@ -34,6 +34,11 @@ def main():
     parser.add_argument("--dll", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--engine", choices=("internal32", "external32", "external64"), default="internal32")
+    parser.add_argument("--renderer", choices=("current", "madvr"), default="current")
+    parser.add_argument("--media", type=Path)
+    parser.add_argument("--seek-seconds", type=int, default=1340)
+    parser.add_argument("--paused-seconds", type=int, default=0,
+                        help="Hold paused for queue inspection before measured playback")
     parser.add_argument("--profile-session", type=int)
     parser.add_argument("--startup-poll-interval", type=float, default=1.0)
     parser.add_argument("--bitmap-cache-items", type=int, help="Temporary XySubFilter bitmap/group-key cache entry limit")
@@ -62,9 +67,12 @@ def main():
         raise RuntimeError("TCP port 33001 is already in use")
     settings = Path(r"Z:\zpAI\zplayer.local")
     engine_options = {b"D:OPExternalMediaEngineEnable": b"0" if args.engine == "internal32" else b"1"}
+    if args.renderer == "madvr":
+        engine_options[b"D:OPCMDefRenderer"] = b"8"
     if args.engine != "internal32":
         engine_options.update({b"D:OPExternalMediaEngineMode": b"1" if bits == 64 else b"0",
-                               b"S:OPExternalMediaEngineExtList": b"MKV;MP4"})
+                               b"S:OPExternalMediaEngineExtList": b"MKV;MP4",
+                               b"D:OPEnableVis": b"0", b"D:OPEnableVisVid": b"0"})
     original_engine_options = {}
     for name in engine_options:
         match = re.search(rb"(?m)^" + re.escape(name) + rb"\|([^\r\n]*)(?=\r?$)", settings.read_bytes())
@@ -114,7 +122,12 @@ def main():
         command = [sys.executable, str(Path(__file__).with_name("run_playback_baseline.py")),
                    "--attach-pid", str(player.pid), "--build-record", str(args.build_record), "--output", str(args.output),
                    "--startup-poll-interval", str(args.startup_poll_interval),
+                   "--seek-seconds", str(args.seek_seconds), "--paused-seconds", str(args.paused_seconds),
                    "--engine", args.engine, "--expected-filter", str(args.dll)]
+        if args.media is not None:
+            command += ["--media", str(args.media.resolve(strict=True))]
+        if args.renderer == "madvr":
+            command += ["--expected-renderer", "madVR"]
         if args.profile_session is not None:
             command += ["--profile-session",str(args.profile_session)]
         result = subprocess.run(command).returncode

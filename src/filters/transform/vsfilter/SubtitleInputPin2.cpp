@@ -67,6 +67,17 @@ void SubtitleInputPin2::InvalidateSubtitle( REFERENCE_TIME rtStart, ISubStream* 
     xy_sub_filter->InvalidateSubtitle(rtStart, (DWORD_PTR)(ISubStream*)pSubStream);
 }
 
+STDMETHODIMP SubtitleInputPin2::NewSegment(REFERENCE_TIME start, REFERENCE_TIME stop, double rate)
+{
+    CAutoLock lock(m_pSubLock);
+    const HRESULT hr = __super::NewSegment(start, stop, rate);
+    if (SUCCEEDED(hr) && m_helper) {
+        // A seek replaces the stream's packet timeline and requested horizon.
+        InvalidateSubtitle(-1, m_helper->GetSubStream());
+    }
+    return hr;
+}
+
 STDMETHODIMP_(CSubtitleInputPinHelper*) SubtitleInputPin2::CreateHelper( const CMediaType& mt, IPin* pReceivePin )
 {
     if (IsHdmvSub(&mt)) 

@@ -62,8 +62,9 @@ public:
     ConsumerInvalidation* pending;
     bool extension, reenter;
     int clears;
+    REFERENCE_TIME boundary;
     DECLARE_IUNKNOWN;
-    ClearConsumer(ConsumerInvalidation* queue) : CUnknown(NAME("clear consumer"),NULL), pending(queue), extension(true), reenter(false), clears(0) {}
+    ClearConsumer(ConsumerInvalidation* queue) : CUnknown(NAME("clear consumer"),NULL), pending(queue), extension(true), reenter(false), clears(0), boundary(0) {}
     STDMETHODIMP NonDelegatingQueryInterface(REFIID iid, void** value) {
         if (iid == __uuidof(ISubRenderConsumer2) && extension) return GetInterface((ISubRenderConsumer2*)this,value);
         if (iid == __uuidof(ISubRenderConsumer)) return GetInterface((ISubRenderConsumer*)this,value);
@@ -91,7 +92,7 @@ public:
         static_cast<ConsumerInvalidation*>(value)->Schedule(); return 0;
     }
     STDMETHODIMP Clear(REFERENCE_TIME time) {
-        Require(time==0,"Clear did not use the video timeline reset boundary");
+        boundary=time;
         ++clears;
         if (reenter) {
             reenter=false;
@@ -254,15 +255,17 @@ static int LayoutContract()
     ConsumerInvalidation queue;
     ClearConsumer* consumer=new ClearConsumer(&queue);
     CComPtr<ISubRenderConsumer> consumerOwner=consumer;
-    const ULONGLONG before=queue.Generation();
+    const ULONGLONG epoch=queue.Epoch();
+    ConsumerInvalidation::Delivery before;
+    queue.Begin(before,100,100);
     queue.Schedule();queue.Schedule();consumer->reenter=true;
-    Require(SUCCEEDED(queue.Dispatch(consumer)) && consumer->clears==1,"Clear requests were not coalesced");
-    Require(SUCCEEDED(queue.Dispatch(consumer)) && consumer->clears==2,"Reentrant invalidation was lost");
-    Require(queue.Dispatch(consumer)==S_FALSE,"Unchanged queue was cleared repeatedly");
-    queue.Delivered(before);queue.Dispatch(consumer);
+    Require(SUCCEEDED(queue.Dispatch(consumer,epoch)) && consumer->clears==1 && consumer->boundary==0,"Clear requests were not coalesced");
+    Require(SUCCEEDED(queue.Dispatch(consumer,epoch)) && consumer->clears==2,"Reentrant invalidation was lost");
+    Require(queue.Dispatch(consumer,epoch)==S_FALSE,"Unchanged queue was cleared repeatedly");
+    queue.Finish(before,true);queue.Dispatch(consumer,epoch);
     Require(consumer->clears==3,"Delivery racing Clear did not reschedule invalidation");
     consumer->extension=false;queue.Schedule();
-    Require(queue.Dispatch(consumer)==S_FALSE && consumer->clears==3,"Legacy consumer was not supported");
+    Require(queue.Dispatch(consumer,epoch)==S_FALSE && consumer->clears==3,"Legacy consumer was not supported");
     printf("layout_contract=passed (dimensions, static invalidation, bounded combining, alpha, 128 retained frames, allocation failures, reentrant queue clearing)\n");
     return 0;
 }

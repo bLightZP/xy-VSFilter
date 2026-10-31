@@ -474,3 +474,35 @@ Use `run_layout_regressions.py --exe <render_subtitles.exe> --xy-dll <XySubFilte
 --vs-dll <VSFilter.dll> --output <results.json>` to run all three new contracts with
 a 30-second watchdog per process and cleanup of that process's isolated test
 settings after a failure or timeout.
+
+## Consumer queue regression tests
+
+Run matching Win32 and x64 executable/DLL pairs:
+
+```powershell
+python test/benchmark/run_queue_regressions.py --exe <render_subtitles.exe> --xy-dll <XySubFilter.dll> --output <results.json>
+```
+
+The runner uses a 45-second child watchdog and the same isolated registry cleanup
+as the layout tests. It records the tested DLL hash. `--queue-state-contract`
+checks partial-boundary coalescing, in-flight delivery races, failed deliveries,
+connection replacement epochs, future packets and delay/speed overflow handling.
+`--queue-filter-contract native|libass <dll>` connects the actual DLL to a
+128-slot consumer and feeds ASS through a real DirectShow subtitle pin. It checks
+constant, jittering, VFR and zero frame durations; changing geometry; future and
+late packets; synchronous refill from Clear; video-time delivery and partial
+invalidation with delay/speed; global settings; seeks; failure propagation; and
+consumers without the optional Clear interface. No DLL registration is needed.
+
+`--alpha-wrap-contract` preserves the existing out-of-range ASS alpha behavior:
+both native and libass interpolate toward `F00` before narrowing to eight bits.
+Forty frame comparisons cover both `&F00&` and `&HF00&` spellings against static
+in-range references. This test does not reinterpret the authored effect.
+
+For real madVR validation, `benchmark_filter.py` accepts `--renderer madvr`,
+`--media <mkv>`, `--seek-seconds <seconds>` and `--paused-seconds <0..300>`.
+It restores renderer/engine settings and temporarily disables visualization
+routing when an external helper is requested. A requested renderer or helper
+that is not actually loaded fails validation. The Debug/LOCAL build and loaded
+DLL hashes are still verified. The paused hold allows inspection of madVR's
+subtitle queue overlay; TCP 1150 alone does **not** report subtitle queue depth.
