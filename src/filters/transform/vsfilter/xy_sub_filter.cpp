@@ -382,6 +382,7 @@ HRESULT XySubFilter::OnOptionChanged( unsigned field )
         }
         m_context_id++;
         break;
+    case BOOL_MPC_BE_ALPHA:
     case BOOL_PREFER_LIBASS:
     case BOOL_OVERRIDE_PLACEMENT:
     case SIZE_PLACEMENT_PERC:
@@ -1767,6 +1768,7 @@ void XySubFilter::SetSubtitle( ISubStream* pSubStream, bool fApplyDefStyle /*= t
             CRenderedTextSubtitle* pRTS = dynamic_cast<CRenderedTextSubtitle*>(pSubStream);
             pRTS->Deinit();//clear caches
             pRTS->SetPreferLibass(m_xy_bool_opt[BOOL_PREFER_LIBASS]);
+            pRTS->SetMpcBeAlphaCompatibility(m_xy_bool_opt[BOOL_MPC_BE_ALPHA]);
             if (m_xy_bool_opt[BOOL_PREFER_LIBASS]) pRTS->LoadLibassGraphFonts(m_pGraph);
 
             STSStyle s = m_defStyle;

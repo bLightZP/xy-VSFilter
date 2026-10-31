@@ -2281,7 +2281,7 @@ CRenderedTextSubtitle::CRenderedTextSubtitle(CCritSec* pLock)
     , m_reconstructionBytes(0), m_reconstructionPeakBytes(0)
     , m_collectDiagnostics(false)
     , m_time(0), m_delay(0)
-    , m_preferLibass(false), m_libassFontsLoaded(false)
+    , m_preferLibass(false), m_libassFontsLoaded(false), m_alphaTargetMask(0xff)
 {
     if( m_cmdMap.IsEmpty() )
     {
@@ -2559,6 +2559,16 @@ bool CRenderedTextSubtitle::Init( const CRectCoor2& video_rect, const CRectCoor2
     m_target_scale_y = video_rect.Height() * 1.0 / layout_size.cy;
 
     return(true);
+}
+
+void CRenderedTextSubtitle::SetMpcBeAlphaCompatibility(bool enabled)
+{
+    const int mask = enabled ? 0xff : -1;
+    if (m_alphaTargetMask == mask) return;
+    m_alphaTargetMask = mask;
+    // Evaluated layouts and prepared subtitles depend on alpha policy. The
+    // immutable parsed numbers remain unmodified, including globally shared tags.
+    Deinit();
 }
 
 void CRenderedTextSubtitle::Deinit()
@@ -3074,16 +3084,18 @@ bool CRenderedTextSubtitle::ParseSSATag( CSubtitle* sub, const AssTagList& assTa
                       cmd_type==CMD_3a ? 2 :
                     /*cmd_type==CMD_4a ?*/ 3;
                 style.alpha[i] = !p.IsEmpty()
-                    ? (BYTE)CalcAnimation(assTag.GetNumber(0).integer, style.alpha[i], fAnimate)
+                    ? (BYTE)CalcAnimation(assTag.GetNumber(0).integer & m_alphaTargetMask, style.alpha[i], fAnimate)
                     : org.alpha[i];
                 break;
             }
         case CMD_alpha:
             {
+                // One mask per tag, never per pixel. In-range targets are unchanged.
+                const int alpha = assTag.GetNumber(0).integer & m_alphaTargetMask;
                 for(int i = 0; i < 4; i++)
                 {
                     style.alpha[i] = !p.IsEmpty()
-                                     ? (BYTE)CalcAnimation(assTag.GetNumber(0).integer, style.alpha[i], fAnimate)
+                                     ? (BYTE)CalcAnimation(alpha, style.alpha[i], fAnimate)
                                      : org.alpha[i];
                 }
                 break;

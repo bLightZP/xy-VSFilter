@@ -26,7 +26,10 @@ def main():
                                  stderr=subprocess.PIPE, text=True)
         timed_out = False
         try:
-            stdout, stderr = child.communicate(timeout=45)
+            # The alpha matrix renders 3,600 references; keep the queue-deadlock
+            # watchdog short while allowing slower machines to finish that test.
+            timeout = 180 if options[0] == "--alpha-wrap-contract" else 45
+            stdout, stderr = child.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:
             timed_out = True
             child.kill()

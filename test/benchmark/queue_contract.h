@@ -5,31 +5,47 @@
 static int AlphaWrapContract()
 {
     const char header[]="[Script Info]\nScriptType: v4.00+\nPlayResX: 320\nPlayResY: 180\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Default,Arial,24,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\nDialogue: 0,0:00:00.00,0:00:02.00,Default,,0,0,0,,";
-    const char drawing[]="}m 0 0 l 40 0 40 40 0 40\n";
-    CCritSec lock;const RECT rect={0,0,320,180};const SIZE size={320,180};
+    CCritSec lock; const RECT rect={0,0,320,180}; const SIZE size={320,180};
+    int comparisons=0;
     for (int backend=0;backend<2;++backend) {
-        for (int spelling=0;spelling<2;++spelling) {
-            CStringA script=header;script+="{\\an7\\pos(20,20)\\bord0\\shad0\\p1\\alpha&H00&\\t(0,1000,\\alpha&";
-            script+=spelling ? "HF00&)" : "F00&)";script+=drawing;
-            CRenderedTextSubtitle animated(&lock);
-            Require(animated.Open((BYTE*)script.GetString(),script.GetLength(),DEFAULT_CHARSET,L"alpha-wrap"),"Cannot open alpha fixture");
-            animated.SetPreferLibass(backend!=0);
-            Require(animated.IsUsingLibass()==(backend!=0),"Wrong alpha fixture backend");
-            for (int ms : {0,50,100,150,200,250,300,500,750,1000}) {
-                CStringA expectedScript=header,tag;
-                tag.Format("{\\an7\\pos(20,20)\\bord0\\shad0\\p1\\alpha&H%02X&",(3840*ms/1000)&255);
-                expectedScript+=tag;expectedScript+=drawing;
-                CRenderedTextSubtitle expected(&lock);
-                Require(expected.Open((BYTE*)expectedScript.GetString(),expectedScript.GetLength(),DEFAULT_CHARSET,L"alpha-reference"),"Cannot open alpha reference");
-                expected.SetPreferLibass(backend!=0);
-                CComPtr<IXySubRenderFrame> a,b;
-                Require(SUCCEEDED(animated.RenderEx(&a,MSP_RGBA,rect,rect,size,REFERENCE_TIME(ms)*10000,24)) &&
-                    SUCCEEDED(expected.RenderEx(&b,MSP_RGBA,rect,rect,size,REFERENCE_TIME(ms)*10000,24)) && EqualFrames(a,b),
-                    "Out-of-range alpha no longer wraps after interpolation");
+        for (const char* command : {"alpha","1a","2a","3a","4a"}) {
+            for (int target : {0,128,255,256,3840,4095}) {
+                for (int spelling=0;spelling<2;++spelling) {
+                    CStringA prefix="{\\an7\\pos(20,20)\\bord2\\shad2\\p1\\kf100\\alpha&H80&";
+                    CStringA tag,script=header;
+                    tag.Format("\\t(100,1100,\\%s&%s%X&)",command,spelling ? "H" : "",target);
+                    script+=prefix;script+=tag;script+="}m 0 0 l 40 0 40 40 0 40\n";
+                    CRenderedTextSubtitle animated(&lock);
+                    Require(animated.Open((BYTE*)script.GetString(),script.GetLength(),DEFAULT_CHARSET,L"alpha-policy"),"Cannot open alpha fixture");
+                    animated.SetPreferLibass(backend!=0);
+                    Require(animated.IsUsingLibass()==(backend!=0),"Wrong alpha fixture backend");
+                    // First pass tests the enabled default without calling the setter.
+                    // Later passes toggle a populated renderer in both directions.
+                    for (int pass=0;pass<3;++pass) {
+                        const bool mode=pass!=1;
+                        if (pass) animated.SetMpcBeAlphaCompatibility(mode);
+                        for (int ms : {0,100,150,350,600,850,1099,1100,1200,600}) {
+                            const int to=(!backend && mode) ? target&255 : target;
+                            const int elapsed=max(0,min(1000,ms-100));
+                            const int alpha=(int)((1-elapsed/1000.0)*128+(elapsed/1000.0)*to)&255;
+                            CStringA expectedScript=header;
+                            tag.Format("\\%s&H%02X&",command,alpha);
+                            expectedScript+=prefix;expectedScript+=tag;expectedScript+="}m 0 0 l 40 0 40 40 0 40\n";
+                            CRenderedTextSubtitle expected(&lock);
+                            Require(expected.Open((BYTE*)expectedScript.GetString(),expectedScript.GetLength(),DEFAULT_CHARSET,L"alpha-reference"),"Cannot open alpha reference");
+                            expected.SetPreferLibass(backend!=0);
+                            CComPtr<IXySubRenderFrame> actual,reference;
+                            Require(SUCCEEDED(animated.RenderEx(&actual,MSP_RGBA,rect,rect,size,REFERENCE_TIME(ms)*10000,24)) &&
+                                SUCCEEDED(expected.RenderEx(&reference,MSP_RGBA,rect,rect,size,REFERENCE_TIME(ms)*10000,24)) && EqualFrames(actual,reference),
+                                "Alpha policy differs from the independent in-range reference");
+                            ++comparisons;
+                        }
+                    }
+                }
             }
         }
     }
-    printf("alpha_wrap_contract=passed (both backends, both spellings, 40 frame comparisons)\n");
+    printf("alpha_wrap_contract=passed (%d comparisons; all alpha tags, boundaries, toggles, seeks, libass unchanged)\n",comparisons);
     return 0;
 }
 
@@ -267,9 +283,15 @@ static int QueueFilterContract(const wchar_t* dll, bool libass)
         Require(consumer->boundary==24999999,"Delayed/speed-adjusted packet used subtitle time");
         Require(SUCCEEDED(options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,true)),"Layout change failed");
         consumer->Check(4);Require(consumer->boundary==0,"Global setting did not clear all frames");
+        Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,false)),"Alpha policy change failed");
+        consumer->Check(5);Require(consumer->boundary==0,"Alpha policy left old frames in the queue");
+        Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,false)),"Repeated alpha setting failed");
+        consumer->Check(5);
+        Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,true)),"Alpha policy restore failed");
+        consumer->Check(6);
         // Seeking must forget a far-ahead requested horizon before new packets.
-        consumer->refill=false;input->NewSegment(0,1000000000,1);consumer->Check(5,0);
-        source->pin.Packet(300000000,310000000,5);consumer->Check(5,0);
+        consumer->refill=false;input->NewSegment(0,1000000000,1);consumer->Check(7,0);
+        source->pin.Packet(300000000,310000000,5);consumer->Check(7,0);
         consumer->Empty();consumer->extension=false;consumer->Fill();
         options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,false);consumer->Check(0);
         consumer->extension=true;

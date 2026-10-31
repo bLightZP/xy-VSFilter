@@ -244,6 +244,9 @@
 #define IDS_RG_ALLOWMOVING              1070
 #define IDC_CHECKBOX_ALLOW_MOVING       1071
 #define IDC_PREFER_LIBASS               1072
+#define IDC_MPC_BE_ALPHA                1073
+#define IDC_LATEST_RELEASES             1074
+#define IDC_AI_CREDITS                  1075
 
 // Next default values for new objects
 // 
@@ -251,7 +254,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
 #define _APS_NEXT_COMMAND_VALUE         32770
-#define _APS_NEXT_CONTROL_VALUE         343
+#define _APS_NEXT_CONTROL_VALUE         1076
 #define _APS_NEXT_SYMED_VALUE           210
 #endif
 #endif

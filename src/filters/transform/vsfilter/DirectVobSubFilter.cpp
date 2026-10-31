@@ -1725,6 +1725,7 @@ void CDirectVobSubFilter::SetSubtitle(ISubStream* pSubStream, bool fApplyDefStyl
 		{
 			CRenderedTextSubtitle* pRTS = dynamic_cast<CRenderedTextSubtitle*>(pSubStream);
             pRTS->SetPreferLibass(m_xy_bool_opt[BOOL_PREFER_LIBASS]);
+            pRTS->SetMpcBeAlphaCompatibility(m_xy_bool_opt[BOOL_MPC_BE_ALPHA]);
             if (m_xy_bool_opt[BOOL_PREFER_LIBASS]) pRTS->LoadLibassGraphFonts(m_pGraph);
             pRTS->Deinit();//clear caches
 
@@ -2275,6 +2276,7 @@ HRESULT CDirectVobSubFilter::OnOptionChanged( unsigned field )
             break;
         }
         break;
+    case BOOL_MPC_BE_ALPHA:
     case BOOL_PREFER_LIBASS:
     case BOOL_OVERRIDE_PLACEMENT:
     case SIZE_PLACEMENT_PERC:

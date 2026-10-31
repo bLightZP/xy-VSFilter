@@ -1945,11 +1945,18 @@ static int LibassContract()
     return 0;
 }
 
+#include "../../src/filters/transform/vsfilter/version.h"
 #include "layout_contract.h"
 #include "queue_contract.h"
 
 static int FilterContract(const wchar_t* path, bool xy)
 {
+    IsolatedLayoutRegistry isolated;
+    // MFC opens HKCU\Software before creating its application key. Match a
+    // real user hive without seeding the new setting itself.
+    HKEY software=NULL;
+    Require(RegCreateKeyExW(HKEY_CURRENT_USER,L"Software",0,NULL,0,KEY_ALL_ACCESS,NULL,&software,NULL)==ERROR_SUCCESS,"Cannot initialize isolated software settings");
+    RegCloseKey(software);
     Require(SUCCEEDED(CoInitializeEx(NULL,COINIT_APARTMENTTHREADED)), "Cannot initialize COM");
     HMODULE module=LoadLibraryW(path);
     Require(module!=NULL,"Cannot load filter DLL");
@@ -1967,6 +1974,7 @@ static int FilterContract(const wchar_t* path, bool xy)
         CComQIPtr<IXyOptions> options(object);
         Require(options!=NULL,"Missing filter options");
         bool original=false,value=false;
+        Require(SUCCEEDED(options->XyGetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA,&value)) && value,"Native alpha compatibility is not enabled by default");
         const unsigned field=DirectVobSubXyOptions::BOOL_PREFER_LIBASS;
         Require(SUCCEEDED(options->XyGetBool(field,&original)),"Cannot read libass preference");
         Require(SUCCEEDED(options->XySetBool(field,!original)) && SUCCEEDED(options->XyGetBool(field,&value)) && value!=original,"Cannot change preference");
@@ -1975,6 +1983,8 @@ static int FilterContract(const wchar_t* path, bool xy)
         Require(SUCCEEDED(getClass(pageId,IID_IClassFactory,(void**)&pageFactory)),"Cannot get Main page class");
         CComPtr<IPropertyPage> page;
         Require(SUCCEEDED(pageFactory->CreateInstance(NULL,IID_IPropertyPage,(void**)&page)),"Cannot create Main page");
+        CComPtr<IPropertyPageSite> site=new LayoutPageSite();
+        Require(SUCCEEDED(page->SetPageSite(site)),"Cannot set Main page site");
         IUnknown* connected=object;
         Require(SUCCEEDED(page->SetObjects(1,&connected)),"Cannot connect Main page");
         PROPPAGEINFO info={sizeof(info)};
@@ -1993,19 +2003,58 @@ static int FilterContract(const wchar_t* path, bool xy)
         GetWindowRect(checkbox,&checkRect); GetWindowRect(loading,&loadRect); GetClientRect(dialog,&client);
         POINT bottom={checkRect.right,checkRect.bottom}; ScreenToClient(dialog,&bottom);
         Require(checkRect.top>loadRect.bottom && bottom.x<=client.right && bottom.y<=client.bottom,"Main controls overlap or extend outside the page");
+        HWND alpha=GetDlgItem(dialog,IDC_MPC_BE_ALPHA);
+        GetWindowTextW(alpha,label,_countof(label));
+        Require(alpha && !wcscmp(label,L"Fix out of range alpha in native renderer") && SendMessageW(alpha,BM_GETCHECK,0,0)==BST_CHECKED,"Missing or unchecked native alpha setting");
+        RECT alphaRect;GetWindowRect(alpha,&alphaRect);
+        bottom={alphaRect.right,alphaRect.bottom};ScreenToClient(dialog,&bottom);
+        Require(alphaRect.top>=checkRect.bottom && bottom.x<=client.right && bottom.y<=client.bottom,"Native alpha control overlaps or is clipped");
+        SendMessageW(alpha,BM_SETCHECK,BST_UNCHECKED,0);
+        SendMessageW(dialog,WM_COMMAND,MAKEWPARAM(IDC_MPC_BE_ALPHA,BN_CLICKED),reinterpret_cast<LPARAM>(alpha));
+        Require(SUCCEEDED(page->Apply()),"Native alpha preference Apply failed");
+        Require(SUCCEEDED(options->XyGetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA,&value)) && !value,"Main checkbox did not update the option");
+        DWORD savedAlpha=1,savedAlphaBytes=sizeof(savedAlpha);
+        const LSTATUS savedAlphaResult=RegGetValueW(HKEY_CURRENT_USER,
+            xy ? L"Software\\Gabest\\XySubFilter\\General" : L"Software\\Gabest\\VSFilter\\General",
+            L"MpcBeAlphaCompatibility",RRF_RT_REG_DWORD,NULL,&savedAlpha,&savedAlphaBytes);
+        Require(savedAlphaResult==ERROR_SUCCESS && !savedAlpha,"Native alpha preference was not saved to the registry");
+        CComPtr<IUnknown> restored;
+        Require(SUCCEEDED(factory->CreateInstance(NULL,IID_IUnknown,(void**)&restored)),"Cannot reload saved settings");
+        CComQIPtr<IXyOptions> restoredOptions(restored);
+        Require(SUCCEEDED(restoredOptions->XyGetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA,&value)) && !value,"Native alpha preference was not persisted");
+        SendMessageW(alpha,BM_SETCHECK,BST_CHECKED,0);
+        SendMessageW(dialog,WM_COMMAND,MAKEWPARAM(IDC_MPC_BE_ALPHA,BN_CLICKED),reinterpret_cast<LPARAM>(alpha));
+        Require(SUCCEEDED(page->Apply()),"Cannot restore native alpha default");
+        page->Deactivate(); page->SetObjects(0,NULL); page->SetPageSite(NULL); page.Release(); DestroyWindow(host);
+        CoTaskMemFree(info.pszTitle); CoTaskMemFree(info.pszDocString); CoTaskMemFree(info.pszHelpFile);
+        CLSID aboutId;CLSIDFromString(xy ? L"{D0DE7ADC-7DC6-43EC-912D-ABD44D7453FB}" : L"{F544E0F5-CA3C-47ea-A64D-35FCF1602396}",&aboutId);
+        pageFactory.Release();
+        Require(SUCCEEDED(getClass(aboutId,IID_IClassFactory,(void**)&pageFactory)) &&
+            SUCCEEDED(pageFactory->CreateInstance(NULL,IID_IPropertyPage,(void**)&page)),"Cannot create About page");
+        Require(SUCCEEDED(page->SetObjects(1,&connected)) && SUCCEEDED(page->GetPageInfo(&info)),"Cannot connect About page");
+        host=CreateWindowExW(0,L"STATIC",L"",WS_POPUP,0,0,info.size.cx+20,info.size.cy+20,NULL,NULL,g_hInst,NULL);
+        bounds={0,0,info.size.cx,info.size.cy};
+        Require(host && SUCCEEDED(page->Activate(host,&bounds,FALSE)),"Cannot activate About page");
+        dialog=FindWindowExW(host,NULL,L"#32770",NULL);
+        wchar_t aboutText[256]={};GetDlgItemTextW(dialog,IDC_VERSION,aboutText,_countof(aboutText));
+        Require(wcsstr(aboutText,CStringW(XY_ABOUT_VERSION_STR))!=NULL,"About version is stale");
+        GetDlgItemTextW(dialog,IDC_AI_CREDITS,aboutText,_countof(aboutText));
+        Require(wcsstr(aboutText,L"AI optimizations && fixes by Yaron Gur")!=NULL,"Missing AI credit");
+        GetDlgItemTextW(dialog,IDC_LATEST_RELEASES,aboutText,_countof(aboutText));
+        Require(wcsstr(aboutText,L"Latest releases")!=NULL,"Missing releases link");
         page->Deactivate(); page->SetObjects(0,NULL); DestroyWindow(host);
         CoTaskMemFree(info.pszTitle); CoTaskMemFree(info.pszDocString); CoTaskMemFree(info.pszHelpFile);
     }
     FreeLibrary(module); CoUninitialize();
-    printf("filter_contract=passed (COM option round-trip and hidden Main page layout; no registry writes)\n");
+    printf("filter_contract=passed (default alpha policy, Main Apply/persistence, About version/credits/link; isolated registry)\n");
     return 0;
 }
 
 struct BenchmarkSettings
 {
-    bool active, hashes, libass;
+    bool active, hashes, libass, mpcBeAlpha;
     int first, last, mode; // 0 complete render, 1 parse/reconstruction, 2 composition replay
-    BenchmarkSettings() : active(false), hashes(true), libass(false), first(32128), last(34555), mode(0) {}
+    BenchmarkSettings() : active(false), hashes(true), libass(false), mpcBeAlpha(true), first(32128), last(34555), mode(0) {}
 };
 static BenchmarkSettings benchmark;
 
@@ -2040,6 +2089,7 @@ static int Render(const wchar_t* script, const wchar_t* fonts, const wchar_t* ou
     CCritSec lock;
     CRenderedTextSubtitle renderer(&lock);
     Require(renderer.Open(script, DEFAULT_CHARSET), "Cannot open subtitle script");
+    renderer.SetMpcBeAlphaCompatibility(benchmark.mpcBeAlpha);
     if (benchmark.libass) {
         renderer.SetPreferLibass(true);
         Require(renderer.IsUsingLibass(), "This source does not support libass");
@@ -2178,6 +2228,7 @@ int wmain(int argc, wchar_t** argv)
                 if (!wcscmp(argv[i], L"--no-hash")) benchmark.hashes = false;
                 else if (!wcscmp(argv[i], L"--no-diagnostics")) diagnostics = false;
                 else if (!wcscmp(argv[i], L"--libass")) benchmark.libass = true;
+                else if (!wcscmp(argv[i], L"--legacy-alpha")) benchmark.mpcBeAlpha = false;
                 else if (!wcscmp(argv[i], L"--mode")) {
                     Require(i+1 < argc-3,"Missing benchmark mode");
                     ++i;

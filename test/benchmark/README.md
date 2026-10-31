@@ -494,10 +494,20 @@ late packets; synchronous refill from Clear; video-time delivery and partial
 invalidation with delay/speed; global settings; seeks; failure propagation; and
 consumers without the optional Clear interface. No DLL registration is needed.
 
-`--alpha-wrap-contract` preserves the existing out-of-range ASS alpha behavior:
-both native and libass interpolate toward `F00` before narrowing to eight bits.
-Forty frame comparisons cover both `&F00&` and `&HF00&` spellings against static
-in-range references. This test does not reinterpret the authored effect.
+`--alpha-wrap-contract` checks the native MPC-BE alpha policy (enabled by
+default), legacy native behavior when disabled, and unchanged libass behavior
+in both modes. 3,600 frame comparisons cover all five alpha tags, in-range and
+out-of-range targets, both hexadecimal spellings, transform boundaries, policy
+changes on populated renderers, and backward seeks against independent static
+in-range references. `--benchmark --legacy-alpha ...` selects the old native
+behavior for full-script comparisons. The queue runner allows this expanded
+alpha matrix 180 seconds; the queue contracts retain their 45-second watchdog.
+
+`--filter-contract xy|vs <dll>` also verifies the default setting, the Main
+checkbox layout, Apply and persistence in isolated registry settings, and the
+About version, credit and releases link. The queue contract checks that a policy
+change invalidates already delivered frames without repeated clears for an
+unchanged value.
 
 For real madVR validation, `benchmark_filter.py` accepts `--renderer madvr`,
 `--media <mkv>`, `--seek-seconds <seconds>` and `--paused-seconds <0..300>`.

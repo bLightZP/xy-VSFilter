@@ -808,6 +808,7 @@ protected:
     boost::scoped_ptr<LibassRenderer> m_libass;
     LibassRenderer::StyleBaseline m_libassOriginalStyles;
     bool m_preferLibass, m_libassFontsLoaded;
+    int m_alphaTargetMask; // 0xff for MPC-BE, -1 for legacy VSFilter alpha targets
     
 public:
     CRenderedTextSubtitle(CCritSec* pLock);
@@ -827,6 +828,7 @@ private:
         const SIZE& layout_size);
 public:
     void Deinit();
+    void SetMpcBeAlphaCompatibility(bool enabled);
     void SetPreferLibass(bool prefer) { m_preferLibass = prefer; m_movable = !IsUsingLibass(); }
     bool IsUsingLibass() const { return m_preferLibass && m_libass && m_libass->HasSource(); }
     LibassRenderer* GetLibassRenderer() { return m_libass.get(); }

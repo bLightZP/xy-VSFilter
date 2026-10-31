@@ -257,6 +257,9 @@ CDVSBasePPage::CDVSBasePPage(TCHAR* pName, LPUNKNOWN lpunk, int DialogId, int Ti
 
 INT_PTR CDVSBasePPage::OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    // Following the About hyperlink is not an edit to filter settings.
+    if (uMsg == WM_COMMAND && LOWORD(wParam) == IDC_LATEST_RELEASES)
+        return OnMessage(uMsg, wParam, lParam) ? 0 : FALSE;
     switch(uMsg)
     {
     case WM_COMMAND:
@@ -289,9 +292,9 @@ INT_PTR CDVSBasePPage::OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
         break;
     }
 
-    return OnMessage(uMsg, wParam, lParam) 
-        ? 0 
-        : CBasePropertyPage::OnReceiveMessage(hwnd,uMsg,wParam,lParam);
+    if (OnMessage(uMsg, wParam, lParam))
+        return uMsg == WM_DRAWITEM || uMsg == WM_SETCURSOR ? TRUE : 0;
+    return CBasePropertyPage::OnReceiveMessage(hwnd,uMsg,wParam,lParam);
 }
 
 HRESULT CDVSBasePPage::OnConnect(IUnknown* pUnknown)
@@ -475,6 +478,7 @@ CDVSMainPPage::CDVSMainPPage(LPUNKNOWN pUnk, HRESULT* phr)
     BindControl(IDC_PARCOMBO, m_PARCombo);
     BindControl(IDC_CHECKBOX_HideTrayIcon, m_hide_tray_icon);
     BindControl(IDC_PREFER_LIBASS, m_preferLibass);
+    BindControl(IDC_MPC_BE_ALPHA, m_mpcBeAlpha);
     BindControl(IDC_LOADCOMBO, m_load);
     BindControl(IDC_EXTLOAD, m_extload);
     BindControl(IDC_WEBLOAD, m_webload);
@@ -586,6 +590,8 @@ void CDVSMainPPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, m_fPreferLibass);
         CHECK_N_LOG(hr, "Failed to set libass preference");
+        hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA, m_fMpcBeAlpha);
+        CHECK_N_LOG(hr, "Failed to set native alpha compatibility");
         hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to set option");
     }
@@ -615,6 +621,9 @@ void CDVSMainPPage::UpdateObjectData(bool fSave)
         m_fPreferLibass = false;
         hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, &m_fPreferLibass);
         CHECK_N_LOG(hr, "Failed to get libass preference");
+        m_fMpcBeAlpha = true;
+        hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA, &m_fMpcBeAlpha);
+        CHECK_N_LOG(hr, "Failed to get native alpha compatibility");
         hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, &m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to get option");
     }
@@ -643,6 +652,7 @@ void CDVSMainPPage::UpdateControlData(bool fSave)
             m_ePARCompensationType = CSimpleTextSubtitle::EPCTDisabled;
         m_fHideTrayIcon = !!m_hide_tray_icon.GetCheck();
         m_fPreferLibass = !!m_preferLibass.GetCheck();
+        m_fMpcBeAlpha = !!m_mpcBeAlpha.GetCheck();
         if (m_load.GetCurSel() >= 0) m_LoadLevel = (int)m_load.GetItemData(m_load.GetCurSel());
         m_fExternalLoad = !!m_extload.GetCheck();
         m_fWebLoad = !!m_webload.GetCheck();
@@ -686,6 +696,7 @@ void CDVSMainPPage::UpdateControlData(bool fSave)
             m_PARCombo.SetCurSel(3);
         m_hide_tray_icon.SetCheck(m_fHideTrayIcon);
         m_preferLibass.SetCheck(m_fPreferLibass);
+        m_mpcBeAlpha.SetCheck(m_fMpcBeAlpha);
         m_load.ResetContent();
         m_load.AddString(ResStr(IDS_DONOTLOAD)); m_load.SetItemData(0, 2);
         m_load.AddString(ResStr(IDS_LOADWHENNEEDED)); m_load.SetItemData(1, 0);
@@ -1284,12 +1295,52 @@ bool CDVSAboutPPage::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             CStringW str_name(name, chars);
             LocalFree(name);
 
-            version.Format("%ls %s (git %s)\nxy-VSFilter\nCopyright 2001-2012 Yu Zhuohuang, Gabest et. al.", 
-                str_name.GetString(), XY_ABOUT_VERSION_STR, version_sha1_short.GetString());
+            version.Format("%ls %s", str_name.GetString(), XY_ABOUT_VERSION_STR);
+            if (!version_sha1_short.IsEmpty()) {
+                version += " (git "; version += version_sha1_short; version += ")";
+            }
+            version += "\nxy-VSFilter\nCopyright 2001-2012 Yu Zhuohuang, Gabest et. al.";
 
             SetDlgItemTextA( m_Dlg, IDC_VERSION, version.GetString() );
+            LOGFONT font = {};
+            HFONT dialogFont = reinterpret_cast<HFONT>(SendMessage(m_Dlg, WM_GETFONT, 0, 0));
+            GetObject(dialogFont ? dialogFont : GetStockObject(DEFAULT_GUI_FONT), sizeof(font), &font);
+            font.lfUnderline = TRUE;
+            m_releaseLinkFont.DeleteObject();
+            m_releaseLinkFont.CreateFontIndirect(&font);
             break;
         }
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDC_LATEST_RELEASES && HIWORD(wParam) == BN_CLICKED) {
+            ShellExecuteW(m_Dlg, L"open", L"https://github.com/bLightZP/xy-VSFilter/releases",
+                NULL, NULL, SW_SHOWNORMAL);
+            return true;
+        }
+        break;
+    case WM_DRAWITEM:
+        {
+            const DRAWITEMSTRUCT* item = reinterpret_cast<const DRAWITEMSTRUCT*>(lParam);
+            if (!item || item->CtlID != IDC_LATEST_RELEASES) break;
+            // A keyboard-accessible link using a standard button also works in
+            // legacy DirectShow hosts without a common-controls v6 manifest.
+            const int saved = SaveDC(item->hDC);
+            FillRect(item->hDC, &item->rcItem, GetSysColorBrush(COLOR_BTNFACE));
+            SelectObject(item->hDC, m_releaseLinkFont.GetSafeHandle());
+            SetBkMode(item->hDC, TRANSPARENT);
+            SetTextColor(item->hDC, GetSysColor(COLOR_HOTLIGHT));
+            RECT text = item->rcItem;
+            DrawTextW(item->hDC, L"Latest releases", -1, &text, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            if ((item->itemState & ODS_FOCUS) && !(item->itemState & ODS_NOFOCUSRECT))
+                DrawFocusRect(item->hDC, &item->rcItem);
+            RestoreDC(item->hDC, saved);
+            return true;
+        }
+    case WM_SETCURSOR:
+        if (reinterpret_cast<HWND>(wParam) == GetDlgItem(m_Dlg, IDC_LATEST_RELEASES)) {
+            SetCursor(LoadCursor(NULL, IDC_HAND));
+            return true;
+        }
+        break;
     }
 
     return false;
@@ -1745,6 +1796,7 @@ CXySubFilterMainPPage::CXySubFilterMainPPage(LPUNKNOWN pUnk, HRESULT* phr)
     BindControl(IDC_ONLYSHOWFORCEDSUBS, m_forcedsubs);
     BindControl(IDC_CHECKBOX_HideTrayIcon, m_hide_tray_icon);
     BindControl(IDC_PREFER_LIBASS, m_preferLibass);
+    BindControl(IDC_MPC_BE_ALPHA, m_mpcBeAlpha);
 
     BindControl(IDC_LOADCOMBO, m_load);
     BindControl(IDC_EXTLOAD, m_extload);
@@ -1862,6 +1914,8 @@ void CXySubFilterMainPPage::UpdateObjectData(bool fSave)
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, m_fPreferLibass);
         CHECK_N_LOG(hr, "Failed to set libass preference");
+        hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA, m_fMpcBeAlpha);
+        CHECK_N_LOG(hr, "Failed to set native alpha compatibility");
         hr = m_pDirectVobSubXy->XySetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to set option");
         hr = m_pDirectVobSub->put_LoadSettings(m_LoadLevel, m_fExternalLoad, m_fWebLoad, m_fEmbeddedLoad);
@@ -1894,6 +1948,9 @@ void CXySubFilterMainPPage::UpdateObjectData(bool fSave)
         m_fPreferLibass = false;
         hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_PREFER_LIBASS, &m_fPreferLibass);
         CHECK_N_LOG(hr, "Failed to get libass preference");
+        m_fMpcBeAlpha = true;
+        hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_MPC_BE_ALPHA, &m_fMpcBeAlpha);
+        CHECK_N_LOG(hr, "Failed to get native alpha compatibility");
         hr = m_pDirectVobSubXy->XyGetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON, &m_fHideTrayIcon);
         CHECK_N_LOG(hr, "Failed to get option");
         hr = m_pDirectVobSub->get_LoadSettings(&m_LoadLevel, &m_fExternalLoad, &m_fWebLoad, &m_fEmbeddedLoad);
@@ -1923,6 +1980,7 @@ void CXySubFilterMainPPage::UpdateControlData(bool fSave)
         m_fOnlyShowForcedVobSubs = !!m_forcedsubs.GetCheck();
         m_fHideTrayIcon = !!m_hide_tray_icon.GetCheck();
         m_fPreferLibass = !!m_preferLibass.GetCheck();
+        m_fMpcBeAlpha = !!m_mpcBeAlpha.GetCheck();
 
         if(m_load.GetCurSel() >= 0) m_LoadLevel = m_load.GetItemData(m_load.GetCurSel());
         m_fExternalLoad = !!m_extload.GetCheck();
@@ -1948,6 +2006,7 @@ void CXySubFilterMainPPage::UpdateControlData(bool fSave)
 
         m_hide_tray_icon.SetCheck(m_fHideTrayIcon);
         m_preferLibass.SetCheck(m_fPreferLibass);
+        m_mpcBeAlpha.SetCheck(m_fMpcBeAlpha);
 
         m_load.ResetContent();
         m_load.AddString(ResStr(IDS_DONOTLOAD)); m_load.SetItemData(0, 2);

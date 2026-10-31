@@ -79,6 +79,8 @@ class CDVSMainPPage : public CDVSBasePPage
     bool m_fHideTrayIcon;
     bool m_fPreferLibass;
     CButton m_preferLibass;
+    bool m_fMpcBeAlpha;
+    CButton m_mpcBeAlpha;
 	int	m_PlacementXperc, m_PlacementYperc;
 	STSStyle m_defStyle;
 	bool m_fOnlyShowForcedVobSubs;
@@ -186,6 +188,7 @@ public:
 [uuid("F544E0F5-CA3C-47ea-A64D-35FCF1602396")]
 class CDVSAboutPPage : public CDVSBasePPage
 {
+    CFont m_releaseLinkFont;
 public:
     CDVSAboutPPage(LPUNKNOWN lpunk, HRESULT* phr, TCHAR* pName=NAME("About Property Page"));
     
@@ -267,6 +270,8 @@ class CXySubFilterMainPPage : public CDVSBasePPage
     bool m_fHideTrayIcon;
     bool m_fPreferLibass;
     CButton m_preferLibass;
+    bool m_fMpcBeAlpha;
+    CButton m_mpcBeAlpha;
     int m_PlacementXperc, m_PlacementYperc;
     STSStyle m_defStyle;
     bool m_fForceDefaultStyle;

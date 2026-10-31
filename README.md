@@ -1,8 +1,8 @@
-# xy-VSFilter v3.2.1.930 (2026-10-31)
+# xy-VSFilter v3.2.1.940
 
 Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
-[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
+[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
 
 Each architecture package includes the three filter DLLs and standalone rendering/streaming benchmark consoles. Matching PDB symbols, pinned dependency sources, build and validation records, and SHA256 checksums are separate release assets. Choose the architecture that matches your player/DirectShow graph.
 
@@ -13,6 +13,8 @@ Extract the package to a permanent folder and close your players. Run **Register
 | `VSFilter.dll` | DirectShow subtitle rendering and Avisynth subtitle filters. |
 | `XySubFilter.dll` | Subtitle provider for compatible consumers such as madVR or MPC Video Renderer. |
 | `xy_sub_filter_consumer.dll` | DirectShow video transform that receives and blends XySubFilter frames. |
+
+**Fix out of range alpha in native renderer** is enabled by default under **Main > Rendering**. It normalizes ASS alpha targets before animation to prevent flickering from out-of-range values, matching MPC-BE's handling. Disable it to restore the previous native behavior.
 
 Native rendering is the default. To use libass for ASS/SSA, enable **Prefer libass rendering** in the Main property page's Rendering group. Libass and its dependencies are statically linked into the filters. See [libass configuration and source builds](docs/libass-integration.md).
 
@@ -37,6 +39,12 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
       MaskSub "[file]s[width]i[height]i[fps]f[length]i[charset]i[vfr]s[pixel_type]s"
 
 # Change log:
+
+## v3.2.1.940
+
+- **Fix native ASS subtitle flickering caused by out-of-range animated alpha values.** Alpha targets are reduced to eight bits before animation, matching MPC-BE's handling. The new **Fix out of range alpha in native renderer** setting is enabled by default under **Main > Rendering**; disabling it restores the previous native behavior.
+
+See the [full changelog](docs/releases/v3.2.1.940.md) and [validation results](docs/native-alpha-compatibility-940.md).
 
 ## v3.2.1.930 (2026-10-31)
 

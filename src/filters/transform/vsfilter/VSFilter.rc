@@ -132,10 +132,12 @@ STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif", 400, 0, 0x1
 BEGIN
     GROUPBOX        "",IDC_STATIC,7,7,232,151
-    LTEXT           "",IDC_VERSION,14,14,183,26
+    LTEXT           "",IDC_VERSION,14,14,218,26
     LTEXT           "Credits:\n- SAMI format support by Sanger && Wilowisp of SPKOR\n- Handling of some basic html style modifier tags in SAMI done by [maven]",IDC_STATIC,14,40,218,34
     LTEXT           "- Advanced Text Renderer is using the 'Rasterizer' class \nof Avery Lee's subtitler plugin\n- Command line ppage launcher by @livier",IDC_STATIC,14,74,219,26
     LTEXT           "- Adding hotkeys, Chinese (Taiwan) && Chinese (P.R.C.) localized, Kii Ali <kiiali@cpatch.org>",IDC_STATIC,14,100,206,20
+    LTEXT           "- AI optimizations && fixes by Yaron Gur",IDC_AI_CREDITS,14,126,218,10
+    CONTROL         "Latest releases",IDC_LATEST_RELEASES,"Button",BS_OWNERDRAW | WS_TABSTOP,14,140,74,12
 END
 
 IDD_DVSCOLORPAGE DIALOGEX 0, 0, 247, 188
@@ -176,7 +178,7 @@ BEGIN
     CONTROL         "&Embedded",IDC_EMBLOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,183,160,47,12
 END
 
-IDD_DVSMAINPAGE DIALOGEX 0, 0, 247, 244
+IDD_DVSMAINPAGE DIALOGEX 0, 0, 247, 258
 STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif", 400, 0, 0x1
 BEGIN
@@ -209,8 +211,9 @@ BEGIN
     CONTROL         "E&xternal",IDC_EXTLOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,103,176,39,12
     CONTROL         "We&b",IDC_WEBLOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,149,176,28,12
     CONTROL         "&Embedded",IDC_EMBLOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,183,176,47,12
-    GROUPBOX        "Rendering",IDC_STATIC,7,201,233,35
-    CONTROL         "Prefer libass rendering",IDC_PREFER_LIBASS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,215,203,12
+    GROUPBOX        "Rendering",IDC_STATIC,7,201,233,49
+    CONTROL         "Prefer libass rendering",IDC_PREFER_LIBASS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,215,213,12
+    CONTROL         "Fix out of range alpha in native renderer",IDC_MPC_BE_ALPHA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,229,213,12
 END
 
 IDD_DVSMISCPAGE DIALOGEX 0, 0, 247, 200
@@ -420,8 +423,9 @@ BEGIN
     CONTROL         "We&b",IDC_WEBLOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,149,148,28,12
     CONTROL         "&Embedded",IDC_EMBLOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,183,148,47,12
     CONTROL         "Force Default",IDC_CHECKBOX_FORCE_DEFAULT_STYLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,107,55,12
-    GROUPBOX        "Rendering",IDC_STATIC,7,173,233,35
-    CONTROL         "Prefer libass rendering",IDC_PREFER_LIBASS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,187,203,12
+    GROUPBOX        "Rendering",IDC_STATIC,7,173,233,49
+    CONTROL         "Prefer libass rendering",IDC_PREFER_LIBASS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,187,213,12
+    CONTROL         "Fix out of range alpha in native renderer",IDC_MPC_BE_ALPHA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,201,213,12
 END
 
 IDD_XY_SUB_FILTER_MOREPAGE DIALOGEX 0, 0, 247, 297
