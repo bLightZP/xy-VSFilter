@@ -1,6 +1,6 @@
 # Consumer queue fixes and validation — 2026-10-31
 
-This implements the queue findings in [the v920/sample review](madvr-queue-and-brokensubs1-review-20261031.md). The version remains **3.2.1.920** while testing; these changes do not publish a release.
+This implements the queue findings in [the v920/sample review](madvr-queue-and-brokensubs1-review-20261031.md). Initial implementation testing used binaries reporting **3.2.1.920**. These fixes are included in [v3.2.1.930](releases/v3.2.1.930.md); its separate release rebuild is recorded below.
 
 ## Changes
 
@@ -84,4 +84,12 @@ See [benchmark instructions](../test/benchmark/README.md#consumer-queue-regressi
 
 ## Release decision
 
-The candidate passes the queue regression gate and real madVR playback checks above. Keep the 128-slot D3D11 seek limitation distinct from the repaired queue-clear loop: it also reproduces with v910 and still needs a decoder/renderer-specific investigation if that configuration must be supported. Obtain the reporting user's exact decoder mode and madVR build before claiming their entire playback configuration is resolved. No version bump, tag, push or release is part of this change.
+The candidate passes the queue regression gate and real madVR playback checks above. Keep the 128-slot D3D11 seek limitation distinct from the repaired queue-clear loop: it also reproduces with v910 and still needs a decoder/renderer-specific investigation if that configuration must be supported. Obtain the reporting user's exact decoder mode and madVR build before claiming their entire playback configuration is resolved. The implementation was committed separately as `c3364224`.
+
+## v3.2.1.930 release validation
+
+All three DLLs and both benchmark consoles were rebuilt for Win32 and x64. All six DLL file/product versions are **3.2.1.930**. The release binaries passed **82 contracts** and the **11 Python tests**. Per architecture, 54 fixture outputs, 2,428 credits frames, 50 streaming frames and 536 sample frames per backend matched the v920 references. Cross-architecture credits output also matched.
+
+The versioned x64 XySubFilter DLL completed the heavy credits in Debug/LOCAL Zoom Player with madVR 0.92.17.0, native subtitles, software video decoding and a 128-slot queue. After a 30-second paused hold, it reached EOF in approximately 102 seconds with **zero dropped frames**. The loaded DLL path/hash was verified and temporary settings were restored.
+
+Both packages include `RegisterFilters.cmd`, `UnregisterFilters.cmd` and their shared helper. Fourteen checks cover architecture selection from native/WOW64 command processors, paths with spaces and shell metacharacters, missing DLLs, and mocked administrator-elevation requests/cancellation. Generated release evidence is under `benchmark-results/release-v3.2.1.930`; release assets include validation results, binary hashes, matching symbols and checksums.

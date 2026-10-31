@@ -27,7 +27,9 @@ flowchart LR
 
 The arrows into a DLL mean **build dependency**. The shared-library grouping condenses the repeated `ProjectDependencies` entries in [VSFilter.sln](../VSFilter.sln); it does not imply one physical library. The DLL target names and source membership are in [VSFilter.vcxproj](../src/filters/transform/vsfilter/VSFilter.vcxproj), [xy_sub_filter.vcxproj](../src/filters/transform/vsfilter/xy_sub_filter.vcxproj), and [xy_sub_filter_consumer.vcxproj](../src/filters/transform/vsfilter/xy_sub_filter_consumer.vcxproj). The unit test project is [unit_test.vcxproj](../test/unit_test/unit_test.vcxproj).
 
-Release **v3.2.1.920** is defined in [version_in.h](../src/filters/transform/vsfilter/version_in.h), shared by DLL resources and filter options. CI passes `--versioning-off` so the committed release number is preserved. See [release notes](releases/v3.2.1.920.md) and the preceding [v3.2.1.910 notes](releases/v3.2.1.910.md).
+Release **v3.2.1.930** is defined in [version_in.h](../src/filters/transform/vsfilter/version_in.h), shared by DLL resources and filter options. CI passes `--versioning-off` so the committed release number is preserved. See [release notes](releases/v3.2.1.930.md), the [queue implementation and validation](consumer-queue-fixes-20261031.md), and the preceding [v3.2.1.920 notes](releases/v3.2.1.920.md).
+
+Release packages include [RegisterFilters.cmd](../tools/release/RegisterFilters.cmd) and [UnregisterFilters.cmd](../tools/release/UnregisterFilters.cmd). They share a [registration helper template](../tools/release/filter-registration.cmd.in) configured for each package's architecture. It verifies that the three DLLs are present, selects the matching Windows `regsvr32`, and requests administrator permission when needed; `/check` leaves registration unchanged.
 
 ## Runtime graph
 

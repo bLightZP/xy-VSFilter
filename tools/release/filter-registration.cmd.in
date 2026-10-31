@@ -1,0 +1,105 @@
+@echo off
+setlocal EnableExtensions DisableDelayedExpansion
+rem The release packager replaces this token with Win32 or x64.
+set "xy_package_arch=@PACKAGE_ARCH@"
+set "xy_action=%~1"
+set "xy_option=%~2"
+set "xy_directory=%~dp0"
+set "xy_failed=0"
+set "xy_switch="
+
+if /i "%xy_option%"=="/?" goto help
+if /i "%xy_option%"=="/help" goto help
+if /i "%xy_action%"=="register" goto action_ok
+if /i "%xy_action%"=="unregister" goto unregister
+goto help
+
+:unregister
+set "xy_switch=/u"
+
+:action_ok
+if not "%xy_option%"=="" if /i not "%xy_option%"=="/check" if /i not "%xy_option%"=="/elevated" goto help
+if /i "%xy_package_arch%"=="Win32" goto architecture_ok
+if /i not "%xy_package_arch%"=="x64" goto bad_package
+if /i "%PROCESSOR_ARCHITECTURE%"=="x86" if not defined PROCESSOR_ARCHITEW6432 goto needs_64bit
+
+:architecture_ok
+set "xy_regsvr=%SystemRoot%\System32\regsvr32.exe"
+if /i "%xy_package_arch%"=="Win32" if exist "%SystemRoot%\SysWOW64\regsvr32.exe" set "xy_regsvr=%SystemRoot%\SysWOW64\regsvr32.exe"
+if /i "%xy_package_arch%"=="x64" if defined PROCESSOR_ARCHITEW6432 set "xy_regsvr=%SystemRoot%\Sysnative\regsvr32.exe"
+if not exist "%xy_regsvr%" goto missing_regsvr
+for %%F in (VSFilter.dll XySubFilter.dll xy_sub_filter_consumer.dll) do (
+    if not exist "%xy_directory%%%F" (
+        echo ERROR: Missing "%xy_directory%%%F". Extract the complete package first.
+        set "xy_failed=1"
+    )
+)
+if "%xy_failed%"=="1" goto finish
+echo Package: %xy_package_arch%
+echo Registration tool: "%xy_regsvr%"
+if /i "%xy_option%"=="/check" (
+    echo Package check passed. No registration changes were made.
+    exit /b 0
+)
+
+set "xy_powershell=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+if not exist "%xy_powershell%" goto missing_powershell
+"%xy_powershell%" -NoLogo -NoProfile -Command "$registrationPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent()); if ($registrationPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { exit 0 }; exit 1"
+if errorlevel 1 goto elevate
+
+echo.
+echo Action: %xy_action% the three %xy_package_arch% filters in this folder.
+for %%F in (VSFilter.dll XySubFilter.dll xy_sub_filter_consumer.dll) do (
+    "%xy_regsvr%" /s %xy_switch% "%xy_directory%%%F"
+    if errorlevel 1 (
+        echo FAILED: %%F
+        set "xy_failed=1"
+    ) else (
+        echo OK: %%F
+    )
+)
+if "%xy_failed%"=="0" (echo All filters completed successfully.) else (echo One or more filters failed. See the results above.)
+goto finish
+
+:elevate
+if /i "%xy_option%"=="/elevated" goto elevation_failed
+echo Requesting administrator permission...
+rem Keep the folder out of the command string so spaces and shell metacharacters remain literal.
+"%xy_powershell%" -NoLogo -NoProfile -Command "try { $registrationArguments = '/d /c filter-registration.cmd ' + $env:xy_action + ' /elevated'; $registrationProcess = Start-Process -FilePath $env:ComSpec -WorkingDirectory $env:xy_directory -ArgumentList $registrationArguments -Verb RunAs -WindowStyle Normal -Wait -PassThru -ErrorAction Stop; exit $registrationProcess.ExitCode } catch { Write-Error $_; exit 1 }"
+if errorlevel 1 goto elevation_failed
+exit /b 0
+
+:elevation_failed
+echo Administrator permission was cancelled, unavailable, or the elevated operation failed.
+set "xy_failed=1"
+goto finish
+
+:bad_package
+echo ERROR: This registration helper has not been configured for a release package.
+set "xy_failed=1"
+goto finish
+
+:needs_64bit
+echo ERROR: The x64 filters require 64-bit Windows. Use the Win32 package on 32-bit Windows.
+set "xy_failed=1"
+goto finish
+
+:missing_regsvr
+echo ERROR: Cannot find "%xy_regsvr%".
+set "xy_failed=1"
+goto finish
+
+:missing_powershell
+echo ERROR: Windows PowerShell is required to request administrator permission.
+set "xy_failed=1"
+goto finish
+
+:help
+echo RegisterFilters.cmd or UnregisterFilters.cmd
+echo Run from the extracted package. Windows requests administrator permission when needed.
+echo Add /check to verify the package and registration tool without changing registration.
+exit /b 0
+
+:finish
+if /i not "%xy_option%"=="/check" pause
+exit /b %xy_failed%

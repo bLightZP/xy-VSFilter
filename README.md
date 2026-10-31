@@ -1,10 +1,12 @@
-# xy-VSFilter v3.2.1.920 (2026-10-30)
+# xy-VSFilter v3.2.1.930 (2026-10-31)
 
 Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
-[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
+[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
 
 Each architecture package includes the three filter DLLs and standalone rendering/streaming benchmark consoles. Matching PDB symbols, pinned dependency sources, build and validation records, and SHA256 checksums are separate release assets. Choose the architecture that matches your player/DirectShow graph.
+
+Extract the package to a permanent folder and close your players. Run **RegisterFilters.cmd** to register its three filters, or **UnregisterFilters.cmd** to unregister them. The scripts request administrator permission when needed and select the registration tool for the package's architecture. Keep the folder in place while the filters are registered. Run either script with `/check` for a check that leaves registration unchanged.
 
 | Component | Purpose |
 | --- | --- |
@@ -35,6 +37,16 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
       MaskSub "[file]s[width]i[height]i[fps]f[length]i[charset]i[vfr]s[pixel_type]s"
 
 # Change log:
+
+## v3.2.1.930 (2026-10-31)
+
+- Fix madVR subtitle queue draining and failure to fill while paused by keeping consumer parameter updates from repeatedly clearing queued output.
+- Keep future embedded subtitle packets from clearing the queue; limit late-packet invalidation to affected frames.
+- Correct video timestamps and partial invalidation boundaries when subtitle delay or speed adjustment is active.
+- Reset queue tracking after seeks and fix invalidation races involving in-flight frames, failed delivery and consumer reconnection.
+- Safely fall back when consumer frame durations are zero or unavailable.
+
+See the [full changelog](docs/releases/v3.2.1.930.md) and [release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.930).
 
 ## v3.2.1.920 (2026-10-30)
 
