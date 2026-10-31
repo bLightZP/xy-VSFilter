@@ -14,7 +14,7 @@ Extract the package to a permanent folder and close your players. Run **Register
 | `XySubFilter.dll` | Subtitle provider for compatible consumers such as madVR or MPC Video Renderer. |
 | `xy_sub_filter_consumer.dll` | DirectShow video transform that receives and blends XySubFilter frames. |
 
-**Fix out of range alpha in native renderer** is enabled by default under **Main > Rendering**. It normalizes ASS alpha targets before animation to prevent flickering from out-of-range values, matching MPC-BE's handling. Disable it to restore the previous native behavior.
+**Fix out of range alpha in native renderer** is enabled by default under **Main > Rendering**. It normalizes ASS alpha targets before animation to prevent flickering from out-of-range values. Disable it to restore the previous native behavior.
 
 Native rendering is the default. To use libass for ASS/SSA, enable **Prefer libass rendering** in the Main property page's Rendering group. Libass and its dependencies are statically linked into the filters. See [libass configuration and source builds](docs/libass-integration.md).
 
@@ -42,7 +42,7 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
 
 ## v3.2.1.940
 
-- **Fix native ASS subtitle flickering caused by out-of-range animated alpha values.** Alpha targets are reduced to eight bits before animation, matching MPC-BE's handling. The new **Fix out of range alpha in native renderer** setting is enabled by default under **Main > Rendering**; disabling it restores the previous native behavior.
+- **Fix native ASS subtitle flickering caused by out-of-range animated alpha values.** Alpha targets are reduced to eight bits before animation. The new **Fix out of range alpha in native renderer** setting is enabled by default under **Main > Rendering**; disabling it restores the previous native behavior.
 
 See the [full changelog](docs/releases/v3.2.1.940.md) and [validation results](docs/native-alpha-compatibility-940.md).
 
