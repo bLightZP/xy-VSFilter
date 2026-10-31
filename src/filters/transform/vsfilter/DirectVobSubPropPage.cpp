@@ -1330,8 +1330,6 @@ bool CDVSAboutPPage::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             SetTextColor(item->hDC, GetSysColor(COLOR_HOTLIGHT));
             RECT text = item->rcItem;
             DrawTextW(item->hDC, L"Latest releases", -1, &text, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-            if ((item->itemState & ODS_FOCUS) && !(item->itemState & ODS_NOFOCUSRECT))
-                DrawFocusRect(item->hDC, &item->rcItem);
             RestoreDC(item->hDC, saved);
             return true;
         }
