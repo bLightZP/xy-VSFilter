@@ -1724,7 +1724,8 @@ static int CacheContract()
     return 0;
 }
 
-static CStringA FrameSha256(IXySubRenderFrame* frame, BCRYPT_ALG_HANDLE algorithm, int* count)
+template<class Frame>
+static CStringA FrameSha256(Frame* frame, BCRYPT_ALG_HANDLE algorithm, int* count)
 {
     BCRYPT_HASH_HANDLE hash = NULL;
     Require(BCryptCreateHash(algorithm, &hash, NULL, 0, NULL, 0, 0) >= 0, "Cannot create SHA256");
@@ -1834,7 +1835,7 @@ static int Fixtures(const wchar_t* output)
             CComPtr<IXySubRenderFrame> frame;
             Require(SUCCEEDED(renderer.RenderEx(&frame, MSP_RGBA, rect, rect, size, time, 24)), "Fixture render failed");
             int count;
-            CStringA hash = FrameSha256(frame, algorithm, &count);
+            CStringA hash = FrameSha256(frame.p, algorithm, &count);
             fprintf(csv, "%u,%lld,%d,%s\n", i, time, count, hash.GetString());
         }
     }
@@ -1948,6 +1949,7 @@ static int LibassContract()
 #include "../../src/filters/transform/vsfilter/version.h"
 #include "layout_contract.h"
 #include "queue_contract.h"
+#include "outline_contract.h"
 
 static int FilterContract(const wchar_t* path, bool xy)
 {
@@ -2133,7 +2135,7 @@ static int Render(const wchar_t* script, const wchar_t* fonts, const wchar_t* ou
         Require(SUCCEEDED(hr), "RenderEx failed");
         int count = 0;
         CStringA hash;
-        if (benchmark.hashes) hash = FrameSha256(frame, algorithm, &count);
+        if (benchmark.hashes) hash = FrameSha256(frame.p, algorithm, &count);
         else if (frame) Require(SUCCEEDED(frame->GetBitmapCount(&count)), "Cannot read bitmap count");
         fprintf(csv, "%d,%lld,%.6f,%d,%s", frameIndex, time,
             (benchmark.mode ? phaseTicks : after.QuadPart - before.QuadPart) * 1000.0 / frequency.QuadPart, count, hash.GetString());
@@ -2213,6 +2215,8 @@ int wmain(int argc, wchar_t** argv)
         if (argc==4 && !wcscmp(argv[1],L"--layout-filter-contract")) return LayoutFilterContract(argv[3],!wcscmp(argv[2],L"xy"));
         if (argc==2 && !wcscmp(argv[1],L"--layout-contract")) return LayoutContract();
         if (argc==2 && !wcscmp(argv[1],L"--queue-state-contract")) return QueueStateContract();
+        if (argc==2 && !wcscmp(argv[1],L"--outline-contract")) return OutlineContract();
+        if (argc==5 && !wcscmp(argv[1],L"--outline-filter-contract")) return OutlineFilterContract(argv[3],argv[4],!wcscmp(argv[2],L"xy"));
         if (argc==2 && !wcscmp(argv[1],L"--alpha-wrap-contract")) return AlphaWrapContract();
         if (argc==4 && !wcscmp(argv[1],L"--queue-filter-contract")) return QueueFilterContract(argv[3],!wcscmp(argv[2],L"libass"));
         if (argc==4 && !wcscmp(argv[1],L"--filter-contract")) return FilterContract(argv[3],!wcscmp(argv[2],L"xy"));

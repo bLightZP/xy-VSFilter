@@ -1,8 +1,8 @@
-# xy-VSFilter v3.2.1.940 (2026-11-01)
+# xy-VSFilter v3.2.1.950 (2026-11-01)
 
 Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
-[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
+[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.950 release notes](docs/releases/v3.2.1.950.md) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
 
 Each architecture package includes the three filter DLLs and standalone rendering/streaming benchmark consoles. Matching PDB symbols, pinned dependency sources, build and validation records, and SHA256 checksums are separate release assets. Choose the architecture that matches your player/DirectShow graph.
 
@@ -39,6 +39,13 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
       MaskSub "[file]s[width]i[height]i[fps]f[length]i[charset]i[vfr]s[pixel_type]s"
 
 # Change log:
+
+## v3.2.1.950 (2026-11-01)
+
+- **Fix native ASS outline rendering crashes and hangs triggered by animated vector subtitles**, including playback and seeking at high custom resolutions. Correct an overflow that could keep expired outline arcs active and access memory outside the outline buffer.
+- Handle invalid outline geometry and allocation failures safely, clearing partial output so subsequent subtitle requests can recover.
+
+See the [full changelog](docs/releases/v3.2.1.950.md), [release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.950), and [validation results](docs/native-outline-fix-20261101.md).
 
 ## v3.2.1.940 (2026-11-01)
 

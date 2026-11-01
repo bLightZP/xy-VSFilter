@@ -99,7 +99,7 @@ int wmain(int argc,wchar_t** argv)
             Require(SUCCEEDED(renderer.RenderEx(&output,MSP_RGBA,rect,rect,size,time,24000.0/1001)),"Packet render failed");
             QueryPerformanceCounter(&afterRender);
             const ULONGLONG cpu=ThreadTicks()-cpuBefore;
-            int count;CStringA hash=FrameSha256(output,algorithm,&count);
+            int count;CStringA hash=FrameSha256(output.p,algorithm,&count);
             fprintf(csv,"%d,%lld,%.6f,%d,%s,%.6f,%.6f,%.6f,%llu",frame,time,
                 (afterRender.QuadPart-afterIngest.QuadPart)*1000.0/frequency.QuadPart,count,hash.GetString(),
                 (afterIngest.QuadPart-before.QuadPart)*1000.0/frequency.QuadPart,

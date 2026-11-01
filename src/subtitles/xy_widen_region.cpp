@@ -3,6 +3,8 @@
 #include "Rasterizer.h"
 #include <vector>
 #include "xy_circular_array_queue.h"
+#include "RenderLimits.h"
+#include <memory>
 #include <math.h>
 
 //terminology
@@ -139,7 +141,18 @@ WidenRegionCreater::~WidenRegionCreater()
 
 void WidenRegionCreater::xy_overlap_region( SpanBuffer* dst, const SpanBuffer& src, int rx, int ry )
 {
-    m_impl->xy_overlap_region(dst, src, rx, ry);
+    if (!dst || dst == &src) throw CAtlException(E_INVALIDARG);
+    try {
+        m_impl->xy_overlap_region(dst, src, rx, ry);
+    } catch (CMemoryException* error) {
+        error->Delete();
+        dst->clear();
+        throw CAtlException(E_OUTOFMEMORY);
+    } catch (...) {
+        // A failed sweep must not expose a partially widened outline.
+        dst->clear();
+        throw;
+    }
 }
 
 //
@@ -157,6 +170,11 @@ WidenRegionCreaterImpl::~WidenRegionCreaterImpl()
 
 void WidenRegionCreaterImpl::xy_overlap_region(SpanBuffer* dst, const SpanBuffer& src, int rx, int ry)
 {
+    // Radii are in 1/8-pixel scan coordinates. Bound allocation and the cubic
+    // ellipse arithmetic, while allowing every supported output dimension.
+    const int maxRadius = RenderLimits::MaxDimension * 8;
+    if (rx < 0 || ry <= 0 || rx > maxRadius || ry > maxRadius) throw CAtlException(E_INVALIDARG);
+    if (src.empty()) return;
     if (m_ellipse!=NULL && (m_ellipse->m_rx!=rx || m_ellipse->m_ry!=ry))
     {
         delete m_ellipse;
@@ -164,18 +182,11 @@ void WidenRegionCreaterImpl::xy_overlap_region(SpanBuffer* dst, const SpanBuffer
     }
     if (m_ellipse==NULL)
     {
-        m_ellipse = DEBUG_NEW XyEllipse();
-        if (m_ellipse==NULL)
-        {
-            ASSERT(0);
-            return;
-        }
-        int rv = m_ellipse->init(rx, ry);
-        if (rv<0)
-        {
-            ASSERT(0);
-            return;
-        }
+        // Publish only a completely initialized ellipse. In particular, a
+        // failed cross-table allocation must not poison the next request.
+        std::unique_ptr<XyEllipse> ellipse(DEBUG_NEW XyEllipse());
+        if (ellipse->init(rx, ry) < 0) throw CAtlException(E_OUTOFMEMORY);
+        m_ellipse = ellipse.release();
     }
 
     LinkSpanList link_span_list;
@@ -196,7 +207,14 @@ void WidenRegionCreaterImpl::xy_overlap_region(SpanBuffer* dst, const SpanBuffer
     {
         const XY_POINT &left = SPAN_PTR_LEFT(it_src);
         const XY_POINT &right = SPAN_PTR_RIGHT(it_src);
-        int line = XY_POINT_Y(left); //fix me
+        const unsigned __int64 line64 = XY_POINT_Y(left);
+        // Scan spans are ordered, nonoverlapping, and use a positive bias.
+        // Leave room for the complete widened span and its exclusive expiry.
+        if (line64 < unsigned(ry) || line64 >= unsigned(MAX_CROSS_LINE - ry) ||
+            XY_POINT_Y(right) != line64 || XY_POINT_X(left) < unsigned(rx) ||
+            XY_POINT_X(right) >= unsigned(MAX_X - rx) || left >= right ||
+            (it_src != src.begin() && (it_src-1)->second > left)) throw CAtlException(E_INVALIDARG);
+        const int line = static_cast<int>(line64);
         if (line-ry>dst_line)
         {
             add_line(dst, link_span_list, dst_line, line - ry);
@@ -208,6 +226,7 @@ void WidenRegionCreaterImpl::xy_overlap_region(SpanBuffer* dst, const SpanBuffer
         }
         while(true)
         {
+            if (!pos) throw CAtlException(E_FAIL);
             LinkSpan &spans = link_span_list.GetAt(pos);
             LinkArc &arc = spans.left;
             int y = cross_left(arc, left);
@@ -239,11 +258,14 @@ void WidenRegionCreaterImpl::xy_overlap_region(SpanBuffer* dst, const SpanBuffer
             }
         }
     }
-    add_line(dst, link_span_list, dst_line, MAX_CROSS_LINE);
+    // Do not sweep towards INT_MAX even if an internal invariant is broken.
+    add_line(dst, link_span_list, dst_line, static_cast<int>(XY_POINT_Y(src.back().first)) + ry + 1);
+    if (link_span_list.GetCount() != 1) throw CAtlException(E_FAIL); // only the sentinel may remain
 }
 
 int WidenRegionCreaterImpl::cross_left(const LinkArc& arc, XY_POINT center)
 {
+    if (arc.empty()) throw CAtlException(E_FAIL);
     ASSERT(!arc.empty());
     int y = m_ellipse->cross_left(arc.back().arc_center, center);
     if (y>=MAX_CROSS_LINE)
@@ -284,7 +306,7 @@ void WidenRegionCreaterImpl::add_left( LinkArc* arc, XY_POINT center )
         {
             break;
         }
-        else if  ( y+line>arc->get_at(i-1).dead_line )
+        else if (y >= -ry && y+line > arc->get_at(i-1).dead_line)
         {
             arc->get_at(i).dead_line = y+line;
             break;
@@ -297,16 +319,21 @@ void WidenRegionCreaterImpl::add_left( LinkArc* arc, XY_POINT center )
     if (i==0)
     {
         y = m_ellipse->cross_left( arc->get_at(0).arc_center, center );
-        ASSERT(y>=-ry && y+line<=arc->get_at(0).dead_line);
         if (y<=-ry)
         {
             arc->pop_back();
         }
-        else
+        else if (y < MAX_CROSS_LINE)
         {
+            // MAX_CROSS_LINE means no intersection, not a row offset. Adding
+            // it to the biased scan row overflows and prevents arc expiry.
+            ASSERT(y+line <= arc->get_at(0).dead_line);
             arc->get_at(0).dead_line = y + line;
         }
     }
+    // i is the last retained index (0 may also mean an empty queue). The
+    // 2*ry+2 ring reserves one slot; reuse i instead of another modulo/size().
+    if (i >= 2*ry) throw CAtlException(E_FAIL);
     LinkArcItem& item = arc->inc_1_at_tail();
     item.arc_center = center;
     item.dead_line = line + ry + 1;
@@ -328,7 +355,7 @@ void WidenRegionCreaterImpl::add_right( LinkArc* arc, XY_POINT center )
         {
             break;
         }
-        else if ( y+line>arc->get_at(i-1).dead_line )
+        else if (y >= -ry && y+line > arc->get_at(i-1).dead_line)
         {
             arc->get_at(i).dead_line = y+line;
             break;
@@ -352,6 +379,7 @@ void WidenRegionCreaterImpl::add_right( LinkArc* arc, XY_POINT center )
             arc->get_at(0).dead_line = y + line;
         }
     }
+    if (i >= 2*ry) throw CAtlException(E_FAIL); // same capacity check as add_left
     LinkArcItem& item = arc->inc_1_at_tail();
     item.arc_center = center;
     item.dead_line = line + ry + 1;
@@ -367,6 +395,7 @@ void WidenRegionCreaterImpl::add_line( SpanBuffer* dst, LinkSpanList& spans, int
     {
         POSITION pos_cur = spans.GetHeadPosition();
         POSITION pos_next = pos_cur;
+        if (!pos_next) throw CAtlException(E_FAIL);
         ASSERT(pos_next!=NULL);
         LinkSpan *span = &spans.GetNext(pos_next);
         if (pos_next==NULL)
@@ -376,6 +405,7 @@ void WidenRegionCreaterImpl::add_line( SpanBuffer* dst, LinkSpanList& spans, int
 
         while(pos_next!=NULL)
         {
+            if (span->left.empty() || span->right.empty()) throw CAtlException(E_FAIL);
             ASSERT(!span->left.empty());
             const LinkArcItem &left_top = span->left.get_at(0);
 
@@ -384,6 +414,7 @@ void WidenRegionCreaterImpl::add_line( SpanBuffer* dst, LinkSpanList& spans, int
 
             ASSERT(cur_dst_line < left_top.dead_line);
             ASSERT(cur_dst_line < right_top.dead_line);
+            if (cur_dst_line >= left_top.dead_line || cur_dst_line >= right_top.dead_line) throw CAtlException(E_FAIL);
 
             XY_POINT left, right;
             int x = m_ellipse->get_left_arc_x(left_top.arc_center, cur_dst_line);
@@ -428,6 +459,7 @@ void WidenRegionCreaterImpl::add_line( SpanBuffer* dst, LinkSpanList& spans, int
             if (span->left.empty())
             {
                 ASSERT(span->right.empty());
+                if (!span->right.empty()) throw CAtlException(E_FAIL);
                 spans.RemoveAt(pos_cur);
                 pos_cur = pos_next;
                 span = &spans.GetNext(pos_next);
@@ -588,8 +620,7 @@ int XyEllipse::init( int rx, int ry )
     m_f_ry = ry;
     m_f_half_inv_rx = rx > 0 ? 0.5f / m_f_rx : 0;
     m_f_half_inv_ry = /*ry > 0*/ 0.5f / m_f_ry;
-    init_cross_point();
-    return 0;
+    return init_cross_point();
 }
 
 int XyEllipse::get_left_arc_x( int y ) const
@@ -599,7 +630,9 @@ int XyEllipse::get_left_arc_x( int y ) const
 
 int XyEllipse::get_left_arc_x( XY_POINT center, int y ) const
 {
-    return XY_POINT_X(center) + m_left_arc[y-XY_POINT_Y(center)];
+    const int offset = y - static_cast<int>(XY_POINT_Y(center));
+    if (offset < -m_ry || offset > m_ry) throw CAtlException(E_FAIL);
+    return XY_POINT_X(center) + m_left_arc[offset];
 }
 
 int XyEllipse::get_right_arc_x( int y ) const
@@ -609,7 +642,9 @@ int XyEllipse::get_right_arc_x( int y ) const
 
 int XyEllipse::get_right_arc_x( XY_POINT center, int y ) const
 {
-    return XY_POINT_X(center) - m_left_arc[y-XY_POINT_Y(center)];
+    const int offset = y - static_cast<int>(XY_POINT_Y(center));
+    if (offset < -m_ry || offset > m_ry) throw CAtlException(E_FAIL);
+    return XY_POINT_X(center) - m_left_arc[offset];
 }
 
 int XyEllipse::init_cross_point()
@@ -618,7 +653,7 @@ int XyEllipse::init_cross_point()
     {
         return 0;
     }
-    if ((2*m_ry+1)*(2*m_rx+1)>(2*LOOKUP_TABLE_SIZE_RY+1)*(2*LOOKUP_TABLE_SIZE_RX+1))
+    if ((2LL*m_ry+1)*(2LL*m_rx+1)>(2*LOOKUP_TABLE_SIZE_RY+1)*(2*LOOKUP_TABLE_SIZE_RX+1))
     {
         return 0;
     }
@@ -699,7 +734,6 @@ int XyEllipse::cross_right( XY_POINT c1, XY_POINT base ) const
 
 int XyEllipse::cross_left( int dx, int dy ) const
 {
-    ASSERT(dy<0 && dy>=-2*m_ry);
     if (dx < -m_rx)
     {
         return MAX_CROSS_LINE;
@@ -708,11 +742,12 @@ int XyEllipse::cross_left( int dx, int dy ) const
     {
         return MIN_CROSS_LINE;
     }
-    else if (m_cross_matrix)// [-m_rx, m_rx], use lookup table
+    // Distant sentinel centers were handled by the x comparisons above.
+    if (dy >= 0 || dy < -2*m_ry) throw CAtlException(E_FAIL);
+    if (m_cross_matrix)// [-m_rx, m_rx], use lookup table
     {
-        ASSERT( abs( *(m_cross_matrix + dy*(2*m_rx+1) + dx) )<=m_ry || 
-            *(m_cross_matrix + dy*(2*m_rx+1) + dx) == MIN_CROSS_LINE || 
-            *(m_cross_matrix + dy*(2*m_rx+1) + dx) == MAX_CROSS_LINE );
+        const int cross = *(m_cross_matrix + dy*(2*m_rx+1) + dx);
+        ASSERT(cross == MIN_CROSS_LINE || cross == MAX_CROSS_LINE || (cross >= -m_ry && cross <= m_ry));
         return *(m_cross_matrix + dy*(2*m_rx+1) + dx);
     }
     else

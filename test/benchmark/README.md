@@ -516,3 +516,33 @@ routing when an external helper is requested. A requested renderer or helper
 that is not actually loaded fails validation. The Debug/LOCAL build and loaded
 DLL hashes are still verified. The paused hold allows inspection of madVR's
 subtitle queue overlay; TCP 1150 alone does **not** report subtitle queue depth.
+
+## Native outline regression tests
+
+Run matching Win32 and x64 binaries without registering either filter:
+
+```powershell
+python test/benchmark/run_outline_regressions.py --exe <render_subtitles.exe> --xy-dll <XySubFilter.dll> --vs-dll <VSFilter.dll> --output <results.json>
+```
+
+Each child has a 60-second watchdog. The runner records executable, DLL and
+fixture hashes and removes only that child's isolated registry subtree.
+
+- `--outline-contract` compares 32 cases to an independent union of expanded
+  spans using the existing ellipse kernel. It covers table and analytic radii,
+  zero horizontal radius, isolated eccentric ellipses, invalid coordinates and
+  radii, partial-output cleanup and recovery after failure. Overlapping eccentric
+  ellipses retain the existing analytic/Bresenham rounding; the reference does
+  not impose a different rounding rule.
+- `--outline-filter-contract xy <dll> <fixture>` requests the reduced crash
+  geometry through the actual DLL at its failing timestamp, then seeks across
+  border-transform and event boundaries, changes 1080p/4K/8K geometry, retains
+  128 frames through stop/removal, checks their hashes and reopens the filter.
+- `--outline-filter-contract vs <dll> <fixture>` exercises VSFilter's exported
+  CSRI native renderer at 4K, verifying visible output, repeatable seeks and
+  close/reopen. This is not a DirectShow video-transform playback test.
+
+The three-triangle fixture is translated down and unclipped so successful output
+can be checked. Both released 940 x64 DLLs crash on this fixture; the corrected
+DLLs must render it. Full sample and actual madVR validation are recorded in
+[the implementation report](../../docs/native-outline-fix-20261101.md).

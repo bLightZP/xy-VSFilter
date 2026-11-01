@@ -1,0 +1,19 @@
+[Script Info]
+; Three vector triangles reduced from the reported native outline crash.
+; No dialogue or embedded font is required. Original timing and vector geometry;
+; translated down and unclipped so successful rendering is visibly testable.
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+PlayResX: 1280
+PlayResY: 720
+YCbCr Matrix: TV.709
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,46,&H00FFFFFF,&H00FFFFFF,&H00000000,&H003E30AD,-1,0,0,0,100,100,2,0,1,1.5,0,8,10,10,23,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:01:10.55,0:01:10.85,Default,,0,0,0,,{\an7\fr12\1c&HFFFFFF&\3c&HFFFFFF&\t(0,33,\bord6.25\blur3.75)\t(33,99,\3c&HFF4E03&\bord2.5\blur3.75)\pos(718,246)\fad(0,250)\fscx125\fscy125\p1}m 24 -37 l 26 -37 l 28 -43 m 28 -43 l 30 -43 l 23 -42 m 23 -42 l 25 -42 l 17 -48

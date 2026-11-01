@@ -27,7 +27,7 @@ flowchart LR
 
 The arrows into a DLL mean **build dependency**. The shared-library grouping condenses the repeated `ProjectDependencies` entries in [VSFilter.sln](../VSFilter.sln); it does not imply one physical library. The DLL target names and source membership are in [VSFilter.vcxproj](../src/filters/transform/vsfilter/VSFilter.vcxproj), [xy_sub_filter.vcxproj](../src/filters/transform/vsfilter/xy_sub_filter.vcxproj), and [xy_sub_filter_consumer.vcxproj](../src/filters/transform/vsfilter/xy_sub_filter_consumer.vcxproj). The unit test project is [unit_test.vcxproj](../test/unit_test/unit_test.vcxproj).
 
-Build **v3.2.1.940** is defined in [version_in.h](../src/filters/transform/vsfilter/version_in.h), shared by DLL resources and filter options. CI passes `--versioning-off` so the committed release number is preserved. See [release notes](releases/v3.2.1.940.md), the [native alpha validation](native-alpha-compatibility-940.md), the [queue implementation and validation](consumer-queue-fixes-20261031.md), and the preceding [v3.2.1.920 notes](releases/v3.2.1.920.md).
+Build **v3.2.1.950** is defined in [version_in.h](../src/filters/transform/vsfilter/version_in.h), shared by DLL resources and filter options. CI passes `--versioning-off` so the committed release number is preserved. See [release notes](releases/v3.2.1.950.md), the [native outline validation](native-outline-fix-20261101.md), the [native alpha validation](native-alpha-compatibility-940.md), the [queue implementation and validation](consumer-queue-fixes-20261031.md), and the preceding [v3.2.1.920 notes](releases/v3.2.1.920.md).
 
 Release packages include [RegisterFilters.cmd](../tools/release/RegisterFilters.cmd) and [UnregisterFilters.cmd](../tools/release/UnregisterFilters.cmd). They share a [registration helper template](../tools/release/filter-registration.cmd.in) configured for each package's architecture. It verifies that the three DLLs are present, selects the matching Windows `regsvr32`, and requests administrator permission when needed; `/check` leaves registration unchanged.
 
@@ -310,3 +310,24 @@ The independent [storage fixture](../test/benchmark/fixtures/tag-storage.ass)
 contains 100 events and exercises short/long programs and legacy parameter forms.
 
 See [the cold-storage implementation/results](performance-20261028-tag-storage.md) for repeated timings, memory, rejected alternatives and exact-output gates.
+
+## Native outline sweep safety (2026-11-01)
+
+`ScanLineData2::CreateWidenedRegion` in [Rasterizer.cpp](../src/subtitles/Rasterizer.cpp)
+uses [xy_widen_region.cpp](../src/subtitles/xy_widen_region.cpp) for vertical/elliptical
+border expansion. Both native filter paths share this widener; libass bypasses it.
+The optimized arc queues, ellipse kernels, intersection tables and raster caches
+remain in use. No-intersection sentinels must never be added to biased scan rows.
+
+The sweep checks source coordinates, queue expiry and ellipse lookup bounds and
+stops at the last source row plus its vertical radius. A failed sweep clears its
+partial output and throws `CAtlException`, which the native `RenderEx` boundary
+maps to an HRESULT. MFC allocation exceptions are deleted and converted to
+`E_OUTOFMEMORY`; only completely initialized ellipses enter the reusable cache.
+
+[outline_contract.h](../test/benchmark/outline_contract.h) checks span unions,
+failure recovery, the actual XySubFilter consumer path and VSFilter's CSRI entry
+point. [outline-sentinel.ass](../test/benchmark/fixtures/outline-sentinel.ass)
+is a font-independent reduction of the reported crash. The Python runner bounds
+each test process and cleans its isolated registry hive after failures.
+See [implementation and validation](native-outline-fix-20261101.md).
