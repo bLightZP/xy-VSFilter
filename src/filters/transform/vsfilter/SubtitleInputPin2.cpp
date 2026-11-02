@@ -72,8 +72,7 @@ STDMETHODIMP SubtitleInputPin2::NewSegment(REFERENCE_TIME start, REFERENCE_TIME 
     CAutoLock lock(m_pSubLock);
     const HRESULT hr = __super::NewSegment(start, stop, rate);
     if (SUCCEEDED(hr) && m_helper) {
-        // A seek replaces the stream's packet timeline and requested horizon.
-        InvalidateSubtitle(-1, m_helper->GetSubStream());
+        xy_sub_filter->NewSubtitleSegment(m_helper->GetSubStream());
     }
     return hr;
 }

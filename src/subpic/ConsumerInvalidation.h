@@ -48,7 +48,8 @@ public:
         CAutoLock lock(&m_lock);
         return m_epoch;
     }
-    // Old deliveries may finish, but cannot clear a replacement consumer.
+    // Old deliveries may finish, but cannot clear a replacement consumer or
+    // a new segment. The graph seek itself flushes the consumer's old queue.
     void Reset() {
         CAutoLock lock(&m_lock);
         ++m_epoch;

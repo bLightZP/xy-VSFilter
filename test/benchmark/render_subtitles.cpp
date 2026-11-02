@@ -1950,6 +1950,7 @@ static int LibassContract()
 #include "layout_contract.h"
 #include "queue_contract.h"
 #include "outline_contract.h"
+#include "font_size_contract.h"
 
 static int FilterContract(const wchar_t* path, bool xy)
 {
@@ -2216,6 +2217,8 @@ int wmain(int argc, wchar_t** argv)
         if (argc==2 && !wcscmp(argv[1],L"--layout-contract")) return LayoutContract();
         if (argc==2 && !wcscmp(argv[1],L"--queue-state-contract")) return QueueStateContract();
         if (argc==2 && !wcscmp(argv[1],L"--outline-contract")) return OutlineContract();
+        if (argc==3 && !wcscmp(argv[1],L"--font-size-contract")) return FontSizeContract(argv[2]);
+        if (argc==6 && !wcscmp(argv[1],L"--font-size-filter-contract")) return FontSizeFilterContract(argv[3],argv[4],argv[5],!wcscmp(argv[2],L"xy"));
         if (argc==5 && !wcscmp(argv[1],L"--outline-filter-contract")) return OutlineFilterContract(argv[3],argv[4],!wcscmp(argv[2],L"xy"));
         if (argc==2 && !wcscmp(argv[1],L"--alpha-wrap-contract")) return AlphaWrapContract();
         if (argc==4 && !wcscmp(argv[1],L"--queue-filter-contract")) return QueueFilterContract(argv[3],!wcscmp(argv[2],L"libass"));

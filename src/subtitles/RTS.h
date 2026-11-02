@@ -47,6 +47,8 @@ class CMyFont : public CFont
 {
 public:
     int m_ascent, m_descent;
+    double m_scale;
+    bool m_valid;
 
     CMyFont(const STSStyleBase& style);
 };
@@ -175,7 +177,7 @@ public:
 protected:
     virtual bool CreatePath(PathData* path_data);
 
-    static void GetTextInfo(TextInfo *output, const FwSTSStyle& style, const CStringW& str);
+    static bool GetTextInfo(TextInfo *output, const FwSTSStyle& style, const CStringW& str);
 public:
     CText(const FwSTSStyle& style, const CStringW& str, int ktype, int kstart, int kend
         , double target_scale_x=1.0, double target_scale_y=1.0);

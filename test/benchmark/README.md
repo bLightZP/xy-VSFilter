@@ -546,3 +546,34 @@ The three-triangle fixture is translated down and unclipped so successful output
 can be checked. Both released 940 x64 DLLs crash on this fixture; the corrected
 DLLs must render it. Full sample and actual madVR validation are recorded in
 [the implementation report](../../docs/native-outline-fix-20261101.md).
+
+
+## Oversized native fonts and EOF/seek queue regressions
+
+Run the focused contracts against the built DLLs on each architecture:
+
+```powershell
+python test/benchmark/run_font_queue_regressions.py --exe <render_subtitles.exe> --xy-dll <XySubFilter.dll> --vs-dll <VSFilter.dll> --output <new-results.json>
+```
+
+The runner loads the included OFL-licensed CFF font privately; no font is
+installed. It also checks Windows Arial/TrueType metrics and outlines. The
+synthetic ASS fixture tests custom 8K layout/4K output, nonuniform scale,
+spacing, transforms, multiline text, warm caches, backward seeks, retained
+frames and teardown in both actual native DLLs. Failed font realization must
+leave deterministic empty metrics and a usable GDI context.
+
+The actual-DLL queue contract models EOF/flush/NewSegment, repeated backward
+and forward seeks, and both same-thread and separate-thread refills inside
+Clear. Segment reset must not request old EOF frames; a future packet outside
+the new requested horizon must not clear the queue, while a genuinely late
+packet still must. Both native and libass backends run under child watchdogs
+with isolated filter settings. Queue-state coverage also retires old in-flight
+deliveries without losing legitimate out-of-order requests in the new segment.
+
+For private-desktop madVR validation, verify the active candidate using actual
+callback evidence after the helper closes. A loaded-module list alone does not
+identify the active filter instance. Windows directory size metadata can remain
+stale while a diagnostic trace is open; read completed trace contents instead.
+Private-desktop presentation counters are not a visible-display FPS benchmark.
+See [implementation and validation](../../docs/font-queue-fixes-20261102.md).

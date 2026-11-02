@@ -123,12 +123,47 @@ inline CStringW::PCXSTR FindChar(CStringW::PCXSTR start, CStringW::PCXSTR end, W
 
 // CMyFont
 
+namespace {
+    // Bound only GDI realization, not the authored font size. Large CFF fonts
+    // can return a handle but fail metrics/TextOut at our 64x layout precision.
+    const int MaxGdiFontSize = 15087;
+    struct NativeFontSelection {
+        HGDIOBJ previous;
+        NativeFontSelection(HFONT font) : previous(SelectObject(g_hDC, font)) {}
+        bool Valid() const { return previous && previous != HGDI_ERROR; }
+        ~NativeFontSelection() { if (Valid()) SelectObject(g_hDC, previous); }
+    };
+    bool TextCoordinate(double value) {
+        return std::isfinite(value) && value >= INT_MIN && value <= INT_MAX;
+    }
+    bool RescaleTextPath(PathData* path, double scale, int first = 0, double offset = 0) {
+        for (int i = first; i < path->mPathPoints; ++i) {
+            const double x = path->mpPathPoints[i].x * scale + offset;
+            const double y = path->mpPathPoints[i].y * scale;
+            if (!TextCoordinate(x) || !TextCoordinate(y)) return false;
+            path->mpPathPoints[i].x = (LONG)x;
+            path->mpPathPoints[i].y = (LONG)y;
+        }
+        return true;
+    }
+}
+
 CMyFont::CMyFont(const STSStyleBase& style)
+    : m_ascent(0), m_descent(0), m_scale(1), m_valid(false)
 {
+    if (!std::isfinite(style.fontSize) || style.fontSize < 0) return;
     LOGFONT lf;
     ZeroMemory(&lf, sizeof(lf));
-    lf <<= style;
-    lf.lfHeight         = (LONG)(style.fontSize+0.5);
+    if (style.fontSize > MaxGdiFontSize) {
+        STSStyleBase bounded(style);
+        bounded.fontSize = MaxGdiFontSize;
+        lf <<= bounded;
+        lf.lfHeight = MaxGdiFontSize;
+        m_scale = style.fontSize / MaxGdiFontSize;
+    } else {
+        lf <<= style;
+        lf.lfHeight = (LONG)(style.fontSize+0.5);
+    }
     lf.lfOutPrecision   = OUT_TT_PRECIS;
     lf.lfClipPrecision  = CLIP_DEFAULT_PRECIS;
     lf.lfQuality        = ANTIALIASED_QUALITY;
@@ -136,14 +171,17 @@ CMyFont::CMyFont(const STSStyleBase& style)
     if(!CreateFontIndirect(&lf))
     {
         _tcscpy(lf.lfFaceName, _T("Arial"));
-        VERIFY(CreateFontIndirect(&lf));
+        if (!CreateFontIndirect(&lf)) return;
     }
-    HFONT hOldFont = SelectFont(g_hDC, *this);
-    TEXTMETRIC tm;
-    GetTextMetrics(g_hDC, &tm);
-    m_ascent  = ((tm.tmAscent  + 4) >> 3);
-    m_descent = ((tm.tmDescent + 4) >> 3);
-    SelectFont(g_hDC, hOldFont);
+    NativeFontSelection selected(*this);
+    TEXTMETRIC tm = {};
+    if (!selected.Valid() || !GetTextMetrics(g_hDC, &tm)) return;
+    const double ascent = (tm.tmAscent * m_scale + 4) / 8;
+    const double descent = (tm.tmDescent * m_scale + 4) / 8;
+    if (!TextCoordinate(ascent) || !TextCoordinate(descent)) return;
+    m_ascent = (int)ascent;
+    m_descent = (int)descent;
+    m_valid = true;
 }
 
 // CWord
@@ -632,9 +670,9 @@ CText::CText( const FwSTSStyle& style, const CStringW& str, int ktype, int kstar
     if(pos==NULL)
     {
         TextInfo* tmp=DEBUG_NEW TextInfo();
-        GetTextInfo(tmp, m_style, m_str.Get());
         text_info.reset(tmp);
-        text_info_cache->UpdateCache(text_info_key, text_info);
+        if (GetTextInfo(tmp, m_style, m_str.Get()))
+            text_info_cache->UpdateCache(text_info_key, text_info);
     }
     else
     {
@@ -664,81 +702,82 @@ bool CText::Append(const SharedPtrCWord& w)
 
 bool CText::CreatePath(PathData* path_data)
 {
-    bool succeeded = false;
     FwCMyFont font(m_style);
-    HFONT hOldFont = SelectFont(g_hDC, font.get());
-    ASSERT(hOldFont);
-
-    int width = 0;
+    if (!font.get().m_valid) return false;
+    NativeFontSelection selected(font.get());
+    if (!selected.Valid()) return false;
+    const auto fail = [&]() {
+        ::AbortPath(g_hDC);
+        path_data->_TrashPath();
+        return false;
+    };
+    const double scale = font.get().m_scale;
     const CStringW& str = m_str.Get();
     if(m_style.get().fontSpacing || (long)GetVersion() < 0)
     {
-        bool bFirstPath = true;
+        if (!TextCoordinate(m_style.get().fontSpacing)) return false;
+        const int spacing = (int)m_style.get().fontSpacing;
+        double width = 0;
+        bool first = true;
         for(LPCWSTR s = str; *s; s++)
         {
             CSize extent;
-            if(!GetTextExtentPoint32W(g_hDC, s, 1, &extent)) {SelectFont(g_hDC, hOldFont); ASSERT(0); return(false);}
-            path_data->PartialBeginPath(g_hDC, bFirstPath);
-            bFirstPath = false;
-            TextOutW(g_hDC, 0, 0, s, 1);
-            path_data->PartialEndPath(g_hDC, width, 0);
-            width += extent.cx + (int)m_style.get().fontSpacing;
+            if (!GetTextExtentPoint32W(g_hDC, s, 1, &extent) ||
+                !path_data->PartialBeginPath(g_hDC, first)) return fail();
+            first = false;
+            const int begin = path_data->mPathPoints;
+            if (!TextOutW(g_hDC, 0, 0, s, 1) || !TextCoordinate(width) ||
+                !path_data->PartialEndPath(g_hDC, scale == 1 ? (LONG)width : 0, 0)) return fail();
+            // Scale glyphs before adding authored spacing: spacing must not be
+            // multiplied by the realization correction (or rounded per glyph).
+            if (scale != 1 && !RescaleTextPath(path_data, scale, begin, width)) return fail();
+            width += extent.cx * scale + spacing;
         }
     }
     else
     {
-        CSize extent;
-        succeeded = !!GetTextExtentPoint32W(g_hDC, str, str.GetLength(), &extent);
-        if(!succeeded)
-        {
-            SelectFont(g_hDC, hOldFont); ASSERT(0); return(false);
-        }
-        succeeded = path_data->BeginPath(g_hDC);
-        if(!succeeded)
-        {
-            SelectFont(g_hDC, hOldFont); ASSERT(0); return(false);
-        }
-        succeeded = !!TextOutW(g_hDC, 0, 0, str, str.GetLength());
-        if(!succeeded)
-        {
-            SelectFont(g_hDC, hOldFont); ASSERT(0); return(false);
-        }
-        succeeded = path_data->EndPath(g_hDC);
-        if(!succeeded)
-        {
-            SelectFont(g_hDC, hOldFont); ASSERT(0); return(false);
-        }
+        if (!path_data->BeginPath(g_hDC) ||
+            !TextOutW(g_hDC, 0, 0, str, str.GetLength()) ||
+            !path_data->EndPath(g_hDC)) return fail();
+        if (scale != 1 && !RescaleTextPath(path_data, scale)) return fail();
     }
-    ASSERT(SelectFont(g_hDC, hOldFont));
-    return(true);
+    return true;
 }
 
-void CText::GetTextInfo(TextInfo *output, const FwSTSStyle& style, const CStringW& str )
+bool CText::GetTextInfo(TextInfo *output, const FwSTSStyle& style, const CStringW& str)
 {
+    *output = TextInfo();
     FwCMyFont font(style);
-    output->m_ascent = (int)(style.get().fontScaleY/100*font.get().m_ascent);
-    output->m_descent = (int)(style.get().fontScaleY/100*font.get().m_descent);
-
-    HFONT hOldFont = SelectFont(g_hDC, font.get());
+    if (!font.get().m_valid) return false;
+    NativeFontSelection selected(font.get());
+    if (!selected.Valid()) return false;
+    const double scale = font.get().m_scale;
+    double width = 0;
     if(style.get().fontSpacing || (long)GetVersion() < 0)
     {
-        bool bFirstPath = true;
+        if (!TextCoordinate(style.get().fontSpacing)) return false;
+        const int spacing = (int)style.get().fontSpacing;
         for(LPCWSTR s = str; *s; s++)
         {
             CSize extent;
-            if(!GetTextExtentPoint32W(g_hDC, s, 1, &extent)) {SelectFont(g_hDC, hOldFont); ASSERT(0); return;}
-            output->m_width += extent.cx + (int)style.get().fontSpacing;
+            if (!GetTextExtentPoint32W(g_hDC, s, 1, &extent)) return false;
+            width += extent.cx * scale + spacing;
         }
-        //          m_width -= (int)m_style.get().fontSpacing; // TODO: subtract only at the end of the line
     }
     else
     {
         CSize extent;
-        if(!GetTextExtentPoint32W(g_hDC, str, wcslen(str), &extent)) {SelectFont(g_hDC, hOldFont); ASSERT(0); return;}
-        output->m_width += extent.cx;
+        if (!GetTextExtentPoint32W(g_hDC, str, str.GetLength(), &extent)) return false;
+        width = extent.cx * scale;
     }
-    output->m_width = (int)(style.get().fontScaleX/100*output->m_width + 4) >> 3;
-    SelectFont(g_hDC, hOldFont);
+    const double ascent = style.get().fontScaleY/100 * font.get().m_ascent;
+    const double descent = style.get().fontScaleY/100 * font.get().m_descent;
+    width = style.get().fontScaleX/100 * width + 4;
+    if (!TextCoordinate(width) || !TextCoordinate(ascent) || !TextCoordinate(descent)) return false;
+    output->m_width = (int)width >> 3;
+    output->m_ascent = (int)ascent;
+    output->m_descent = (int)descent;
+    return true;
 }
 
 // CPolygon

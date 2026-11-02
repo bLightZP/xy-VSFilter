@@ -1,8 +1,8 @@
-# xy-VSFilter v3.2.1.950 (2026-11-01)
+# xy-VSFilter v3.2.1.960 (2026-11-02)
 
 Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
-[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.950 release notes](docs/releases/v3.2.1.950.md) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
+[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.960 release notes](docs/releases/v3.2.1.960.md) · [v3.2.1.950 release notes](docs/releases/v3.2.1.950.md) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
 
 Each architecture package includes the three filter DLLs and standalone rendering/streaming benchmark consoles. Matching PDB symbols, pinned dependency sources, build and validation records, and SHA256 checksums are separate release assets. Choose the architecture that matches your player/DirectShow graph.
 
@@ -39,6 +39,14 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
       MaskSub "[file]s[width]i[height]i[fps]f[length]i[charset]i[vfr]s[pixel_type]s"
 
 # Change log:
+
+## v3.2.1.960 (2026-11-02)
+
+- **Fix blank native ASS subtitles with certain OpenType/CFF fonts at high custom resolutions, including 8K.** Preserve the intended glyph size, layout and character spacing while keeping GDI font realization within a working size.
+- **Fix repeated madVR subtitle queue clearing after playback loops or seeks.** Reset the previous segment's request tracking without triggering a refill of old end-of-file frames.
+- Handle failed native font measurements and outline creation safely, preventing invalid metrics from entering the cache and restoring the drawing context for subsequent subtitles.
+
+See the [full changelog](docs/releases/v3.2.1.960.md), [release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.960), and [validation results](docs/font-queue-fixes-20261102.md).
 
 ## v3.2.1.950 (2026-11-01)
 

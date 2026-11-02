@@ -1941,6 +1941,18 @@ void XySubFilter::SetSubtitle( ISubStream* pSubStream, bool fApplyDefStyle /*= t
     }
 }
 
+void XySubFilter::NewSubtitleSegment(ISubStream* stream)
+{
+    CAutoLock lock(&m_csFilter);
+    if (stream != m_curSubStream) return;
+    if (m_sub_provider) m_sub_provider->Invalidate(-1);
+    // The consumer flushes its video queue as part of the graph seek. Clear(0)
+    // here can request the old EOF frames before its new timeline is installed,
+    // restoring the old horizon and causing every new packet to clear again.
+    // Retire old pending/in-flight notifications without requesting a refill.
+    m_consumerInvalidation.Reset();
+}
+
 void XySubFilter::InvalidateSubtitle( REFERENCE_TIME rtInvalidate /*= -1*/, DWORD_PTR nSubtitleId /*= -1*/, bool clearConsumer/*= true*/ )
 {
     CAutoLock cAutolock(&m_csFilter);

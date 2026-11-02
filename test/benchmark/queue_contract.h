@@ -1,6 +1,7 @@
 // Actual-DLL queue contract; the consumer deliberately refills inside Clear.
 #include "moreuuids.h"
 #include "../../src/filters/transform/vsfilter/IDirectVobSub.h"
+#include <thread>
 
 static int AlphaWrapContract()
 {
@@ -77,6 +78,18 @@ static int QueueStateContract()
     Require(dispatch()==S_OK && c->boundary==0,"Replacement consumer lost its clear");
     q.Packet(10,0,1,1);
     Require(dispatch()==S_FALSE,"Reset kept the old requested horizon");
+    ConsumerInvalidation::Delivery previousSegment, currentSegment, outOfOrder;
+    q.Begin(previousSegment,900,900);q.Packet(800,0,1,1);
+    const auto previousEpoch=q.Epoch();q.Reset();
+    q.Begin(currentSegment,50,50);q.Finish(previousSegment,true);
+    Require(q.Dispatch(c,previousEpoch)==S_FALSE && dispatch()==S_FALSE,
+        "Old segment delivery cleared the new segment");
+    q.Packet(100,0,1,1);
+    Require(dispatch()==S_FALSE,"New segment retained EOF horizon");
+    q.Begin(outOfOrder,10,10);q.Finish(outOfOrder,true);
+    q.Packet(30,0,1,1);
+    Require(dispatch()==S_OK && c->boundary==29,"Out-of-order refill lost the current horizon");
+    q.Finish(currentSegment,false);q.Reset();
     Require(ConsumerInvalidation::VideoBoundary(30000000,500,3,2)==24999999,"Delay/speed inverse is incorrect");
     Require(ConsumerInvalidation::VideoBoundary(30000000,-500,3,2)==14999999,"Negative delay inverse is incorrect");
     Require(ConsumerInvalidation::VideoBoundary(1,0,3,2)==0,"Fractional boundary was rounded forward");
@@ -100,9 +113,9 @@ public:
     CComPtr<ISubRenderProvider> provider;
     LONG clears, deliveries, mode, queries, visible;
     REFERENCE_TIME boundary;
-    bool extension, refill, bad, failDelivery;
+    bool extension, refill, bad, failDelivery, asyncRefill;
     QueueContractConsumer() : CBaseFilter(NAME("Queue contract"),NULL,&m_lock,CLSID_NULL),
-        clears(0),deliveries(0),mode(0),queries(0),visible(0),boundary(-1),extension(true),refill(false),bad(false),failDelivery(false) {}
+        clears(0),deliveries(0),mode(0),queries(0),visible(0),boundary(-1),extension(true),refill(false),bad(false),failDelivery(false),asyncRefill(false) {}
     int GetPinCount() override { return 0; }
     CBasePin* GetPin(int) override { return NULL; }
     STDMETHODIMP NonDelegatingQueryInterface(REFIID iid,void** value) override {
@@ -158,8 +171,19 @@ public:
                 slots[i].filled=false; slots[i].frame.Release();
             }
         }
-        if (refill) for (int i:missing) {
+        const auto replace = [&]() { for (int i:missing)
             if (FAILED(provider->RequestFrame(slots[i].start,slots[i].stop,(LPVOID)(INT_PTR)i))) bad=true;
+        };
+        if (refill) {
+            if (asyncRefill) {
+                std::thread worker([&]() {
+                    const HRESULT hr=CoInitializeEx(NULL,COINIT_MULTITHREADED);
+                    if (FAILED(hr)) { bad=true;return; }
+                    replace();CoUninitialize();
+                });
+                worker.join();
+            }
+            else replace();
         }
         return S_OK;
     }
@@ -289,9 +313,23 @@ static int QueueFilterContract(const wchar_t* dll, bool libass)
         consumer->Check(5);
         Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,true)),"Alpha policy restore failed");
         consumer->Check(6);
-        // Seeking must forget a far-ahead requested horizon before new packets.
-        consumer->refill=false;input->NewSegment(0,1000000000,1);consumer->Check(7,0);
-        source->pin.Packet(300000000,310000000,5);consumer->Check(7,0);
+        // Model the graph seek's own queue flush. NewSegment must not send a
+        // Clear that refills the old EOF slots before madVR changes timelines.
+        Require(SUCCEEDED(settingsApi->put_SubtitleTiming(0,1,1)),"Timing restore failed");
+        consumer->Check(7);
+        for (bool async : {false,true}) for (REFERENCE_TIME base : {0LL,600000000LL,0LL}) {
+            consumer->asyncRefill=async;
+            consumer->Empty();consumer->Fill(850000000);consumer->Check(0);
+            Require(SUCCEEDED(input->EndOfStream()) && SUCCEEDED(input->BeginFlush()) &&
+                SUCCEEDED(input->EndFlush()) && SUCCEEDED(input->NewSegment(base,1000000000,1)),"Loop/seek transition failed");
+            consumer->Check(0); // neither synchronous nor asynchronous old refills
+            consumer->Empty();consumer->Fill(base);consumer->Check(0);
+            Require(consumer->visible==0,"New segment retained old subtitle entries");
+            source->pin.Packet(100000000,110000000,0);consumer->Check(0);
+            source->pin.Packet(10000000,20000000,1);consumer->Check(1);
+            Require(consumer->boundary==base+9999999,"New segment lost genuine late-packet boundary");
+        }
+        consumer->asyncRefill=false;
         consumer->Empty();consumer->extension=false;consumer->Fill();
         options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,false);consumer->Check(0);
         consumer->extension=true;
