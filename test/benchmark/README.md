@@ -231,7 +231,9 @@ See [libass integration](../../docs/libass-integration.md) for static source bui
 `--filter-contract vs <VSFilter.dll>` instantiate the real filter and Main page in
 a hidden host, check option round-tripping and layout, and do not write registry
 settings. No player or filter registration is needed. Libass performance is not
-an acceptance criterion. Its visual output has a separate baseline from Native.
+an acceptance criterion. Its visual output has a separate baseline from Native. The VSFilter
+contract also connects a 1920×1080 NV12 graph with the tray hidden and checks
+that the output pin accepts its own connected video format.
 
 Focused pixel checks use `compare_rendered.py --first-frame N --last-frame M`;
 missing pixel hashes are rejected. Run `python test/benchmark/test_compare_rendered.py`

@@ -1,8 +1,8 @@
-# xy-VSFilter v3.2.1.960 (2026-11-02)
+# xy-VSFilter v3.2.1.970 (2026-11-18)
 
 Optimized Windows subtitle rendering with **VSFilter**, **XySubFilter**, and an optional **libass backend for ASS/SSA**. Builds are available for **32-bit (Win32) and 64-bit (x64)**.
 
-[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.960 release notes](docs/releases/v3.2.1.960.md) · [v3.2.1.950 release notes](docs/releases/v3.2.1.950.md) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
+[Download the latest release](https://github.com/bLightZP/xy-VSFilter/releases/latest) · [v3.2.1.970 release notes](docs/releases/v3.2.1.970.md) · [v3.2.1.960 release notes](docs/releases/v3.2.1.960.md) · [v3.2.1.950 release notes](docs/releases/v3.2.1.950.md) · [v3.2.1.940 release notes](docs/releases/v3.2.1.940.md) · [v3.2.1.930 release notes](docs/releases/v3.2.1.930.md) · [v3.2.1.920 release notes](docs/releases/v3.2.1.920.md) · [v3.2.1.910 release notes](docs/releases/v3.2.1.910.md)
 
 Each architecture package includes the three filter DLLs and standalone rendering/streaming benchmark consoles. Matching PDB symbols, pinned dependency sources, build and validation records, and SHA256 checksums are separate release assets. Choose the architecture that matches your player/DirectShow graph.
 
@@ -39,6 +39,12 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
       MaskSub "[file]s[width]i[height]i[fps]f[length]i[charset]i[vfr]s[pixel_type]s"
 
 # Change log:
+
+## v3.2.1.970 (2026-11-18)
+
+Fixed a black screen when opening videos with embedded PGS subtitles in 32-bit Zoom Player with EVR and DirectVobSub's tray icon hidden. DirectVobSub now keeps the negotiated video dimensions when its legacy resize settings are unavailable, so EVR can start playback.
+
+[Release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.970) · [Reproduction and validation](docs/pgs-evr-hidden-tray-20261118.md)
 
 ## v3.2.1.960 (2026-11-02)
 

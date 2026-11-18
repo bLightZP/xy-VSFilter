@@ -210,11 +210,19 @@ public:
 
 class QueuePacketPin : public CBaseOutputPin
 {
+    const CMediaType* m_offeredType;
 public:
-    QueuePacketPin(CBaseFilter* filter,CCritSec* lock,HRESULT* hr) : CBaseOutputPin(NAME("Packets"),filter,lock,hr,L"Packets") {}
+    QueuePacketPin(CBaseFilter* filter,CCritSec* lock,HRESULT* hr,const CMediaType* offeredType)
+        : CBaseOutputPin(NAME("Packets"),filter,lock,hr,L"Packets"),m_offeredType(offeredType) {}
+    HRESULT GetMediaType(int position, CMediaType* type) override {
+        if (!m_offeredType) return CBaseOutputPin::GetMediaType(position,type);
+        if (position < 0) return E_INVALIDARG;
+        return position == 0 ? type->Set(*m_offeredType) : VFW_S_NO_MORE_ITEMS;
+    }
     HRESULT CheckMediaType(const CMediaType*) override { return S_OK; }
     HRESULT DecideBufferSize(IMemAllocator* allocator,ALLOCATOR_PROPERTIES* p) override {
-        p->cBuffers=1;p->cbBuffer=4096;ALLOCATOR_PROPERTIES actual={};return allocator->SetProperties(p,&actual);
+        p->cBuffers=1;p->cbBuffer=m_offeredType ? m_offeredType->GetSampleSize() : 4096;
+        ALLOCATOR_PROPERTIES actual={};return allocator->SetProperties(p,&actual);
     }
     void Packet(REFERENCE_TIME start,REFERENCE_TIME stop,int order) {
         CStringA text; text.Format("%d,0,Default,,0,0,0,,{\\pos(960,540)\\t(0,500,\\alpha&HF00&)}Queue",order);
@@ -231,7 +239,8 @@ class QueuePacketSource : public CBaseFilter
     CCritSec m_lock;
 public:
     QueuePacketPin pin;
-    QueuePacketSource(HRESULT* hr) : CBaseFilter(NAME("Packet source"),NULL,&m_lock,CLSID_NULL),pin(this,&m_lock,hr) {}
+    QueuePacketSource(HRESULT* hr,const CMediaType* offeredType=NULL)
+        : CBaseFilter(NAME("Packet source"),NULL,&m_lock,CLSID_NULL),pin(this,&m_lock,hr,offeredType) {}
     int GetPinCount() override { return 1; }
     CBasePin* GetPin(int i) override { return i==0 ? &pin : NULL; }
 };

@@ -1952,6 +1952,58 @@ static int LibassContract()
 #include "outline_contract.h"
 #include "font_size_contract.h"
 
+static void CheckConnectedNv12Size(IBaseFilter* filter)
+{
+    CComQIPtr<IXyOptions> options(filter);
+    Require(options && SUCCEEDED(options->XySetBool(DirectVobSubXyOptions::BOOL_HIDE_TRAY_ICON,true)),
+        "Cannot hide the DirectVobSub tray icon");
+
+    CMediaType nv12;
+    nv12.SetType(&MEDIATYPE_Video);
+    nv12.SetSubtype(&MEDIASUBTYPE_NV12);
+    nv12.SetFormatType(&FORMAT_VideoInfo2);
+    VIDEOINFOHEADER2 info={};
+    info.AvgTimePerFrame=400000;
+    info.dwPictAspectRatioX=16;
+    info.dwPictAspectRatioY=9;
+    info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+    info.bmiHeader.biWidth=1920;
+    info.bmiHeader.biHeight=1080;
+    info.bmiHeader.biPlanes=1;
+    info.bmiHeader.biBitCount=12;
+    info.bmiHeader.biCompression=MEDIASUBTYPE_NV12.Data1;
+    info.bmiHeader.biSizeImage=1920*1080*3/2;
+    nv12.SetSampleSize(info.bmiHeader.biSizeImage);
+    Require(nv12.SetFormat(reinterpret_cast<BYTE*>(&info),sizeof(info)),"Cannot construct video format");
+
+    HRESULT hr=S_OK;
+    auto source=new QueuePacketSource(&hr,&nv12);
+    CComPtr<IBaseFilter> sourceOwner=source;
+    CComPtr<IGraphBuilder> graph;
+    Require(SUCCEEDED(hr),"Cannot create NV12 source");
+    CComPtr<IBaseFilter> sink=new CNullVideoRenderer(NULL,&hr);
+    Require(SUCCEEDED(hr) && SUCCEEDED(graph.CoCreateInstance(CLSID_FilterGraph)),"Cannot create video negotiation graph");
+    Require(SUCCEEDED(graph->AddFilter(sourceOwner,L"NV12 source")) &&
+        SUCCEEDED(graph->AddFilter(filter,L"DirectVobSub")) && SUCCEEDED(graph->AddFilter(sink,L"Sink")),
+        "Cannot add filters to video negotiation graph");
+    CComPtr<IPin> input,output;
+    CComPtr<IPin> sinkInput=GetFirstPin(sink);
+    Require(SUCCEEDED(filter->FindPin(L"In",&input)) && SUCCEEDED(filter->FindPin(L"Out",&output)) &&
+        sinkInput,"Missing video pins");
+    Require(SUCCEEDED(graph->ConnectDirect(&source->pin,input,&nv12)) &&
+        SUCCEEDED(graph->ConnectDirect(output,sinkInput,NULL)),"Cannot connect the 1080p NV12 graph");
+
+    // CompleteConnect reapplies the input format after the output is connected.
+    // EVR then asks whether the pin still accepts the format it negotiated.
+    CMediaType connected;
+    Require(SUCCEEDED(output->ConnectionMediaType(&connected)) && connected.subtype==MEDIASUBTYPE_NV12 &&
+        connected.formattype==FORMAT_VideoInfo2 && connected.cbFormat>=sizeof(info),"Unexpected connected video format");
+    const auto& bitmap=reinterpret_cast<const VIDEOINFOHEADER2*>(connected.pbFormat)->bmiHeader;
+    Require(bitmap.biWidth==1920 && bitmap.biHeight==1080 && output->QueryAccept(&connected)==S_OK,
+        "DirectVobSub rejected its connected 1920x1080 NV12 format with the tray hidden");
+    printf("connected_nv12_size=passed (1920x1080, tray hidden)\n");
+}
+
 static int FilterContract(const wchar_t* path, bool xy)
 {
     IsolatedLayoutRegistry isolated;
@@ -1974,6 +2026,11 @@ static int FilterContract(const wchar_t* path, bool xy)
         Require(SUCCEEDED(getClass(clsid,IID_IClassFactory,(void**)&factory)),"Cannot get filter class");
         CComPtr<IUnknown> object;
         Require(SUCCEEDED(factory->CreateInstance(NULL,IID_IUnknown,(void**)&object)),"Cannot create filter");
+        if (!xy) {
+            CComQIPtr<IBaseFilter> filter(object);
+            Require(filter!=NULL,"Missing DirectVobSub filter");
+            CheckConnectedNv12Size(filter);
+        }
         CComQIPtr<IXyOptions> options(object);
         Require(options!=NULL,"Missing filter options");
         bool original=false,value=false;

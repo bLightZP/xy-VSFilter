@@ -775,7 +775,9 @@ void CDirectVobSubFilter::InitSubPicQueue()
 bool CDirectVobSubFilter::AdjustFrameSize(CSize& s)
 {
 	int horizontal, vertical, resx2, resx2minw, resx2minh;
-	get_ExtendPicture(&horizontal, &vertical, &resx2, &resx2minw, &resx2minh);
+	if (FAILED(get_ExtendPicture(&horizontal, &vertical, &resx2, &resx2minw, &resx2minh))) {
+		return false;
+	}
 
 	bool fRet = (resx2 == 1) || (resx2 == 2 && s.cx*s.cy <= resx2minw*resx2minh);
 
