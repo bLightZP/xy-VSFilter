@@ -114,7 +114,7 @@ public:
     LONG clears, deliveries, mode, queries, visible;
     REFERENCE_TIME boundary;
     bool extension, refill, bad, failDelivery, asyncRefill;
-    QueueContractConsumer() : CBaseFilter(NAME("Queue contract"),NULL,&m_lock,CLSID_NULL),
+    explicit QueueContractConsumer(REFCLSID clsid = CLSID_NULL) : CBaseFilter(NAME("Queue contract"),NULL,&m_lock,clsid),
         clears(0),deliveries(0),mode(0),queries(0),visible(0),boundary(-1),extension(true),refill(false),bad(false),failDelivery(false),asyncRefill(false) {}
     int GetPinCount() override { return 0; }
     CBasePin* GetPin(int) override { return NULL; }
@@ -224,8 +224,8 @@ public:
         p->cBuffers=1;p->cbBuffer=m_offeredType ? m_offeredType->GetSampleSize() : 4096;
         ALLOCATOR_PROPERTIES actual={};return allocator->SetProperties(p,&actual);
     }
-    void Packet(REFERENCE_TIME start,REFERENCE_TIME stop,int order) {
-        CStringA text; text.Format("%d,0,Default,,0,0,0,,{\\pos(960,540)\\t(0,500,\\alpha&HF00&)}Queue",order);
+    void Packet(REFERENCE_TIME start,REFERENCE_TIME stop,int order, const char* cue = "{\\pos(960,540)\\t(0,500,\\alpha&HF00&)}Queue") {
+        CStringA text; text.Format("%d,0,Default,,0,0,0,,%s",order,cue);
         CComPtr<IMediaSample> sample;
         Require(SUCCEEDED(GetDeliveryBuffer(&sample,&start,&stop,0)),"Cannot allocate packet");
         BYTE* bytes;sample->GetPointer(&bytes);memcpy(bytes,text.GetString(),text.GetLength());
@@ -245,7 +245,65 @@ public:
     CBasePin* GetPin(int i) override { return i==0 ? &pin : NULL; }
 };
 
-static int QueueFilterContract(const wchar_t* dll, bool libass)
+#include "mpc_timing_contract.h"
+
+static void CheckQueuedConsumer(IBaseFilter* filter, QueuePacketSource* source, QueueContractConsumer* consumer,
+    IPin* input, IXyOptions* options)
+{
+    using namespace DirectVobSubXyOptions;
+    source->pin.Packet(0,200000000,0);Sleep(100);
+    for (int mode=0;mode<5;++mode) {
+        consumer->Empty();consumer->mode=mode;consumer->Fill();consumer->Check(0);
+        Require(consumer->visible>0,"Embedded ASS never produced visible output");
+    }
+    const LONG delivered=consumer->deliveries;
+    consumer->mode=5;
+    Require(FAILED(consumer->provider->RequestFrame(0,417083,NULL)),"Invalid render geometry did not fail");
+    consumer->Check(0);Require(consumer->deliveries==delivered,"Failed request delivered a frame");
+    consumer->mode=0;consumer->failDelivery=true;
+    Require(consumer->provider->RequestFrame(0,417083,NULL)==E_FAIL,"Delivery failure was not propagated");
+    consumer->Check(0);consumer->failDelivery=false;
+    consumer->mode=0;consumer->Empty();consumer->Fill();consumer->refill=true;
+    source->pin.Packet(300000000,310000000,1);consumer->Check(0);
+    source->pin.Packet(REFERENCE_TIME(128)*417083,60000000,2);consumer->Check(0);
+    source->pin.Packet(20000000,30000000,3);consumer->Check(1);
+    Require(consumer->boundary==19999999,"Late packet lost video boundary");
+    CComQIPtr<IDirectVobSub> settingsApi(filter);
+    Require(settingsApi && SUCCEEDED(settingsApi->put_SubtitleTiming(500,3,2)),"Timing change failed");
+    consumer->Check(2);
+    source->pin.Packet(30000000,40000000,4);consumer->Check(3);
+    Require(consumer->boundary==24999999,"Delayed/speed-adjusted packet used subtitle time");
+    Require(SUCCEEDED(options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,true)),"Layout change failed");
+    consumer->Check(4);Require(consumer->boundary==0,"Global setting did not clear all frames");
+    Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,false)),"Alpha policy change failed");
+    consumer->Check(5);Require(consumer->boundary==0,"Alpha policy left old frames in the queue");
+    Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,false)),"Repeated alpha setting failed");
+    consumer->Check(5);
+    Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,true)),"Alpha policy restore failed");
+    consumer->Check(6);
+    // Model the graph seek's own queue flush. NewSegment must not send a
+    // Clear that refills the old EOF slots before madVR changes timelines.
+    Require(SUCCEEDED(settingsApi->put_SubtitleTiming(0,1,1)),"Timing restore failed");
+    consumer->Check(7);
+    for (bool async : {false,true}) for (REFERENCE_TIME base : {0LL,600000000LL,0LL}) {
+        consumer->asyncRefill=async;
+        consumer->Empty();consumer->Fill(850000000);consumer->Check(0);
+        Require(SUCCEEDED(input->EndOfStream()) && SUCCEEDED(input->BeginFlush()) &&
+            SUCCEEDED(input->EndFlush()) && SUCCEEDED(input->NewSegment(base,1000000000,1)),"Loop/seek transition failed");
+        consumer->Check(0); // neither synchronous nor asynchronous old refills
+        consumer->Empty();consumer->Fill(base);consumer->Check(0);
+        Require(consumer->visible==0,"New segment retained old subtitle entries");
+        source->pin.Packet(100000000,110000000,0);consumer->Check(0);
+        source->pin.Packet(10000000,20000000,1);consumer->Check(1);
+        Require(consumer->boundary==base+9999999,"New segment lost genuine late-packet boundary");
+    }
+    consumer->asyncRefill=false;
+    consumer->Empty();consumer->extension=false;consumer->Fill();
+    options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,false);consumer->Check(0);
+    consumer->extension=true;
+}
+
+static int QueueFilterContract(const wchar_t* dll, bool libass, bool useMpcHelper = false)
 {
     using namespace DirectVobSubXyOptions;
     IsolatedLayoutRegistry settings;
@@ -265,7 +323,9 @@ static int QueueFilterContract(const wchar_t* dll, bool libass)
         options->XySetBool(BOOL_PREFER_LIBASS,libass);
         CComPtr<IFilterGraph2> graph;
         Require(SUCCEEDED(graph.CoCreateInstance(CLSID_FilterGraph)),"Graph creation failed");
-        auto consumer=new QueueContractConsumer();CComPtr<IBaseFilter> owner=consumer;
+        auto helper = useMpcHelper ? new MpcTimingConsumer() : nullptr;
+        QueueContractConsumer* consumer = helper ? helper : new QueueContractConsumer();
+        CComPtr<IBaseFilter> owner = consumer;
         Require(SUCCEEDED(graph->AddFilter(owner,L"Queue consumer")),"Add consumer failed");
         Require(SUCCEEDED(graph->AddFilter(filter,L"XySubFilter")),"Add provider failed");
         HRESULT hr=S_OK;auto source=new QueuePacketSource(&hr);CComPtr<IBaseFilter> sourceOwner=source;
@@ -292,58 +352,12 @@ static int QueueFilterContract(const wchar_t* dll, bool libass)
         Require(SUCCEEDED(filter->Pause()) && consumer->provider,"Provider did not connect");
         Require(SUCCEEDED(source->Pause()),"Packet allocator failed");
         input->NewSegment(0,1000000000,1);Sleep(100);
-        source->pin.Packet(0,200000000,0);Sleep(100);
-        for (int mode=0;mode<5;++mode) {
-            consumer->Empty();consumer->mode=mode;consumer->Fill();consumer->Check(0);
-            Require(consumer->visible>0,"Embedded ASS never produced visible output");
-        }
-        const LONG delivered=consumer->deliveries;
-        consumer->mode=5;
-        Require(FAILED(consumer->provider->RequestFrame(0,417083,NULL)),"Invalid render geometry did not fail");
-        consumer->Check(0);Require(consumer->deliveries==delivered,"Failed request delivered a frame");
-        consumer->mode=0;consumer->failDelivery=true;
-        Require(consumer->provider->RequestFrame(0,417083,NULL)==E_FAIL,"Delivery failure was not propagated");
-        consumer->Check(0);consumer->failDelivery=false;
-        consumer->mode=0;consumer->Empty();consumer->Fill();consumer->refill=true;
-        source->pin.Packet(300000000,310000000,1);consumer->Check(0);
-        source->pin.Packet(REFERENCE_TIME(128)*417083,60000000,2);consumer->Check(0);
-        source->pin.Packet(20000000,30000000,3);consumer->Check(1);
-        Require(consumer->boundary==19999999,"Late packet lost video boundary");
-        CComQIPtr<IDirectVobSub> settingsApi(filter);
-        Require(settingsApi && SUCCEEDED(settingsApi->put_SubtitleTiming(500,3,2)),"Timing change failed");
-        consumer->Check(2);
-        source->pin.Packet(30000000,40000000,4);consumer->Check(3);
-        Require(consumer->boundary==24999999,"Delayed/speed-adjusted packet used subtitle time");
-        Require(SUCCEEDED(options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,true)),"Layout change failed");
-        consumer->Check(4);Require(consumer->boundary==0,"Global setting did not clear all frames");
-        Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,false)),"Alpha policy change failed");
-        consumer->Check(5);Require(consumer->boundary==0,"Alpha policy left old frames in the queue");
-        Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,false)),"Repeated alpha setting failed");
-        consumer->Check(5);
-        Require(SUCCEEDED(options->XySetBool(BOOL_MPC_BE_ALPHA,true)),"Alpha policy restore failed");
-        consumer->Check(6);
-        // Model the graph seek's own queue flush. NewSegment must not send a
-        // Clear that refills the old EOF slots before madVR changes timelines.
-        Require(SUCCEEDED(settingsApi->put_SubtitleTiming(0,1,1)),"Timing restore failed");
-        consumer->Check(7);
-        for (bool async : {false,true}) for (REFERENCE_TIME base : {0LL,600000000LL,0LL}) {
-            consumer->asyncRefill=async;
-            consumer->Empty();consumer->Fill(850000000);consumer->Check(0);
-            Require(SUCCEEDED(input->EndOfStream()) && SUCCEEDED(input->BeginFlush()) &&
-                SUCCEEDED(input->EndFlush()) && SUCCEEDED(input->NewSegment(base,1000000000,1)),"Loop/seek transition failed");
-            consumer->Check(0); // neither synchronous nor asynchronous old refills
-            consumer->Empty();consumer->Fill(base);consumer->Check(0);
-            Require(consumer->visible==0,"New segment retained old subtitle entries");
-            source->pin.Packet(100000000,110000000,0);consumer->Check(0);
-            source->pin.Packet(10000000,20000000,1);consumer->Check(1);
-            Require(consumer->boundary==base+9999999,"New segment lost genuine late-packet boundary");
-        }
-        consumer->asyncRefill=false;
-        consumer->Empty();consumer->extension=false;consumer->Fill();
-        options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,false);consumer->Check(0);
-        consumer->extension=true;
+        if (helper)
+            CheckMpcSubtitleTiming(filter, source, helper);
+        else
+            CheckQueuedConsumer(filter, source, consumer, input, options);
     }
     FreeLibrary(module);CoUninitialize();
-    printf("queue_filter_contract=passed backend=%s\n",libass ? "libass" : "native");
+    printf("%s=passed backend=%s\n", useMpcHelper ? "mpc_timing_contract" : "queue_filter_contract", libass ? "libass" : "native");
     return 0;
 }

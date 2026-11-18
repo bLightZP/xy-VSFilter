@@ -118,6 +118,9 @@
     <ClInclude Include="XySubRenderIntf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MpcSubtitleHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="xy_sub_filter.h">
       <Filter>Header Files</Filter>
     </ClInclude>

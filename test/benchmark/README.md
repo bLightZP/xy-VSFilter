@@ -496,6 +496,15 @@ late packets; synchronous refill from Clear; video-time delivery and partial
 invalidation with delay/speed; global settings; seeks; failure propagation; and
 consumers without the optional Clear interface. No DLL registration is needed.
 
+`--mpc-timing-contract native|libass <dll>` exercises the same DLL with a
+consumer that implements MPC Subtitle Helper's presenter interface and timestamp
+adjustments. It checks bitmap visibility on either side of an embedded ASS
+cue's start and end, including positive and negative shared delays, separate
+provider and presenter delays, live changes, and a 3/2 subtitle speed ratio. It also
+checks the returned interval and context for empty and visible frames, the
+partial clear boundary for a late packet, and unrepresentable delivery times.
+The queue regression runner includes this test for both subtitle backends.
+
 `--alpha-wrap-contract` checks the native MPC-BE alpha policy (enabled by
 default), legacy native behavior when disabled, and unchanged libass behavior
 in both modes. 3,600 frame comparisons cover all five alpha tags, in-range and
@@ -518,6 +527,9 @@ routing when an external helper is requested. A requested renderer or helper
 that is not actually loaded fails validation. The Debug/LOCAL build and loaded
 DLL hashes are still verified. The paused hold allows inspection of madVR's
 subtitle queue overlay; TCP 1150 alone does **not** report subtitle queue depth.
+On a private desktop, a graph using the installed madVR SDK can capture that
+overlay with `IMadVRFrameGrabber::GrabFrame` and `FLAGS_RENDER_OSD`. Read the
+subtitle queue row after the paused graph has had time to refill.
 
 ## Native outline regression tests
 
@@ -573,9 +585,8 @@ packet still must. Both native and libass backends run under child watchdogs
 with isolated filter settings. Queue-state coverage also retires old in-flight
 deliveries without losing legitimate out-of-order requests in the new segment.
 
-For private-desktop madVR validation, verify the active candidate using actual
-callback evidence after the helper closes. A loaded-module list alone does not
-identify the active filter instance. Windows directory size metadata can remain
-stale while a diagnostic trace is open; read completed trace contents instead.
+For private-desktop madVR validation, verify which candidate instance is
+connected and check its composited output or provider callbacks. Read diagnostic
+traces after the helper exits because Windows can cache directory size metadata.
 Private-desktop presentation counters are not a visible-display FPS benchmark.
 See [implementation and validation](../../docs/font-queue-fixes-20261102.md).

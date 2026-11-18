@@ -287,9 +287,7 @@ STDMETHODIMP XySubFilter::JoinFilterGraph(IFilterGraph* pGraph, LPCWSTR pName)
                 XY_LOG_ERROR("Failed to disconnect consumer");
             }
             m_filter_info_string = m_xy_str_opt[STRING_NAME];
-            CAutoLock cAutoLock(&m_csConsumer);
-            m_consumer = NULL;
-            m_consumerInvalidation.Reset();
+            SetConsumer(NULL);
         }
         ::DeleteSystray(&m_hSystrayThread, &m_tbid);
         m_workaround_mpc_hc   = false;
@@ -1207,7 +1205,8 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
     CComPtr<IXySubRenderFrame> sub_render_frame;
     CComPtr<ISubRenderConsumer> consumer;
     ConsumerInvalidation::Delivery delivery;
-    const REFERENCE_TIME videoStart = start, videoStop = stop;
+    const REFERENCE_TIME requestStop = stop;
+    REFERENCE_TIME deliveryStart = start, deliveryStop = stop;
     {
         CAutoLock cAutoLock(&m_csFilter);
 
@@ -1221,8 +1220,19 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
         // no, it won't overflow even without normalizing if we use normal parameters
         // (__int64 is enough for about 2000 hours if we multiply it by the max: 65536 as m_SubtitleSpeedMul)
         // anyway, m_SubtitleSpeed and m_SubtitleSpeedDiv parameters are normalized upon read
-        start = (start - 10000i64 * m_SubtitleDelay) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
-        stop = (stop - 10000i64 * m_SubtitleDelay) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
+        const SubtitleDelays delays = GetSubtitleDelays();
+        if (delays.presenter) {
+            // MPC adds its delay to the delivered interval before testing it
+            // against the request. Cancel that addition for both bitmap and empty frames.
+            const REFERENCE_TIME offset = 10000i64 * delays.presenter;
+            if ((offset > 0 && min(start, stop) < (std::numeric_limits<REFERENCE_TIME>::min)() + offset) ||
+                (offset < 0 && max(start, stop) > (std::numeric_limits<REFERENCE_TIME>::max)() + offset))
+                return E_INVALIDARG;
+            deliveryStart -= offset;
+            deliveryStop -= offset;
+        }
+        start = (start - 10000i64 * delays.lookup) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
+        stop = (stop - 10000i64 * delays.lookup) * m_SubtitleSpeedNormalizedMul / m_SubtitleSpeedNormalizedDiv;
 
         REFERENCE_TIME now = start; //NOTE: It seems that the physically right way is (start + stop) / 2, but...
         m_last_requested = now;
@@ -1273,11 +1283,11 @@ STDMETHODIMP XySubFilter::RequestFrame( REFERENCE_TIME start, REFERENCE_TIME sto
 
         }
         consumer = m_consumer;
-        m_consumerInvalidation.Begin(delivery, videoStop, stop);
+        m_consumerInvalidation.Begin(delivery, requestStop, stop);
     }
     //fix me: print osd message
     TRACE_RENDERER_REQUEST("Returnning "<<XY_LOG_VAR_2_STR(hr)<<XY_LOG_VAR_2_STR(sub_render_frame));
-    hr = consumer ? consumer->DeliverFrame(videoStart, videoStop, context, sub_render_frame) : VFW_E_NOT_CONNECTED;
+    hr = consumer ? consumer->DeliverFrame(deliveryStart, deliveryStop, context, sub_render_frame) : VFW_E_NOT_CONNECTED;
     m_consumerInvalidation.Finish(delivery, SUCCEEDED(hr));
     return hr;
 }
@@ -1299,9 +1309,7 @@ STDMETHODIMP XySubFilter::Disconnect( void )
             {
                 XY_LOG_WARN("Failed to disconnect with consumer!");
             }
-            CAutoLock cAutoLock(&m_csConsumer);
-            m_consumer = NULL;
-            m_consumerInvalidation.Reset();
+            SetConsumer(NULL);
         }
         else
         {
@@ -1961,8 +1969,10 @@ void XySubFilter::InvalidateSubtitle( REFERENCE_TIME rtInvalidate /*= -1*/, DWOR
     if (m_sub_provider) m_sub_provider->Invalidate(rtInvalidate);
     if (!clearConsumer) return;
     if (rtInvalidate < 0) m_consumerInvalidation.Schedule();
-    else m_consumerInvalidation.Packet(rtInvalidate, m_SubtitleDelay,
-        m_SubtitleSpeedNormalizedMul, m_SubtitleSpeedNormalizedDiv);
+    else {
+        m_consumerInvalidation.Packet(rtInvalidate, GetSubtitleDelays().lookup,
+            m_SubtitleSpeedNormalizedMul, m_SubtitleSpeedNormalizedDiv);
+    }
 }
 
 HRESULT XySubFilter::UpdateParamFromConsumer( bool getNameAndVersion/*=false*/ )
@@ -2476,11 +2486,32 @@ HRESULT XySubFilter::StartStreaming()
     return S_OK;
 }
 
+// Called under m_csFilter. The invalidation worker snapshots m_consumer under m_csConsumer.
+void XySubFilter::SetConsumer(ISubRenderConsumer* consumer, REFCLSID filterId)
+{
+    CComPtr<IMpcSubtitlePresenter> presenter;
+    if (consumer && filterId == __uuidof(MpcSubtitleHelperFilter))
+        consumer->QueryInterface(IID_PPV_ARGS(&presenter));
+    CAutoLock lock(&m_csConsumer);
+    m_mpcSubtitlePresenter = presenter;
+    m_consumer = consumer;
+    m_consumerInvalidation.Reset();
+}
+
+XySubFilter::SubtitleDelays XySubFilter::GetSubtitleDelays() const
+{
+    const int presenterDelay = m_mpcSubtitlePresenter ? m_mpcSubtitlePresenter->GetSubtitleDelay() : 0;
+    // The helper already subtracted its delay before requesting the frame.
+    // Hosts such as Zoom Player write the same adjustment to both interfaces.
+    return { presenterDelay, presenterDelay == m_SubtitleDelay ? 0 : m_SubtitleDelay };
+}
+
 HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
 {
     XY_LOG_INFO(pGraph);
     HRESULT hr = NOERROR;
     CComPtr<ISubRenderConsumer> consumer;
+    CLSID consumerId = CLSID_NULL;
     ULONG meric = 0;
 
 
@@ -2492,7 +2523,7 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
             if(pBF != (IBaseFilter*)this)
             {
                 CComQIPtr<ISubRenderConsumer> new_consumer(pBF);
-                CLSID filterID;
+                CLSID filterID = CLSID_NULL;
 				hr = pBF->GetClassID(&filterID);
 				
 				if(!new_consumer && filterID == CLSID_EnhancedVideoRenderer)
@@ -2521,6 +2552,7 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
                         if (meric < new_meric)
                         {
                             consumer = new_consumer;
+                            consumerId = filterID;
                             meric = new_meric;
                         }
                     }
@@ -2531,6 +2563,7 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
                         {
                             XY_LOG_WARN("No consumer found yet.");
                             consumer = new_consumer;
+                            consumerId = filterID;
                         }
                     }
                 }
@@ -2539,8 +2572,7 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
         EndEnumFilters;//Add a ; so that my editor can do a correct auto-indent
         if (consumer)
         {
-            m_consumerInvalidation.Reset();
-            m_consumer = consumer;
+            SetConsumer(consumer, consumerId);
             hr = UpdateParamFromConsumer(true);
             if (FAILED(hr))
             {
@@ -2550,8 +2582,7 @@ HRESULT XySubFilter::FindAndConnectConsumer(IFilterGraph* pGraph)
             if (FAILED(hr))
             {
                 XY_LOG_ERROR("Failed to connect "<<XY_LOG_VAR_2_STR(consumer)<<XY_LOG_VAR_2_STR(hr));
-                m_consumer = NULL;
-                m_consumerInvalidation.Reset();
+                SetConsumer(NULL);
                 return hr;
             }
             XY_LOG_INFO("Connected with "<<XY_LOG_VAR_2_STR(consumer)<<" "

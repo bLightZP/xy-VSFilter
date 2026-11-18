@@ -20,7 +20,9 @@ def main():
               "dll_sha256": hashlib.sha256(dll.read_bytes()).hexdigest(), "tests": []}
     for options in (["--queue-state-contract"], ["--alpha-wrap-contract"],
                     ["--queue-filter-contract", "native", str(dll)],
-                    ["--queue-filter-contract", "libass", str(dll)]):
+                    ["--queue-filter-contract", "libass", str(dll)],
+                    ["--mpc-timing-contract", "native", str(dll)],
+                    ["--mpc-timing-contract", "libass", str(dll)]):
         started = time.monotonic()
         child = subprocess.Popen([str(exe), *options], stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE, text=True)

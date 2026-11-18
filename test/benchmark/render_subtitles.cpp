@@ -2278,6 +2278,7 @@ int wmain(int argc, wchar_t** argv)
         if (argc==6 && !wcscmp(argv[1],L"--font-size-filter-contract")) return FontSizeFilterContract(argv[3],argv[4],argv[5],!wcscmp(argv[2],L"xy"));
         if (argc==5 && !wcscmp(argv[1],L"--outline-filter-contract")) return OutlineFilterContract(argv[3],argv[4],!wcscmp(argv[2],L"xy"));
         if (argc==2 && !wcscmp(argv[1],L"--alpha-wrap-contract")) return AlphaWrapContract();
+        if (argc==4 && !wcscmp(argv[1],L"--mpc-timing-contract")) return QueueFilterContract(argv[3],!wcscmp(argv[2],L"libass"),true);
         if (argc==4 && !wcscmp(argv[1],L"--queue-filter-contract")) return QueueFilterContract(argv[3],!wcscmp(argv[2],L"libass"));
         if (argc==4 && !wcscmp(argv[1],L"--filter-contract")) return FilterContract(argv[3],!wcscmp(argv[2],L"xy"));
         if (argc == 2 && !wcscmp(argv[1], L"--libass-contract")) {

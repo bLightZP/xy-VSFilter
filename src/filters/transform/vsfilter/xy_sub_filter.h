@@ -3,6 +3,7 @@
 #include <atlsync.h>
 #include "DirectVobSub.h"
 #include "SubRenderIntf.h"
+#include "MpcSubtitleHelper.h"
 #include "../../../subpic/ConsumerInvalidation.h"
 #include "SubRenderOptionsImpl.h"
 
@@ -107,6 +108,9 @@ private:
     HRESULT StartStreaming();
 
     HRESULT FindAndConnectConsumer(IFilterGraph* pGraph);
+    void SetConsumer(ISubRenderConsumer* consumer, REFCLSID filterId = CLSID_NULL);
+    struct SubtitleDelays { int presenter, lookup; };
+    SubtitleDelays GetSubtitleDelays() const;
 
     void UpdateLanguageCount();
 
@@ -154,6 +158,7 @@ private:
 
     ConsumerInvalidation m_consumerInvalidation;
     CComPtr<ISubRenderConsumer> m_consumer;
+    CComPtr<IMpcSubtitlePresenter> m_mpcSubtitlePresenter;
     ULONGLONG m_context_id;
 
     REFERENCE_TIME m_last_requested;

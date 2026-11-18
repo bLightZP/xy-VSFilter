@@ -109,6 +109,7 @@
     <ClInclude Include="XyOptionsImpl.h" />
     <ClInclude Include="XySubRenderIntf.h" />
     <ClInclude Include="xy_logger.h" />
+    <ClInclude Include="MpcSubtitleHelper.h" />
     <ClInclude Include="xy_sub_filter.h" />
   </ItemGroup>
   <ItemGroup>
