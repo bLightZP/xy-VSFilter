@@ -102,6 +102,10 @@ static int QueueStateContract()
 class QueueContractConsumer : public CBaseFilter, public ISubRenderConsumer2
 {
     CCritSec m_lock;
+    CCritSec m_refillLock;
+    ATL::CEvent m_clearFinished;
+    ATL::CEvent m_refillStarted;
+    bool m_acceptClears = true;
     struct Slot {
         REFERENCE_TIME start, stop;
         bool filled;
@@ -115,7 +119,11 @@ public:
     REFERENCE_TIME boundary;
     bool extension, refill, bad, failDelivery, asyncRefill;
     explicit QueueContractConsumer(REFCLSID clsid = CLSID_NULL) : CBaseFilter(NAME("Queue contract"),NULL,&m_lock,clsid),
-        clears(0),deliveries(0),mode(0),queries(0),visible(0),boundary(-1),extension(true),refill(false),bad(false),failDelivery(false),asyncRefill(false) {}
+        clears(0),deliveries(0),mode(0),queries(0),visible(0),boundary(-1),extension(true),refill(false),bad(false),failDelivery(false),asyncRefill(false) {
+        m_clearFinished.Create(nullptr, FALSE, FALSE, nullptr);
+        m_refillStarted.Create(nullptr, FALSE, FALSE, nullptr);
+        Require(m_clearFinished.m_h && m_refillStarted.m_h, "Cannot create queue test events");
+    }
     int GetPinCount() override { return 0; }
     CBasePin* GetPin(int) override { return NULL; }
     STDMETHODIMP NonDelegatingQueryInterface(REFIID iid,void** value) override {
@@ -147,8 +155,28 @@ public:
     STDMETHODIMP SetString(LPCSTR,LPWSTR,int) { return S_OK; }
     STDMETHODIMP SetBin(LPCSTR,LPVOID,int) { return S_OK; }
     STDMETHODIMP GetMerit(ULONG* v) { *v=1;return S_OK; }
-    STDMETHODIMP Connect(ISubRenderProvider* p) { provider=p;return S_OK; }
-    STDMETHODIMP Disconnect() { provider.Release();return S_OK; }
+    STDMETHODIMP Connect(ISubRenderProvider* p) {
+        CAutoLock lock(&m_lock);
+        provider=p; m_acceptClears=true;
+        return S_OK;
+    }
+    STDMETHODIMP Disconnect() {
+        CAutoLock lock(&m_lock);
+        m_acceptClears=false; provider.Release();
+        return S_OK;
+    }
+    void DisconnectProvider() {
+        CComPtr<ISubRenderProvider> current;
+        {
+            // Drain any refill before asking the filter to disconnect. Its Disconnect
+            // callback may hold a filter lock needed by an in-flight RequestFrame.
+            CAutoLock drain(&m_refillLock);
+            CAutoLock lock(&m_lock);
+            m_acceptClears=false;
+            current=provider;
+        }
+        if (current) current->Disconnect();
+    }
     STDMETHODIMP DeliverFrame(REFERENCE_TIME start,REFERENCE_TIME stop,LPVOID context,ISubRenderFrame* frame) {
         CAutoLock lock(&m_lock);
         const INT_PTR index=(INT_PTR)context;
@@ -161,29 +189,45 @@ public:
         slot.filled=true; slot.frame=frame; return S_OK;
     }
     STDMETHODIMP Clear(REFERENCE_TIME time) {
-        std::vector<int> missing;
+        CAutoLock refillLock(&m_refillLock);
+        struct Request { int index; REFERENCE_TIME start, stop; };
+        std::vector<Request> missing;
+        CComPtr<ISubRenderProvider> current;
+        bool async;
         {
             CAutoLock lock(&m_lock);
-            boundary=time; ++clears;
-            if (clears>8) { bad=true; return E_FAIL; } // bounded on the broken DLL
+            if (!m_acceptClears || !provider) return S_FALSE;
+            if (clears>=8) { bad=true; m_clearFinished.Set(); return E_FAIL; }
+            current=provider;
+            async=asyncRefill;
             for (int i=0;i<128;++i) if (time==0 || slots[i].stop>time) {
-                if (slots[i].filled) missing.push_back(i);
+                if (refill && slots[i].filled) missing.push_back({i,slots[i].start,slots[i].stop});
                 slots[i].filled=false; slots[i].frame.Release();
             }
         }
-        const auto replace = [&]() { for (int i:missing)
-            if (FAILED(provider->RequestFrame(slots[i].start,slots[i].stop,(LPVOID)(INT_PTR)i))) bad=true;
+        bool failed=false;
+        const auto replace = [&]() {
+            for (const Request& r:missing)
+                if (FAILED(current->RequestFrame(r.start,r.stop,(LPVOID)(INT_PTR)r.index))) failed=true;
         };
-        if (refill) {
-            if (asyncRefill) {
+        if (!missing.empty()) {
+            m_refillStarted.Set();
+            if (async) {
                 std::thread worker([&]() {
                     const HRESULT hr=CoInitializeEx(NULL,COINIT_MULTITHREADED);
-                    if (FAILED(hr)) { bad=true;return; }
+                    if (FAILED(hr)) { failed=true;return; }
                     replace();CoUninitialize();
                 });
                 worker.join();
             }
             else replace();
+        }
+        {
+            CAutoLock lock(&m_lock);
+            bad = bad || failed;
+            boundary=time;
+            ++clears;
+            m_clearFinished.Set();
         }
         return S_OK;
     }
@@ -200,11 +244,34 @@ public:
         }
     }
     void Check(int expectedClears, int expectedCount=128) {
+        // Allow unsolicited clears to surface even when the expected count is zero.
         Sleep(100);
-        CAutoLock lock(&m_lock);
-        int count=0;for (const auto& slot:slots) count+=slot.filled;
-        printf("queue clears=%ld filled=%d deliveries=%ld boundary=%lld\n",clears,count,deliveries,boundary);fflush(stdout);
-        Require(!bad && clears==expectedClears && count==expectedCount,"Queue did not stabilize at the expected depth");
+        const ULONGLONG deadline=GetTickCount64()+5000;
+        for (;;) {
+            DWORD remaining;
+            {
+                CAutoLock lock(&m_lock);
+                const ULONGLONG now=GetTickCount64();
+                if (bad || clears>=expectedClears || now>=deadline) {
+                    int count=0;for (const auto& slot:slots) count+=slot.filled;
+                    printf("queue clears=%ld filled=%d deliveries=%ld boundary=%lld\n",clears,count,deliveries,boundary);fflush(stdout);
+                    Require(!bad && clears==expectedClears && count==expectedCount,"Queue did not stabilize at the expected depth");
+                    return;
+                }
+                remaining=static_cast<DWORD>(deadline-now);
+            }
+            WaitForSingleObject(m_clearFinished,remaining);
+        }
+    }
+    void CheckRefillTeardown(IXyOptions* options) {
+        m_refillStarted.Reset();
+        asyncRefill=true;
+        Require(SUCCEEDED(options->XySetBool(DirectVobSubXyOptions::BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,true)),
+            "Cannot trigger teardown refill");
+        Require(WaitForSingleObject(m_refillStarted,5000)==WAIT_OBJECT_0, "Teardown refill did not start");
+        DisconnectProvider();
+        Check(1); // All 128 refills must finish before disconnect returns.
+        Require(Clear(0)==S_FALSE, "Disconnected consumer accepted a late clear");
     }
 };
 
@@ -301,6 +368,7 @@ static void CheckQueuedConsumer(IBaseFilter* filter, QueuePacketSource* source, 
     consumer->Empty();consumer->extension=false;consumer->Fill();
     options->XySetBool(BOOL_RENDER_TO_ORIGINAL_VIDEO_SIZE,false);consumer->Check(0);
     consumer->extension=true;
+    consumer->CheckRefillTeardown(options);
 }
 
 static int QueueFilterContract(const wchar_t* dll, bool libass, bool useMpcHelper = false)
@@ -344,7 +412,7 @@ static int QueueFilterContract(const wchar_t* dll, bool libass, bool useMpcHelpe
             IFilterGraph2* graph; IBaseFilter* filter; QueuePacketSource* source;
             QueueContractConsumer* consumer; IPin* input;
             ~GraphCleanup() {
-                if (consumer->provider) consumer->provider->Disconnect();
+                consumer->DisconnectProvider();
                 filter->Stop();source->Stop();graph->Disconnect(input);graph->Disconnect(&source->pin);
                 graph->RemoveFilter(filter);graph->RemoveFilter(source);graph->RemoveFilter(consumer);
             }

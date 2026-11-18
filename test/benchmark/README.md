@@ -485,7 +485,7 @@ Run matching Win32 and x64 executable/DLL pairs:
 python test/benchmark/run_queue_regressions.py --exe <render_subtitles.exe> --xy-dll <XySubFilter.dll> --output <results.json>
 ```
 
-The runner uses a 45-second child watchdog and the same isolated registry cleanup
+The runner uses per-test watchdogs and the same isolated registry cleanup
 as the layout tests. It records the tested DLL hash. `--queue-state-contract`
 checks partial-boundary coalescing, in-flight delivery races, failed deliveries,
 connection replacement epochs, future packets and delay/speed overflow handling.
@@ -494,7 +494,9 @@ connection replacement epochs, future packets and delay/speed overflow handling.
 constant, jittering, VFR and zero frame durations; changing geometry; future and
 late packets; synchronous refill from Clear; video-time delivery and partial
 invalidation with delay/speed; global settings; seeks; failure propagation; and
-consumers without the optional Clear interface. No DLL registration is needed.
+consumers without the optional Clear interface. The teardown test disconnects
+during an asynchronous refill, verifies that all 128 slots complete, and checks
+that the disconnected consumer rejects a late clear. No DLL registration is needed.
 
 `--mpc-timing-contract native|libass <dll>` exercises the same DLL with a
 consumer that implements MPC Subtitle Helper's presenter interface and timestamp
@@ -512,7 +514,8 @@ out-of-range targets, both hexadecimal spellings, transform boundaries, policy
 changes on populated renderers, and backward seeks against independent static
 in-range references. `--benchmark --legacy-alpha ...` selects the old native
 behavior for full-script comparisons. The queue runner allows this expanded
-alpha matrix 180 seconds; the queue contracts retain their 45-second watchdog.
+alpha matrix 180 seconds, the 128-slot graph tests 90 seconds, and the other
+contracts 45 seconds.
 
 `--filter-contract xy|vs <dll>` also verifies the default setting, the Main
 checkbox layout, Apply and persistence in isolated registry settings, and the
