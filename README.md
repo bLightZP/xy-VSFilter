@@ -42,7 +42,7 @@ For development, see the [architecture graph](docs/knowledge-graph.md), [benchma
 
 ## v3.2.1.980 (2026-11-19)
 
-Fixed subtitles disappearing when adjusting subtitle sync in Zoom Player with MPC Video Renderer. XySubFilter now applies the offset once, so subtitles stay visible at the requested time when shifted earlier or later.
+Fixed subtitles disappearing when adjusting subtitle sync in players that use MPC Subtitle Helper with MPC Video Renderer. Subtitles now shift earlier or later by the requested amount.
 
 [Release downloads](https://github.com/bLightZP/xy-VSFilter/releases/tag/v3.2.1.980)
 
